@@ -53,13 +53,24 @@ router.get("/register", (req, res) => {
   res.send("this is register page");
 });
 
-
 router.post("/register", async (req, res) => {
-  const { firstName, lastName, email, password, numberPhone, status, roleId } = req.body;
+  const { firstName, lastName, email, password, numberPhone, roleId} =
+    req.body;
 
- 
-  if (!firstName || !lastName || !email || !password || !numberPhone || !status || !roleId) {
+  if (
+    !firstName ||
+    !lastName ||
+    !email ||
+    !password ||
+    !numberPhone ||
+    !roleId
+  ) {
     return res.status(400).json({ message: "Field(s) missing" });
+  }
+  const checkUser = await User.findOne({ email });
+
+  if (checkUser) {
+    return res.status(400).json({ message: "User already exists" });
   }
 
   try {
@@ -71,8 +82,8 @@ router.post("/register", async (req, res) => {
       email,
       password: passwordHashed,
       numberPhone,
-      status,
-      roleId: new mongoose.Types.ObjectId(roleId) 
+      status:"suspended",
+      roleId: new mongoose.Types.ObjectId(roleId),
     });
 
     await user.save();
