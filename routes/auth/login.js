@@ -2,8 +2,10 @@ const express = require("express");
 const router = express.Router();
 const User = require("../../models/User");
 const Role = require("../../models/Role");
-const bcrypt = require("bcrypt");
+const Token = require("../../models/Token");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const { generateAccessToken,  generateRefreshToken } = require("../../jwt/generateToken");
 require("dotenv").config();
 
 /**
@@ -33,7 +35,7 @@ require("dotenv").config();
  *         description: Invalid credentials
  */
 
-const JWT_SECRET = process.env.JWT_SECRET;
+
 
 router.get("/login", (req, res) => {
   res.send("login page");
@@ -63,19 +65,19 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign(
-      {
-        id: user._id,
-        email: user.email,
-        role: user.roleId?.name || null,
-      },
-      JWT_SECRET,
-      { expiresIn: "1h" }
-    );
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
 
+    
+    console.log("this the refreshToken", refreshToken)
+    console.log("this the accessToken", accessToken)
+
+    await Token.create({userId:user.id, refreshToken:refreshToken});
+    
     res.status(200).json({
       message: "Login successful",
-      token,
+      accessToken:accessToken,
+      refreshToken:refreshToken,
       user: {
         id: user._id,
         firstName: user.firstName,
@@ -90,6 +92,31 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
+router.post("/refresh", async (req, res) => {
+    const {token} = req.body
+
+    if(!token) return res.status(401).json({ message: "Refresh token required" });
+
+    try{
+      const storedToken = await Token.find({token});
+
+      if(!storedToken){
+        return res.status(403).json({message:"Invalid refresh token"})
+      }
+
+         const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+    const user = await User.findById(decoded.email);
+    if (!user) return res.status(403).json({ message: "User not found" });
+
+    const newAccessToken = generateAccessToken(user);
+    res.json({ accessToken: newAccessToken });
+    
+    }catch(err){
+       console.log(err);
+    res.status(403).json({ message: "Invalid or expired refresh token" });
+    }
+})
 
 const blacklistedTokens = new Set();
 
