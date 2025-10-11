@@ -58,6 +58,7 @@ db.createCollection("Appointment", {
     }
   }
 });
+
 db.createCollection("Notification", {
   validator: {
     $jsonSchema: {
@@ -132,7 +133,6 @@ db.createCollection("Consultation", {
         "diagnosis",
         "prescribedTreatment",
         "doctorNotes",
-        "vitalId",
         "allergies",
         "bloodType",
         "weight",
@@ -163,10 +163,6 @@ db.createCollection("Consultation", {
         doctorNotes: {
           bsonType: "string",
           description: "Additional notes from doctor"
-        },
-        vitalId: {
-          bsonType: "objectId",
-          description: "Reference to VitalSigns document"
         },
         allergies: {
           bsonType: "string",
