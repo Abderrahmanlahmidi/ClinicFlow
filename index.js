@@ -42,11 +42,15 @@ database.once("connected", () => {
 });
 
 
-const Register = require("./routes/auth/register");
-const Login = require("./routes/auth/login");
+const routes = [
+    { path: "/api/auth", route: require("./routes/auth/register") },
+    { path: "/api/auth", route: require("./routes/auth/login") },
+    { path: "/api/clinic", route: require("./routes/clinic/role") },
+    {path:"/api/clinic", route: require("./routes/clinic/speciality") },
+];
 
-app.use("/api/auth", Register);
-app.use("/api/auth", Login);
+routes.forEach(r => app.use(r.path, r.route));
+
 
 app.listen(3000, () => {
   console.log(`Server Started at http://localhost:3000`);
