@@ -54,7 +54,7 @@ router.get("/register", (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
-  const { firstName, lastName, email, password, numberPhone, roleId} =
+  const { firstName, lastName, email, password, numberPhone, roleId, specialityId} =
     req.body;
 
   if (
@@ -76,15 +76,16 @@ router.post("/register", async (req, res) => {
   try {
     const passwordHashed = await bcrypt.hash(password, 10);
 
-    const user = new User({
-      firstName,
-      lastName,
-      email,
-      password: passwordHashed,
-      numberPhone,
-      status:"suspended",
-      roleId: new mongoose.Types.ObjectId(roleId),
-    });
+      const user = new User({
+          firstName,
+          lastName,
+          email,
+          password: passwordHashed,
+          numberPhone,
+          status: "active",
+          roleId: new mongoose.Types.ObjectId(roleId),
+          specialityId:  specialityId ? new mongoose.Types.ObjectId(specialityId) : null,
+      });
 
     await user.save();
     res.status(201).json({ message: "User registered successfully" });
