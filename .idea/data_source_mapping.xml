@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourcePerFileMappings">
-    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/b2f41078-00d7-4559-81fc-700b2394c275/console.js" value="b2f41078-00d7-4559-81fc-700b2394c275" />
-    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/b2f41078-00d7-4559-81fc-700b2394c275/console_1.js" value="b2f41078-00d7-4559-81fc-700b2394c275" />
-    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/b2f41078-00d7-4559-81fc-700b2394c275/console_2.js" value="b2f41078-00d7-4559-81fc-700b2394c275" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/d6f586bb-c13a-49f6-96a9-3f2c30e51f8d/console.js" value="d6f586bb-c13a-49f6-96a9-3f2c30e51f8d" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/d6f586bb-c13a-49f6-96a9-3f2c30e51f8d/console_1.js" value="d6f586bb-c13a-49f6-96a9-3f2c30e51f8d" />
   </component>
 </project>
