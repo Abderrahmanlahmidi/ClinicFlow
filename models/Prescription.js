@@ -10,6 +10,9 @@ const prescriptionSchema = new mongoose.Schema({
   dosage: { type: String, required: true },
   duration: { type: String, required: true },
   instructions: { type: String, required: true }
+}, {
+    collection: "Prescription",
+    timestamps: true
 });
 
 const Prescription = mongoose.model("Prescription", prescriptionSchema);

@@ -20,6 +20,9 @@ const notificationSchema = new mongoose.Schema({
     ref: "User", 
     required: true 
   }
+}, {
+    collection: "Notifications",
+    timestamps: true
 });
 
 const Notification = mongoose.model("Notification", notificationSchema);

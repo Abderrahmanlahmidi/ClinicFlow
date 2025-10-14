@@ -54,16 +54,14 @@ router.get("/register", (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
-  const { firstName, lastName, email, password, numberPhone, roleId, specialityId} =
-    req.body;
+  const { firstName, lastName, email, password, numberPhone, specialityId, roleId} = req.body;
 
   if (
     !firstName ||
     !lastName ||
     !email ||
     !password ||
-    !numberPhone ||
-    !roleId
+    !numberPhone
   ) {
     return res.status(400).json({ message: "Field(s) missing" });
   }
@@ -72,6 +70,9 @@ router.post("/register", async (req, res) => {
   if (checkUser) {
     return res.status(400).json({ message: "User already exists" });
   }
+
+
+  const role = roleId ? roleId : "68eb65a167c899cc8d931a99";
 
   try {
     const passwordHashed = await bcrypt.hash(password, 10);
@@ -83,7 +84,7 @@ router.post("/register", async (req, res) => {
           password: passwordHashed,
           numberPhone,
           status: "active",
-          roleId: new mongoose.Types.ObjectId(roleId),
+          roleId: new mongoose.Types.ObjectId(role),
           specialityId:  specialityId ? new mongoose.Types.ObjectId(specialityId) : null,
       });
 
