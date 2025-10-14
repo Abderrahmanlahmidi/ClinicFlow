@@ -16,6 +16,10 @@ const consultationSchema = new mongoose.Schema({
   hearRate: { type: Number, required: true },
   height: { type: Number, required: true }, 
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }
+}, {
+    collection: "Consultation",
+    timestamps: true
+
 });
 
 const Consultation = mongoose.model("Consultation", consultationSchema);
