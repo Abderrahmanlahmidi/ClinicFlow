@@ -47,6 +47,8 @@ const routes = [
     { path: "/api/auth", route: require("./routes/auth/login") },
     { path: "/api/clinic", route: require("./routes/clinic/role") },
     {path:"/api/clinic", route: require("./routes/clinic/speciality") },
+    {path:"/api/clinic", route: require("./routes/clinic/availability") },
+    {path:"/api/clinic", route: require("./routes/clinic/appointment") },
 ];
 
 routes.forEach(r => app.use(r.path, r.route));

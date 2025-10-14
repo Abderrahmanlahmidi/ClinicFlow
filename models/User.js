@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
     roleId: {type: mongoose.Schema.Types.ObjectId, ref: "Role", required: true},
     specialityId: {type: mongoose.Schema.Types.ObjectId, ref: "Speciality", required: false}
 
-}, {collection: "User"});
+}, {collection: "User", timestamps: true});
 
 const User = mongoose.model("User", userSchema);
 

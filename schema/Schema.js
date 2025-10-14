@@ -39,24 +39,30 @@ db.createCollection("User", {
 
 
 db.createCollection("Appointment", {
-  validator: {
-    $jsonSchema: {
-      bsonType: "object",
-      required: ["date", "status", "patientId"],
-      properties: {
-        date: {
-          bsonType: "date",
-        },
-        status: {
-          bsonType: "string",
-          enum: ["pending", "confirmed", "cancelled"],
-        },
-        patientId: {
-          bsonType: "objectId",
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["date", "status", "patientId", "queueNumber", "doctorId"],
+            properties: {
+                date: {
+                    bsonType: "date",
+                },
+                status: {
+                    bsonType: "string",
+                    enum: ["scheduled", "in progress", "completed", "cancelled"],
+                },
+                doctorId: {
+                    bsonType: "objectId"
+                },
+                patientId: {
+                    bsonType: "objectId",
+                },
+                queueNumber: {
+                    bsonType: "int"
+                }
+            }
         }
-      }
     }
-  }
 });
 
 db.createCollection("Notification", {
@@ -113,10 +119,13 @@ db.createCollection("Availability", {
                     bsonType:"string"
                 },
                 startTime:{
-                    bsonType:"date"
+                    bsonType:"string"
                 },
                 endTime:{
-                    bsonType:"date"
+                    bsonType:"string"
+                },
+                dailyCapacity:{
+                    bsonType:"int"
                 }
             }
         }
