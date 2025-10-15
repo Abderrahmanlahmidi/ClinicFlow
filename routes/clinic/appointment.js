@@ -4,6 +4,7 @@ const Availability = require("../../models/Availability");
 const Appointment = require("../../models/Appointment");
 const mongoose = require("mongoose");
 
+
 router.post("/create-appointment", async (req, res) => {
     const { doctorId, patientId, date } = req.body;
 
@@ -138,7 +139,8 @@ router.get("/appointments", async (req, res) => {
 })
 
 
-router.put("/appointments/:id", async (req, res) => {
+router.patch("/update-appointment/:id", async (req, res) => {
+
     const { id } = req.params;
     const { date } = req.body;
 
@@ -213,10 +215,11 @@ router.put("/appointments/:id", async (req, res) => {
         console.error("ERROR UPDATING APPOINTMENT:", error);
         return res.status(500).json({ message: "Error updating appointment", error: error.message });
     }
+
 });
 
 
-router.delete("/appointments/:id", async (req, res) => {
+router.delete("/appointment/:id", async (req, res) => {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -232,7 +235,6 @@ router.delete("/appointments/:id", async (req, res) => {
 
         return res.status(200).json({
             message: "Appointment deleted successfully.",
-            appointment: deletedAppointment
         });
 
     } catch (error) {
