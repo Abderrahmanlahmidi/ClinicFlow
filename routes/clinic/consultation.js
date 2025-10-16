@@ -6,22 +6,46 @@ router.get("/user-consultations/:id", async (req, res) => {
   const userId = req.params.id;
 
   try {
-    const userConsultations = await Consultation.findById(userId);
 
-    if (!userConsultations || userConsultations.lenght === 0) {
-      return res.status(400).json({
-        message: "No consultations found",
+    const userConsultations = await Consultation.find({
+      userId: userId,
+    }).populate({ path: "prescriptions", consultations: "Prescription" });
+
+    if (!userConsultations || userConsultations.length === 0) {
+      return res.status(404).json({
+        message: "No consultations found for this user",
       });
     }
 
     return res.status(200).json({
-      message: "message get consultations successfully",
+      message: "Consultations retrieved successfully",
       consultations: userConsultations,
     });
   } catch (error) {
-    console.error(error);
-    res.status(400).json({ errors: error.errors });
+    res.status(500).json({ error: error.message });
   }
+});
+
+router.get("/consultations", async (req, res) => {
+
+  try {
+    
+    const consultations = await Consultation.find().populate({ path: "prescriptions", consultations: "Prescription" });
+
+    if (!consultations || consultations.length === 0) {
+      return res.status(404).json({
+        message: "No consultations found for this user",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Consultations retrieved successfully",
+      consultations: consultations,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+
 });
 
 router.post("/create-consultation", async (req, res) => {
@@ -62,7 +86,7 @@ router.post("/create-consultation", async (req, res) => {
   }
 
   try {
-    await Consultation.create({
+    const newConsultation = await Consultation.create({
       consultationDate,
       consultationReason,
       diagnosis,
@@ -79,12 +103,12 @@ router.post("/create-consultation", async (req, res) => {
       doctorId,
     });
 
-    return res.status(200).json({
+    return res.status(201).json({
       message: "Consultation created successfully",
+      consultation: newConsultation,
     });
   } catch (error) {
-    console.error(error);
-    res.status(400).json({ errors: error.errors });
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -125,65 +149,56 @@ router.patch("/update-consultation/:id", async (req, res) => {
 
   try {
     const consultation = await Consultation.findById(consultationId);
-    console.log("3)-the consultations from the db :" + consultation);
 
     if (!consultation) {
       return res.status(404).json({
-        message: "No consultations found",
+        message: "Consultation not found",
       });
     }
 
-    consultation.consultationDate = consultationDate;
-    consultation.consultationReason = consultationReason;
-    consultation.diagnosis = diagnosis;
-    consultation.doctorNotes = doctorNotes;
-    consultation.allergies = allergies;
-    consultation.bloodType = bloodType;
-    consultation.weight = weight;
-    consultation.height = height;
-    consultation.bloodPressure = bloodPressure;
-    consultation.temperature = temperature;
-    consultation.respiratoryRate = respiratoryRate;
-    consultation.hearRate = hearRate;
-    consultation.save();
+    if (consultationDate) consultation.consultationDate = consultationDate;
+    if (consultationReason) consultation.consultationReason = consultationReason;
+    if (diagnosis) consultation.diagnosis = diagnosis;
+    if (doctorNotes) consultation.doctorNotes = doctorNotes;
+    if (allergies) consultation.allergies = allergies;
+    if (bloodType) consultation.bloodType = bloodType;
+    if (weight) consultation.weight = weight;
+    if (height) consultation.height = height;
+    if (bloodPressure) consultation.bloodPressure = bloodPressure;
+    if (temperature) consultation.temperature = temperature;
+    if (respiratoryRate) consultation.respiratoryRate = respiratoryRate;
+    if (hearRate) consultation.hearRate = hearRate;
+    await consultation.save();
 
-    return res.status(201).json({
-      message: "Consultation Updated Successfully",
+    return res.status(200).json({
+      message: "Consultation updated successfully",
+      consultation: consultation,
     });
   } catch (error) {
-    console.error(error);
-    res.status(400).json({ errors: error.errors });
+    res.status(500).json({ error: error.message });
   }
 });
 
-
 router.delete("/delete-consultation/:id", async (req, res) => {
-
   const consultationId = req.params.id;
 
   try {
-
     const consultation = await Consultation.findById(consultationId);
 
-    if(!consultation){
-        return res.status(401).json({
-            message:"No consultation found"
-        })
+    if (!consultation) {
+      return res.status(404).json({
+        message: "Consultation not found",
+      });
     }
 
-    await Consultation.deleteOne({_id:consultationId});
+    await Consultation.deleteOne({ _id: consultationId });
 
     return res.status(200).json({
-        message:"consultation deleted successfully"
-    })  
-
+      message: "Consultation deleted successfully",
+    });
   } catch (error) {
-    console.error(error);
-    res.status(400).json({ errors: error.errors });
+    res.status(500).json({ error: error.message });
   }
-  
 });
-
-
 
 module.exports = router;

@@ -24,6 +24,12 @@ const consultationSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    prescriptions: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Prescription",
+      },
+    ],
   },
   {
     collection: "Consultation",
