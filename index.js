@@ -43,12 +43,14 @@ database.once("connected", () => {
 
 
 const routes = [
-    { path: "/api/auth", route: require("./routes/auth/register") },
-    { path: "/api/auth", route: require("./routes/auth/login") },
-    { path: "/api/clinic", route: require("./routes/clinic/role") },
-    {path:"/api/clinic", route: require("./routes/clinic/speciality") },
-    {path:"/api/clinic", route: require("./routes/clinic/availability") },
-    {path:"/api/clinic", route: require("./routes/clinic/appointment") },
+    {path: "/api/auth", route: require("./routes/auth/register")},
+    {path: "/api/auth", route: require("./routes/auth/login")},
+    {path: "/api/clinic", route: require("./routes/clinic/role")},
+    {path: "/api/clinic", route: require("./routes/clinic/speciality")},
+    {path: "/api/clinic", route: require("./routes/clinic/availability")},
+    {path: "/api/clinic", route: require("./routes/clinic/appointment")},
+    {path: "/api/clinic", route: require("./routes/clinic/consultation")},
+    {path: "/api/clinic", route: require("./routes/clinic/prescription")}
 ];
 
 routes.forEach(r => app.use(r.path, r.route));
