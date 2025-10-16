@@ -36,9 +36,8 @@ router.post("/create-speciality", async (req, res) => {
             message: "Successfully created speciality",
             speciality: newSpeciality,
         });
-    } catch (err) {
-        console.error("Error creating speciality:", err);
-        return res.status(500).json({ message: "Internal server error." });
+    } catch (error) {
+        return res.status(500).json({error:error.message});
     }
 });
 
@@ -51,9 +50,8 @@ router.get("/specialities/:id", async (req, res) => {
         if (!speciality) return res.status(404).json({ message: "Speciality not found" });
 
         return res.status(200).json(speciality);
-    } catch (err) {
-        console.error("Error fetching speciality:", err);
-        return res.status(500).json({ message: "Internal server error." });
+    } catch (error) {
+        return res.status(500).json({ error:error.message });
     }
 });
 
@@ -70,9 +68,8 @@ router.patch("/update-speciality/:id", async (req, res) => {
 
         await speciality.save();
         return res.status(200).json({ message: "Speciality updated successfully", speciality });
-    } catch (err) {
-        console.error("Error updating speciality:", err);
-        return res.status(500).json({ message: "Internal server error." });
+    } catch (error) {
+        return res.status(500).json({ error:error.message });
     }
 });
 
@@ -84,9 +81,8 @@ router.delete("/delete-speciality/:id", async (req, res) => {
         if (result.deletedCount === 0) return res.status(404).json({message: "Speciality not found"});
 
         return res.status(200).json({message: "Speciality successfully deleted"});
-    } catch (err) {
-        console.error("Error deleting speciality:", err);
-        return res.status(500).json({message: "Internal server error."});
+    } catch (error) {
+        return res.status(500).json({error:error.message});
     }
 });
 

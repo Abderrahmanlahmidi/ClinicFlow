@@ -19,8 +19,8 @@ router.get('/availabilities/:userId', async (req, res) => {
             userAvailabilities: userAvailabilities
         });
 
-    } catch (err) {
-        return res.status(400).json({message: "ERROR AVAILABILITY:", error})
+    } catch (error) {
+        return res.status(400).json({error:error})
     }
 
 })
@@ -40,7 +40,7 @@ router.get("/availabilities", async (req, res) => {
         }
 
     } catch (error) {
-        return res.status(400).json({message: "ERROR AVAILABILITY:", error})
+        return res.status(400).json({error:error})
     }
 })
 
@@ -82,13 +82,13 @@ router.post("/create-availability", async (req, res) => {
 
     } catch (error) {
 
-        return res.status(400).json({message: "ERROR AVAILABILITY:", error})
+        return res.status(400).json({error: error.message})
     }
 
 })
+ 
 
-
-router.patch("/update-availability/:id", async (req, res) => {
+router.put("/update-availability/:id", async (req, res) => {
 
     const {id} = req.params;
     const {dayOfWeek, startTime, endTime, dailyCapacity, userId} = req.body;
@@ -106,8 +106,8 @@ router.patch("/update-availability/:id", async (req, res) => {
 
         return res.status(200).json({message: "Availability updated successfully."})
 
-    } catch (err) {
-        return res.status(400).json({message: "ERROR AVAILABILITY:", err})
+    } catch (error) {
+        return res.status(400).json({error:error})
     }
 
 })
@@ -124,8 +124,8 @@ router.delete("/delete-availability/:id", async (req, res) => {
 
         return res.status(200).json({message: "Availability successfully deleted"});
 
-    } catch (err) {
-        return res.status(400).json({message: "ERROR DELETE AVAILABILITY:", err});
+    } catch (error) {
+        return res.status(400).json({error:error});
     }
 
 })
