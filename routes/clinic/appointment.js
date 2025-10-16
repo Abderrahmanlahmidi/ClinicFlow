@@ -38,7 +38,7 @@ router.post("/create-appointment", async (req, res) => {
         });
 
         if (!availability) {
-            return res.status(400).json({ message: "Doctor is not available on this day." });
+            return res.status(404).json({ message: "Doctor is not available on this day." });
         }
 
         const hasExistingAppointment = await Appointment.findOne({
@@ -48,7 +48,7 @@ router.post("/create-appointment", async (req, res) => {
         });
 
         if (hasExistingAppointment) {
-            return res.status(400).json({ message: "Appointment already exists for this patient on this day." });
+            return res.status(409).json({ message: "Appointment already exists for this patient on this day." });
         }
 
         const count = await Appointment.countDocuments({
@@ -59,7 +59,7 @@ router.post("/create-appointment", async (req, res) => {
         const queueNumber = count + 1;
 
         if (count >= availability.dailyCapacity) {
-            return res.status(400).json({ message: "No more appointments available for this day." });
+            return res.status(409).json({ message: "No more appointments available for this day." });
         }
 
         const newAppointment = await Appointment.create({
@@ -70,17 +70,15 @@ router.post("/create-appointment", async (req, res) => {
             queueNumber,
         });
 
-        return res.status(200).json({
+        return res.status(201).json({
             message: "Appointment created successfully.",
             appointment: newAppointment,
         });
 
     } catch (error) {
-        console.error("ERROR CREATE APPOINTMENT:", error);
         return res.status(500).json({
-            message: "Error creating appointment",
-            error: error.message,
-        });
+            error: error.message
+        })
     }
 });
 
@@ -95,12 +93,11 @@ router.get("/doctor-appointments/:id", async (req, res) => {
         const doctorAppointments = await Appointment.find({doctorId})
             .populate('patientId', 'firstName lastName numberPhone');
 
-        if (!doctorAppointments) {
-            return res.status(400).json({
-                success: false, message: "You don't have any appointments right now",
+        if (!doctorAppointments || doctorAppointments.length === 0) {
+            return res.status(404).json({
+                success: false, message: "No appointments found for this doctor.",
             });
         }
-
 
         return res.status(200).json({
             doctorAppointments: doctorAppointments
@@ -108,9 +105,9 @@ router.get("/doctor-appointments/:id", async (req, res) => {
 
     } catch (error) {
         console.log("ERROR CREATE APPOINTMENT:", error);
-        return res
-            .status(500)
-            .json({message: "Error creating appointment", error});
+        return res.status(500).json({
+            error: error.message
+        })
     }
 });
 
@@ -120,8 +117,8 @@ router.get("/appointments", async (req, res) => {
     try {
         const appointments = await Appointment.find();
 
-        if (!appointments) {
-            return res.status(400).json({
+        if (!appointments || appointments.length === 0) {
+            return res.status(404).json({
                 success: false, message: "No appointments found."
             })
         }
@@ -131,9 +128,8 @@ router.get("/appointments", async (req, res) => {
         })
 
     } catch (error) {
-        console.log("ERROR GET APPOINTMENT:", error);
         return res.status(500).json({
-            success: false, message: "Error getting appointments",
+            error: error.message
         })
     }
 })
@@ -174,13 +170,11 @@ router.patch("/update-appointment/:id", async (req, res) => {
         const endOfDay = new Date(newDate);
         endOfDay.setHours(23,59,59,999);
 
-
         const dayOfWeek = newDate.toLocaleDateString("en-US", { weekday: "long" });
         const availability = await Availability.findOne({ userId: doctorId, dayOfWeek });
         if (!availability) {
-            return res.status(400).json({ message: "Doctor is not available on this day." });
+            return res.status(404).json({ message: "Doctor is not available on this day." });
         }
-
 
         const conflict = await Appointment.findOne({
             _id: { $ne: id },
@@ -190,7 +184,7 @@ router.patch("/update-appointment/:id", async (req, res) => {
         });
 
         if (conflict) {
-            return res.status(400).json({ message: "Patient already has an appointment on this day." });
+            return res.status(409).json({ message: "Patient already has an appointment on this day." });
         }
 
         const count = await Appointment.countDocuments({
@@ -199,7 +193,7 @@ router.patch("/update-appointment/:id", async (req, res) => {
         });
 
         if (count >= availability.dailyCapacity) {
-            return res.status(400).json({ message: "No more appointments available for this day." });
+            return res.status(409).json({ message: "No more appointments available for this day." });
         }
 
         appointment.date = newDate;
@@ -212,8 +206,9 @@ router.patch("/update-appointment/:id", async (req, res) => {
         });
 
     } catch (error) {
-        console.error("ERROR UPDATING APPOINTMENT:", error);
-        return res.status(500).json({ message: "Error updating appointment", error: error.message });
+        return res.status(500).json({
+            error: error.message
+        })
     }
 
 });
@@ -238,11 +233,9 @@ router.delete("/appointment/:id", async (req, res) => {
         });
 
     } catch (error) {
-        console.error("ERROR DELETE APPOINTMENT:", error);
         return res.status(500).json({
-            message: "Error deleting appointment",
             error: error.message
-        });
+        })
     }
 });
 

@@ -19,8 +19,8 @@ router.get('/availabilities/:userId', async (req, res) => {
             userAvailabilities: userAvailabilities
         });
 
-    } catch (err) {
-        return res.status(400).json({message: "ERROR AVAILABILITY:", error})
+    } catch (error) {
+        return res.status(500).json({error: error.message})
     }
 
 })
@@ -30,17 +30,17 @@ router.get("/availabilities", async (req, res) => {
 
         const availabilities = await Availability.find();
 
-        if (!availabilities) {
+        if (!availabilities || availabilities.length === 0) {
             return res.status(404).json({message: "No availabilities found"});
-        } else {
-            return res.status(200).json({
-                success: true,
-                availabilities: availabilities
-            });
         }
 
+        return res.status(200).json({
+            success: true,
+            availabilities: availabilities
+        });
+
     } catch (error) {
-        return res.status(400).json({message: "ERROR AVAILABILITY:", error})
+        return res.status(500).json({error: error.message})
     }
 })
 
@@ -48,9 +48,8 @@ router.get("/availabilities", async (req, res) => {
 router.post("/create-availability", async (req, res) => {
     const {dayOfWeek, startTime, endTime, userId, dailyCapacity} = req.body;
 
-
     if (!dayOfWeek || !startTime || !endTime || !userId || !dailyCapacity) {
-        return res.status(400).json({message: "dayOfWeek or startTime or endTime or dailyCapacity or userId are required."})
+        return res.status(400).json({message: "All fields are required: dayOfWeek, startTime, endTime, userId, and dailyCapacity."})
     }
 
     const startHour = Number(startTime.split(':')[0]);
@@ -61,16 +60,16 @@ router.post("/create-availability", async (req, res) => {
     }
 
     try {
-        const existingDay = await Availability.findOne({userId});
+        const existingAvailability = await Availability.findOne({
+            userId: userId,
+            dayOfWeek: dayOfWeek
+        });
 
-        if(existingDay) {
-            if (dayOfWeek === existingDay.dayOfWeek) {
-                return res.status(400).json({message: "Availability already exists"});
-            }
+        if(existingAvailability) {
+            return res.status(409).json({message: "Availability already exists for this day and user."});
         }
 
-
-        await Availability.create({
+        const newAvailability = await Availability.create({
             dayOfWeek: dayOfWeek,
             startTime: startTime,
             endTime: endTime,
@@ -78,36 +77,57 @@ router.post("/create-availability", async (req, res) => {
             userId: userId
         })
 
-        return res.status(200).json({message: "Availability created successfully."})
+        return res.status(201).json({
+            message: "Availability created successfully.",
+            availability: newAvailability
+        })
 
     } catch (error) {
-
-        return res.status(400).json({message: "ERROR AVAILABILITY:", error})
+        return res.status(500).json({error: error.message})
     }
 
 })
 
 
-router.patch("/update-availability/:id", async (req, res) => {
+router.put("/update-availability/:id", async (req, res) => {
 
     const {id} = req.params;
     const {dayOfWeek, startTime, endTime, dailyCapacity, userId} = req.body;
 
-    try {
+    if (!dayOfWeek && !startTime && !endTime && !dailyCapacity && !userId) {
+        return res.status(400).json({message: "At least one field is required to update."})
+    }
 
+    try {
         const availability = await Availability.findById(id);
+
+        if (!availability) {
+            return res.status(404).json({message: "Availability not found."});
+        }
+
+        if (startTime && endTime) {
+            const startHour = Number(startTime.split(':')[0]);
+            const endHour = Number(endTime.split(':')[0]);
+            if (startHour >= endHour) {
+                return res.status(400).json({message: "Start time must be earlier than end time."})
+            }
+        }
 
         if (dayOfWeek) availability.dayOfWeek = dayOfWeek;
         if (startTime) availability.startTime = startTime;
         if (endTime) availability.endTime = endTime;
         if (dailyCapacity) availability.dailyCapacity = dailyCapacity;
         if (userId) availability.userId = userId;
+
         await availability.save();
 
-        return res.status(200).json({message: "Availability updated successfully."})
+        return res.status(200).json({
+            message: "Availability updated successfully.",
+            availability: availability
+        })
 
-    } catch (err) {
-        return res.status(400).json({message: "ERROR AVAILABILITY:", err})
+    } catch (error) {
+        return res.status(500).json({error: error.message})
     }
 
 })
@@ -124,8 +144,8 @@ router.delete("/delete-availability/:id", async (req, res) => {
 
         return res.status(200).json({message: "Availability successfully deleted"});
 
-    } catch (err) {
-        return res.status(400).json({message: "ERROR DELETE AVAILABILITY:", err});
+    } catch (error) {
+        return res.status(500).json({error: error.message});
     }
 
 })
