@@ -1,7 +1,7 @@
 const express = require('express');
-const Role = require("../../models/Role");
+const Role = require("../models/Role");
 const router = express.Router();
-const isAuthenticated = require("../../middlewares/isAuthenticated");
+const isAuthenticated = require("../middlewares/isAuthenticated");
 
 
 router.get("/get-roles", async (req, res) => {
@@ -66,7 +66,7 @@ router.patch("/update-role/:id", async (req, res) => {
             return res.status(404).json({message: "Role not found."});
         }
 
-        // Check for duplicate role name if name is being updated
+
         if (name && name.trim() !== role.name) {
             const existingRole = await Role.findOne({name: name.trim()});
             if (existingRole) {

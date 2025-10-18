@@ -1,5 +1,5 @@
 const express = require('express');
-const Availability = require("../../models/Availability");
+const Availability = require("../models/Availability");
 const router = express.Router();
 
 

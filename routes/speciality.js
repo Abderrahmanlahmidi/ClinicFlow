@@ -1,5 +1,6 @@
 const express = require('express');
-const Speciality = require("../../models/Speciality");
+const Speciality = require("../models/Speciality");
+const User = require("../models/User");
 const router = express.Router();
 
 
@@ -65,6 +66,32 @@ router.get("/specialities/:id", async (req, res) => {
         return res.status(500).json({ error: error.message });
     }
 });
+
+router.get("/speciality-doctors/:id", async (req, res) => {
+
+        const id = req.params.id
+
+        try{
+
+            const doctors = await User.find({specialityId:id})
+
+            if(!doctors){
+                return res.status(400).json({
+                    message:"No any doctor found"
+                })
+            }
+
+            return res.status(200).json({
+                specialityDoctors:doctors
+            })
+            
+        }catch(error){
+            return res.status(500).json({
+                error:error.message
+            })
+        }
+
+})
 
 router.patch("/update-speciality/:id", async (req, res) => {
     const id = req.params.id;

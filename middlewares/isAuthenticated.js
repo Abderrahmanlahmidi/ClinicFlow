@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 
+// isAuthenticated(["admin"])
 
 function isAuthenticated(allowedRoles = []) {
   return (req, res, next) => {

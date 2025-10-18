@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const User = require("../../models/User");
 const mongoose = require("mongoose");
+const isAuthenticated = require("../../middlewares/isAuthenticated");
 
 /**
  * @swagger
@@ -49,9 +50,6 @@ const mongoose = require("mongoose");
  *         description: Server error
  */
 
-router.get("/register", (req, res) => {
-  res.send("this is register page");
-});
 
 router.post("/register", async (req, res) => {
   const { firstName, lastName, email, password, numberPhone, specialityId, roleId} = req.body;
@@ -95,5 +93,12 @@ router.post("/register", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+
+
+
+
+
+
 
 module.exports = router;
