@@ -7,6 +7,10 @@ const notificationSchema = new mongoose.Schema({
     enum: ["info", "warning", "success"],
     required: true 
   },
+  title: {
+    type: String,
+    required: true
+  },
   read: { 
     type: Boolean, 
     required: true 
@@ -21,7 +25,7 @@ const notificationSchema = new mongoose.Schema({
     required: true 
   }
 }, {
-    collection: "Notifications",
+    collection: "Notification",
     timestamps: true
 });
 
