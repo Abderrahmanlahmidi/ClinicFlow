@@ -2,267 +2,311 @@ const express = require("express");
 const router = express.Router();
 const Availability = require("../models/Availability");
 const Appointment = require("../models/Appointment");
+const Notification = require("../models/Notification");
 const mongoose = require("mongoose");
 
-
 router.post("/create-appointment", async (req, res) => {
-    const { doctorId, patientId, date } = req.body;
+  const { doctorId, patientId, date } = req.body;
 
-    if (!doctorId || !patientId || !date) {
-        return res.status(400).json({ message: "Please provide all required fields." });
+  if (!doctorId || !patientId || !date) {
+    return res
+      .status(400)
+      .json({ message: "Please provide all required fields." });
+  }
+
+  try {
+    const doctorObjectId = new mongoose.Types.ObjectId(doctorId);
+    const patientObjectId = new mongoose.Types.ObjectId(patientId);
+
+    const selectedDate = new Date(date);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (selectedDate < today) {
+      return res
+        .status(400)
+        .json({ message: "Cannot create an appointment in the past." });
     }
 
-    try {
-        const doctorObjectId = new mongoose.Types.ObjectId(doctorId);
-        const patientObjectId = new mongoose.Types.ObjectId(patientId);
+    const startOfDay = new Date(selectedDate);
+    startOfDay.setHours(0, 0, 0, 0);
 
-        const selectedDate = new Date(date);
+    const endOfDay = new Date(selectedDate);
+    endOfDay.setHours(23, 59, 59, 999);
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (selectedDate < today) {
-            return res.status(400).json({ message: "Cannot create an appointment in the past." });
-        }
+    const dayOfWeek = selectedDate.toLocaleDateString("en-US", {
+      weekday: "long",
+    });
 
-        const startOfDay = new Date(selectedDate);
-        startOfDay.setHours(0, 0, 0, 0);
+    const availability = await Availability.findOne({
+      userId: doctorObjectId,
+      dayOfWeek,
+    });
 
-        const endOfDay = new Date(selectedDate);
-        endOfDay.setHours(23, 59, 59, 999);
-
-        const dayOfWeek = selectedDate.toLocaleDateString("en-US", { weekday: "long" });
-
-        const availability = await Availability.findOne({
-            userId: doctorObjectId,
-            dayOfWeek,
-        });
-
-        if (!availability) {
-            return res.status(404).json({ message: "Doctor is not available on this day." });
-        }
-
-        const hasExistingAppointment = await Appointment.findOne({
-            patientId: patientObjectId,
-            doctorId: doctorObjectId,
-            date: { $gte: startOfDay, $lte: endOfDay },
-        });
-
-        if (hasExistingAppointment) {
-            return res.status(409).json({ message: "Appointment already exists for this patient on this day." });
-        }
-
-        const count = await Appointment.countDocuments({
-            doctorId: doctorObjectId,
-            date: { $gte: startOfDay, $lte: endOfDay },
-        });
-
-        const queueNumber = count + 1;
-
-        if (count >= availability.dailyCapacity) {
-            return res.status(409).json({ message: "No more appointments available for this day." });
-        }
-
-        const newAppointment = await Appointment.create({
-            date: selectedDate,
-            patientId: patientObjectId,
-            doctorId: doctorObjectId,
-            status: "scheduled",
-            queueNumber,
-        });
-
-        return res.status(201).json({
-            message: "Appointment created successfully.",
-            appointment: newAppointment,
-        });
-
-    } catch (error) {
-        return res.status(500).json({
-            error: error.message
-        })
+    if (!availability) {
+      return res
+        .status(404)
+        .json({ message: "Doctor is not available on this day." });
     }
+
+    const hasExistingAppointment = await Appointment.findOne({
+      patientId: patientObjectId,
+      doctorId: doctorObjectId,
+      date: { $gte: startOfDay, $lte: endOfDay },
+    });
+
+    if (hasExistingAppointment) {
+      return res.status(409).json({
+        message: "Appointment already exists for this patient on this day.",
+      });
+    }
+
+    const count = await Appointment.countDocuments({
+      doctorId: doctorObjectId,
+      date: { $gte: startOfDay, $lte: endOfDay },
+    });
+
+    const queueNumber = count + 1;
+
+    if (count >= availability.dailyCapacity) {
+      return res
+        .status(409)
+        .json({ message: "No more appointments available for this day." });
+    }
+
+    const newAppointment = await Appointment.create({
+      date: selectedDate,
+      patientId: patientObjectId,
+      doctorId: doctorObjectId,
+      status: "scheduled",
+      queueNumber,
+    });
+
+    return res.status(201).json({
+      message: "Appointment created successfully.",
+      appointment: newAppointment,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: error.message,
+    });
+  }
 });
 
-
 router.get("/doctor-appointments/:id", async (req, res) => {
+  const doctorId = req.params.id;
 
-    const doctorId = req.params.id;
+  console.log("doctor id: " + doctorId);
 
-    console.log("doctor id: " + doctorId);
+  try {
+    const doctorAppointments = await Appointment.find({ doctorId }).populate(
+      "patientId",
+      "firstName lastName numberPhone"
+    );
 
-    try {
-        const doctorAppointments = await Appointment.find({doctorId})
-            .populate('patientId', 'firstName lastName numberPhone');
-
-        if (!doctorAppointments || doctorAppointments.length === 0) {
-            return res.status(404).json({
-                success: false, message: "No appointments found for this doctor.",
-            });
-        }
-
-        return res.status(200).json({
-            doctorAppointments: doctorAppointments
-        })
-
-    } catch (error) {
-        return res.status(500).json({
-            error: error.message
-        })
+    if (!doctorAppointments || doctorAppointments.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No appointments found for this doctor.",
+      });
     }
+
+    return res.status(200).json({
+      doctorAppointments: doctorAppointments,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: error.message,
+    });
+  }
 });
 
 router.get("/patient-appointments/:id", async (req, res) => {
-    const patientId = req.params.id;
+  const patientId = req.params.id;
 
-    try{
-        const patientAppointments = await Appointment.find({patientId}).populate("doctorId", 'firstName lastName numberPhone')
-        
-        if (!patientAppointments || patientAppointments.length === 0) {
-            return res.status(404).json({
-                success: false, message: "No appointments found for this patient.",
-            });
-        }
+  try {
+    const patientAppointments = await Appointment.find({ patientId }).populate(
+      "doctorId",
+      "firstName lastName numberPhone"
+    );
 
-        return res.status(200).json({
-            patientAppointments:patientAppointments
-        })
-
-
-    }catch(error){
-          return res.status(500).json({
-            error: error.message
-        })
+    if (!patientAppointments || patientAppointments.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No appointments found for this patient.",
+      });
     }
-    
-})
 
+    return res.status(200).json({
+      patientAppointments: patientAppointments,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: error.message,
+    });
+  }
+});
 
 router.get("/appointments", async (req, res) => {
+  try {
+    const appointments = await Appointment.find();
 
-    try {
-        const appointments = await Appointment.find();
-
-        if (!appointments || appointments.length === 0) {
-            return res.status(404).json({
-                success: false, message: "No appointments found."
-            })
-        }
-
-        return res.status(200).json({
-            success: true, appointments: appointments
-        })
-
-    } catch (error) {
-        return res.status(500).json({
-            error: error.message
-        })
+    if (!appointments || appointments.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No appointments found.",
+      });
     }
-})
 
+    return res.status(200).json({
+      success: true,
+      appointments: appointments,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: error.message,
+    });
+  }
+});
 
 router.patch("/update-appointment/:id", async (req, res) => {
 
-    const { id } = req.params;
-    const { date } = req.body;
+  const { id } = req.params;
+  const { date, status } = req.body;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ message: "Invalid appointment ID." });
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid appointment ID." });
+  }
+
+  try {
+    const appointment = await Appointment.findById(id);
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found." });
     }
 
-    if (!date) {
-        return res.status(400).json({ message: "Please provide a new date to update." });
+    const doctorId = appointment.doctorId;
+    const patientId = appointment.patientId.toString();
+
+
+    if (status === "cancelled") {
+
+      appointment.status = "cancelled";
+      await appointment.save();
+
+      const notification = await Notification.create({
+        type: "info",
+        read: false,
+        title: "Appointment Cancelled",
+        message: `Your appointment on ${appointment.date.toLocaleDateString()} has been cancelled.`,
+        userId: new mongoose.Types.ObjectId(appointment.patientId),
+      });
+
+      req.io.to(patientId).emit("newNotification", notification);
+
+      return res.status(200).json({
+        message: "Appointment cancelled successfully.",
+        appointment,
+      });
+    } 
+
+    else if (status) {
+      appointment.status = status;
     }
 
-    try {
-        const appointment = await Appointment.findById(id);
-        if (!appointment) {
-            return res.status(404).json({ message: "Appointment not found." });
-        }
 
-        const doctorId = appointment.doctorId;
-        const patientId = appointment.patientId;
+    if (date) {
+      const newDate = new Date(date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-        const newDate = new Date(date);
+      if (newDate < today) {
+        return res
+          .status(400)
+          .json({ message: "Cannot update appointment to a past date." });
+      }
 
-        const today = new Date();
-        today.setHours(0,0,0,0);
-        if (newDate < today) {
-            return res.status(400).json({ message: "Cannot update appointment to a past date." });
-        }
+      const startOfDay = new Date(newDate);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(newDate);
+      endOfDay.setHours(23, 59, 59, 999);
 
-        const startOfDay = new Date(newDate);
-        startOfDay.setHours(0,0,0,0);
-        const endOfDay = new Date(newDate);
-        endOfDay.setHours(23,59,59,999);
+      const dayOfWeek = newDate.toLocaleDateString("en-US", {
+        weekday: "long",
+      });
 
-        const dayOfWeek = newDate.toLocaleDateString("en-US", { weekday: "long" });
-        const availability = await Availability.findOne({ userId: doctorId, dayOfWeek });
-        if (!availability) {
-            return res.status(404).json({ message: "Doctor is not available on this day." });
-        }
+      const availability = await Availability.findOne({
+        userId: doctorId,
+        dayOfWeek,
+      });
 
-        const conflict = await Appointment.findOne({
-            _id: { $ne: id },
-            patientId,
-            doctorId,
-            date: { $gte: startOfDay, $lte: endOfDay }
-        });
+      if (!availability) {
+        return res
+          .status(404)
+          .json({ message: "Doctor is not available on this day." });
+      }
 
-        if (conflict) {
-            return res.status(409).json({ message: "Patient already has an appointment on this day." });
-        }
+      const conflict = await Appointment.findOne({
+        _id: { $ne: id },
+        patientId,
+        doctorId,
+        date: { $gte: startOfDay, $lte: endOfDay },
+      });
 
-        const count = await Appointment.countDocuments({
-            doctorId,
-            date: { $gte: startOfDay, $lte: endOfDay }
-        });
+      if (conflict) {
+        return res
+          .status(409)
+          .json({ message: "Patient already has an appointment on this day." });
+      }
 
-        if (count >= availability.dailyCapacity) {
-            return res.status(409).json({ message: "No more appointments available for this day." });
-        }
+      const count = await Appointment.countDocuments({
+        doctorId,
+        date: { $gte: startOfDay, $lte: endOfDay },
+      });
 
-        appointment.date = newDate;
-        appointment.queueNumber = count + 1;
-        await appointment.save();
+      if (count >= availability.dailyCapacity) {
+        return res
+          .status(409)
+          .json({ message: "No more appointments available for this day." });
+      }
 
-        return res.status(200).json({
-            message: "Appointment updated successfully.",
-            appointment
-        });
-
-    } catch (error) {
-        return res.status(500).json({
-            error: error.message
-        })
+      appointment.date = newDate;
+      appointment.queueNumber = count + 1;
     }
 
+    await appointment.save();
+
+    return res.status(200).json({
+      message: "Appointment updated successfully.",
+      appointment,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: error.message });
+  }
 });
-
 
 router.delete("/appointment/:id", async (req, res) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ message: "Invalid appointment ID." });
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid appointment ID." });
+  }
+
+  try {
+    const deletedAppointment = await Appointment.findByIdAndDelete(id);
+
+    if (!deletedAppointment) {
+      return res.status(404).json({ message: "Appointment not found." });
     }
 
-    try {
-        const deletedAppointment = await Appointment.findByIdAndDelete(id);
-
-        if (!deletedAppointment) {
-            return res.status(404).json({ message: "Appointment not found." });
-        }
-
-        return res.status(200).json({
-            message: "Appointment deleted successfully.",
-        });
-
-    } catch (error) {
-        return res.status(500).json({
-            error: error.message
-        })
-    }
+    return res.status(200).json({
+      message: "Appointment deleted successfully.",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: error.message,
+    });
+  }
 });
-
-
 
 module.exports = router;
