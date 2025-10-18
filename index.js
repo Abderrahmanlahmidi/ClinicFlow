@@ -71,7 +71,9 @@ const routes = [
   { path: "/api/auth", route: require("./routes/auth/register") },
   { path: "/api/auth", route: require("./routes/auth/login") },
   { path: "/api", route: require("./routes/user") },
+  { path: "/api", route: require("./routes/notification") },
 ];
+
 routes.forEach((r) => app.use(r.path, r.route));
 
 // -------------------- Start server --------------------
