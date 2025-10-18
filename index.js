@@ -6,23 +6,23 @@ const swaggerJsdoc = require("swagger-jsdoc");
 
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 const swaggerOptions = {
-    definition: {
-        openapi: "3.0.0",
-        info: {
-            title: "Auth API",
-            version: "1.0.0",
-            description: "Documentation for Login & Register routes",
-        },
-        servers: [
-            {
-                url: "http://localhost:3000",
-            },
-        ],
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Auth API",
+      version: "1.0.0",
+      description: "Documentation for Login & Register routes",
     },
-    apis: ["./routes/**/*.js"],
+    servers: [
+      {
+        url: "http://localhost:3000",
+      },
+    ],
+  },
+  apis: ["./routes/**/*.js"],
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
@@ -41,20 +41,19 @@ database.once("connected", () => {
   console.log("Database Connected");
 });
 
-
 const routes = [
-    {path: "/api/auth", route: require("./routes/auth/register")},
-    {path: "/api/auth", route: require("./routes/auth/login")},
-    {path: "/api/clinic", route: require("./routes/clinic/role")},
-    {path: "/api/clinic", route: require("./routes/clinic/speciality")},
-    {path: "/api/clinic", route: require("./routes/clinic/availability")},
-    {path: "/api/clinic", route: require("./routes/clinic/appointment")},
-    {path: "/api/clinic", route: require("./routes/clinic/consultation")},
-    {path: "/api/clinic", route: require("./routes/clinic/prescription")}
+  { path: "/api/clinic", route: require("./routes/role") },
+  { path: "/api/clinic", route: require("./routes/speciality") },
+  { path: "/api/clinic", route: require("./routes/availability") },
+  { path: "/api/clinic", route: require("./routes/appointment") },
+  { path: "/api/clinic", route: require("./routes/consultation") },
+  { path: "/api/clinic", route: require("./routes/prescription") },
+  { path: "/api/auth", route: require("./routes/auth/register") },
+  { path: "/api/auth", route: require("./routes/auth/login") },
+  { path: "/api", route: require("./routes/user") },
 ];
 
-routes.forEach(r => app.use(r.path, r.route));
-
+routes.forEach((r) => app.use(r.path, r.route));
 
 app.listen(3000, () => {
   console.log(`Server Started at http://localhost:3000`);

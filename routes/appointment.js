@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const Availability = require("../../models/Availability");
-const Appointment = require("../../models/Appointment");
+const Availability = require("../models/Availability");
+const Appointment = require("../models/Appointment");
 const mongoose = require("mongoose");
 
 
@@ -104,12 +104,36 @@ router.get("/doctor-appointments/:id", async (req, res) => {
         })
 
     } catch (error) {
-        console.log("ERROR CREATE APPOINTMENT:", error);
         return res.status(500).json({
             error: error.message
         })
     }
 });
+
+router.get("/patient-appointments/:id", async (req, res) => {
+    const patientId = req.params.id;
+
+    try{
+        const patientAppointments = await Appointment.find({patientId}).populate("doctorId", 'firstName lastName numberPhone')
+        
+        if (!patientAppointments || patientAppointments.length === 0) {
+            return res.status(404).json({
+                success: false, message: "No appointments found for this patient.",
+            });
+        }
+
+        return res.status(200).json({
+            patientAppointments:patientAppointments
+        })
+
+
+    }catch(error){
+          return res.status(500).json({
+            error: error.message
+        })
+    }
+    
+})
 
 
 router.get("/appointments", async (req, res) => {

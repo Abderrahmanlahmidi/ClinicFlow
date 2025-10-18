@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const notificationSchema = new mongoose.Schema({
   type: { 
     type: String, 
-    enum: ["info", "warnning", "success"], // enum types
+    enum: ["info", "warning", "success"],
     required: true 
   },
   read: { 

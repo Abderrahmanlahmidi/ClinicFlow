@@ -73,7 +73,7 @@ db.createCollection("Notification", {
       properties: {
         type: {
           bsonType: "string",
-          enum: ["info", "warnning", "success"],
+          enum: ["info", "warning", "success"],
         },
           read:{
               bsonType:"bool"
