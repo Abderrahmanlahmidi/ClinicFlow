@@ -3,7 +3,6 @@ const router = express.Router();
 const User = require("../models/User");
 const isAuthenticated = require("../middlewares/isAuthenticated");
 const multer = require("multer");
-const path = require("path");
 
 router.get("/users", isAuthenticated(["Admin"]), async (req, res) => {
   try {

@@ -5,51 +5,6 @@ const User = require("../../models/User");
 const mongoose = require("mongoose");
 const isAuthenticated = require("../../middlewares/isAuthenticated");
 
-/**
- * @swagger
- * /api/auth/register:
- *   post:
- *     summary: Register a new user
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - firstName
- *               - lastName
- *               - email
- *               - password
- *               - numberPhone
- *               - status
- *               - roleId
- *             properties:
- *               firstName:
- *                 type: string
- *               lastName:
- *                 type: string
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *               numberPhone:
- *                 type: number
- *               status:
- *                 type: string
- *                 enum: [active, suspended]
- *               roleId:
- *                 type: string
- *     responses:
- *       201:
- *         description: User registered successfully
- *       400:
- *         description: Missing fields
- *       500:
- *         description: Server error
- */
-
 
 router.post("/register", async (req, res) => {
   const { firstName, lastName, email, password, numberPhone, specialityId, roleId} = req.body;
