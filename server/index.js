@@ -49,10 +49,12 @@ const routes = [
   { path: "/api/clinic", route: require("./routes/appointment") },
   { path: "/api/clinic", route: require("./routes/consultation") },
   { path: "/api/clinic", route: require("./routes/prescription") },
+  { path: "/api/clinic", route: require("./routes/pharmacy") },
+  { path: "/api/clinic", route: require("./routes/laboratory") },
   { path: "/api/auth", route: require("./routes/auth/register") },
   { path: "/api/auth", route: require("./routes/auth/login") },
-  { path: "/api", route: require("./routes/user") },
   { path: "/api", route: require("./routes/notification") },
+  { path: "/api", route: require("./routes/user") },
 ];
 
 routes.forEach((r) => app.use(r.path, r.route));

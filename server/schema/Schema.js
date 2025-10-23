@@ -216,39 +216,74 @@ db.createCollection("Consultation", {
 
 
 db.createCollection("Prescription", {
-  validator: {
-    $jsonSchema: {
-      bsonType: "object",
-      required: [
-        "consultationId",
-        "medicineName",
-        "dosage",
-        "duration",
-        "instructions"
-      ],
-      properties: {
-        consultationId: {
-          bsonType: "objectId",
-          description: "Reference to Consultation document"
-        },
-        medicineName: {
-          bsonType: "string",
-          description: "Name of the prescribed medicine"
-        },
-        dosage: {
-          bsonType: "string",
-          description: "Dosage for the medicine"
-        },
-        duration: {
-          bsonType: "string",
-          description: "Duration of treatment"
-        },
-        instructions: {
-          bsonType: "string",
-          description: "Additional instructions for patient"
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["consultationId", "pharmacyId", "medicineName", "dosage", "duration", "instructions", "status"],
+            properties: {
+                consultationId: {
+                    bsonType: "objectId", description: "Reference to Consultation document"
+                }, pharmacyId: {
+                    bsonType: "objectId", description: "Pharmacy document"
+                }, medicineName: {
+                    bsonType: "string", description: "Name of the prescribed medicine"
+                }, dosage: {
+                    bsonType: "string", description: "Dosage for the medicine"
+                }, duration: {
+                    bsonType: "string", description: "Duration of treatment"
+                }, instructions: {
+                    bsonType: "string", description: "Additional instructions for patient"
+                }, status: {
+                    bsonType: "string", enum: ["pending", "ready", "unavailable"], default: "pending"
+                }
+            }
         }
-      }
     }
-  }
 });
 
+db.createCollection("Pharmacy", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: [
+                "name",
+                "address",
+                "phoneNumber",
+                "emailAddress",
+                "openingHours",
+                "latitude",
+                "longitude"
+            ],
+            properties: {
+                name: {
+                    bsonType: "string",
+                    description: "Name of the prescribed pharmacy"
+                },
+                address: {
+                    bsonType: "string",
+                    description: "Address of the prescribed pharmacy"
+                },
+                phoneNumber: {
+                    bsonType: "string",
+                    description: "Phone number of the prescribed pharmacy"
+                },
+                emailAddress: {
+                    bsonType: "string",
+                    description: "Email address of the prescribed pharmacy"
+                },
+                openingHours: {
+                    bsonType: "string",
+                    description: "Opening Hours for the prescribed pharmacy"
+                },
+                latitude: {
+                    bsonType: "number",
+                    description: "Latitude of the prescribed pharmacy"
+                },
+                longitude: {
+                    bsonType: "number",
+                    description: "Longitude of the prescribed pharmacy"
+                }
+            }
+        }
+    }
+})
