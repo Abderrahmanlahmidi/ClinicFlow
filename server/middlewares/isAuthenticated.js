@@ -1,8 +1,6 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 
-// isAuthenticated(["admin"])
-
-function isAuthenticated(allowedRoles = []) {
+export default function isAuthenticated(allowedRoles = []) {
   return (req, res, next) => {
     try {
       let token = req.get("authorization");
@@ -17,7 +15,6 @@ function isAuthenticated(allowedRoles = []) {
       req.email = decoded.email;
       req.role = decoded.role; 
 
-
       if (allowedRoles.length && !allowedRoles.includes(req.role)) {
         return res.status(403).json({ success: false, msg: "Access denied" });
       }
@@ -29,5 +26,3 @@ function isAuthenticated(allowedRoles = []) {
     }
   };
 }
-
-module.exports = isAuthenticated;

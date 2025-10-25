@@ -1,28 +1,28 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const laboratorySchema = new mongoose.Schema(
   {
     reportFileUrl: {
       type: String,
-      require: true,
+      required: true,
     },
     reportType: {
       type: String,
-      require: true,
+      required: true,
     },
     resultSummary: {
       type: String,
-      require: true,
+      required: true,
     },
     status: {
       type: String,
       enum: ["pending", "in progress", "completed", "cancelled"],
-      require: true,
+      required: true,
     },
     consultationsId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Consultation",
-      require: true,
+      required: true,
     },
     tests: [
       {
@@ -36,4 +36,4 @@ const laboratorySchema = new mongoose.Schema(
 
 const Laboratory = mongoose.model("Laboratory", laboratorySchema);
 
-module.exports = Laboratory;
+export default Laboratory;

@@ -1,5 +1,7 @@
-require('dotenv').config();
-const Minio = require("minio");
+import dotenv from "dotenv";
+dotenv.config();
+
+import * as Minio from "minio";
 
 const minioClient = new Minio.Client({
   endPoint: process.env.MINIO_ENDPOINT,
@@ -9,4 +11,4 @@ const minioClient = new Minio.Client({
   secretKey: process.env.MINIO_SECRET_KEY,
 });
 
-module.exports = minioClient;
+export default minioClient;
