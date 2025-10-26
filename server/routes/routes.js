@@ -10,6 +10,8 @@ import authRoutes from "./auth/authRoutes.js";
 import notificationRoutes from "./entities/notificationRoutes.js";
 import userRoutes from "./entities/userRoutes.js";
 import testRoutes from "./entities/testRoutes.js";
+import documentRoutes from "./entities/documentRoutes.js";
+
 
 const routes = [
     {path: "/api/clinic", route: roleRoutes},
@@ -21,6 +23,7 @@ const routes = [
     {path: "/api/clinic", route: pharmacyRoutes},
     {path: "/api/clinic", route: laboratoryRoutes},
     {path: "/api/clinic", route: testRoutes},
+    {path: "/api/clinic", route: documentRoutes},
     {path: "/api/auth", route: authRoutes},
     {path: "/api", route: notificationRoutes},
     {path: "/api", route: userRoutes},

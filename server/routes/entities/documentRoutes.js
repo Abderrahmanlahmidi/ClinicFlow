@@ -4,7 +4,8 @@ import {
     getAllDocuments,
     getDocumentById,
     updateDocument,
-    deleteDocument
+    deleteDocument,
+    getDocumentsByUser
 } from "../../controllers/documentController.js";
 
 import multer from "multer";
@@ -17,18 +18,19 @@ const upload = multer({ storage });
 const router = express.Router();
 
 
-router.post("/create", upload.single("file"), createDocument);
+router.post("/create-document", upload.single("file"), createDocument);
 
 
-router.get("/", getAllDocuments);
+router.get("/documents", getAllDocuments);
 
 
-router.get("/:id", getDocumentById);
+router.get("/document/:id", getDocumentById);
+
+router.get("/user-documents/:userId", getDocumentsByUser);
+
+router.patch("/update-document/:id", upload.single("file"), updateDocument);
 
 
-router.put("/:id", upload.single("file"), updateDocument);
-
-
-router.delete("/:id", deleteDocument);
+router.delete("/delete-document/:id", deleteDocument);
 
 export default router;

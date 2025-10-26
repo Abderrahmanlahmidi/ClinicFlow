@@ -11,54 +11,51 @@ async function ensureBucketExists() {
 
 ensureBucketExists();
 
+// GET all laboratories
 export const getAllLaboratories = async (req, res) => {
     try {
         const labs = await Laboratory.find().populate("tests");
-        if (!labs || labs.length === 0)
-            return res.status(404).json({message: "No laboratories found"});
+        if (!labs.length) return res.status(404).json({ message: "No laboratories found" });
 
         const labsWithUrls = await Promise.all(
             labs.map(async (lab) => {
                 let downloadUrl = null;
                 if (lab.reportFileUrl) {
-                    downloadUrl = await minioClient.presignedGetObject(
-                        bucketName,
-                        lab.reportFileUrl,
-                        24 * 60 * 60
-                    );
+                    downloadUrl = await minioClient.presignedGetObject(bucketName, lab.reportFileUrl, 24 * 60 * 60);
                 }
-                return {...lab.toObject(), downloadUrl: downloadUrl || null};
+                return { ...lab.toObject(), downloadUrl };
             })
         );
 
-        res.status(200).json({laboratories: labsWithUrls});
+        res.status(200).json({ laboratories: labsWithUrls });
     } catch (error) {
-        res.status(500).json({error: error.message});
+        res.status(500).json({ error: error.message });
     }
 };
 
+// GET single laboratory
 export const getLaboratoryById = async (req, res) => {
-    const {id} = req.params;
+    const { id } = req.params;
     try {
         const lab = await Laboratory.findById(id).populate("tests");
-        if (!lab) return res.status(404).json({message: "Laboratory not found"});
+        if (!lab) return res.status(404).json({ message: "Laboratory not found" });
 
-        const url = await minioClient.presignedGetObject(
-            bucketName,
-            lab.reportFileUrl,
-            24 * 6 * 6
-        );
-        res.status(200).json({...lab.toObject(), downloadUrl: url});
+        let downloadUrl = null;
+        if (lab.reportFileUrl) {
+            downloadUrl = await minioClient.presignedGetObject(bucketName, lab.reportFileUrl, 24 * 60 * 60);
+        }
+
+        res.status(200).json({ ...lab.toObject(), downloadUrl });
     } catch (error) {
-        res.status(500).json({error: error.message});
+        res.status(500).json({ error: error.message });
     }
 };
 
+// CREATE laboratory
 export const createLaboratory = async (req, res) => {
-    const {reportType, resultSummary, status, consultationsId, tests} =
-        req.body;
+    const { reportType, resultSummary, status, consultationsId, tests } = req.body;
     if (!reportType || !resultSummary || !status || !consultationsId || !req.file)
-        return res.status(400).json({message: "Fields required"});
+        return res.status(400).json({ message: "Fields required" });
 
     const localPath = req.file.path;
     const fileName = req.file.filename;
@@ -66,7 +63,8 @@ export const createLaboratory = async (req, res) => {
     try {
         await minioClient.fPutObject(bucketName, fileName, localPath);
         fs.unlinkSync(localPath);
-        await Laboratory.create({
+
+        const lab = await Laboratory.create({
             reportFileUrl: fileName,
             reportType,
             resultSummary,
@@ -74,47 +72,72 @@ export const createLaboratory = async (req, res) => {
             tests: tests || [],
             consultationsId,
         });
-        res.status(201).json({message: "Laboratory created successfully"});
+
+        res.status(201).json({ message: "Laboratory created successfully", lab });
     } catch (error) {
-        res.status(500).json({error: error.message});
+        res.status(500).json({ error: error.message });
     }
 };
 
+// UPDATE laboratory
 export const updateLaboratory = async (req, res) => {
-    const {id} = req.params;
-    const {
-        reportFileUrl,
-        reportType,
-        resultSummary,
-        status,
-        consultationsId,
-        tests,
-    } = req.body;
+    const { id } = req.params;
+    const { reportType, resultSummary, status, consultationsId, tests } = req.body;
+
     try {
         const lab = await Laboratory.findById(id);
-        if (!lab) return res.status(404).json({message: "Laboratory not found"});
-        if (reportFileUrl) lab.reportFileUrl = reportFileUrl;
+        if (!lab) return res.status(404).json({ message: "Laboratory not found" });
+
+        // إذا كان كاين ملف جديد
+        if (req.file) {
+            // حذف الملف القديم من MinIO
+            if (lab.reportFileUrl) {
+                try {
+                    await minioClient.removeObject(bucketName, lab.reportFileUrl);
+                } catch (err) {
+                    console.warn("Old file not found in MinIO, skipping delete");
+                }
+            }
+
+            const newFileName = req.file.filename;
+            await minioClient.fPutObject(bucketName, newFileName, req.file.path);
+            fs.unlinkSync(req.file.path);
+
+            lab.reportFileUrl = newFileName;
+        }
+
         if (reportType) lab.reportType = reportType;
         if (resultSummary) lab.resultSummary = resultSummary;
         if (status) lab.status = status;
         if (consultationsId) lab.consultationsId = consultationsId;
-        if (tests) lab.tests = tests || [];
+        if (tests) lab.tests = tests;
+
         await lab.save();
-        res.status(200).json({message: "Laboratory updated successfully"});
+
+        res.status(200).json({ message: "Laboratory updated successfully", lab });
     } catch (error) {
-        res.status(500).json({error: error.message});
+        res.status(500).json({ error: error.message });
     }
 };
 
+// DELETE laboratory
 export const deleteLaboratory = async (req, res) => {
-    const {id} = req.params;
+    const { id } = req.params;
     try {
         const lab = await Laboratory.findById(id);
-        if (!lab) return res.status(404).json({message: "Lab record not found"});
-        if (lab.fileName) await minioClient.removeObject(bucketName, lab.fileName);
+        if (!lab) return res.status(404).json({ message: "Laboratory not found" });
+
+        if (lab.reportFileUrl) {
+            try {
+                await minioClient.removeObject(bucketName, lab.reportFileUrl);
+            } catch (err) {
+                console.warn("File not found in MinIO, skipping delete");
+            }
+        }
+
         await lab.deleteOne();
-        res.status(200).json({message: "Lab record deleted successfully"});
+        res.status(200).json({ message: "Laboratory deleted successfully" });
     } catch (error) {
-        res.status(500).json({message: "Failed to delete lab record"});
+        res.status(500).json({ error: error.message });
     }
 };

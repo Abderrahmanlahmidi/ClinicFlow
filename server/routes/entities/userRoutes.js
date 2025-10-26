@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
 import isAuthenticated from "../../middlewares/isAuthenticated.js";
-import { getUsers, updateProfile } from "../../controllers/userController.js";
+import { getUsers, updateProfile, changePassword } from "../../controllers/userController.js";
 
 const router = express.Router();
 
@@ -27,5 +27,6 @@ const upload = multer({ storage, fileFilter });
 
 router.get("/users", isAuthenticated(["Admin"]), getUsers);
 router.patch("/update-profile/:id", upload.single("imageProfile"), updateProfile);
+router.put("/change-password",  changePassword);
 
 export default router;

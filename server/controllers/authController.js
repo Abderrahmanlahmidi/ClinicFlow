@@ -29,7 +29,7 @@ export const register = async (req, res) => {
   if (existingUser)
     return res.status(400).json({ message: "User already exists" });
 
-  const role = roleId ? roleId : "68eb65a167c899cc8d931a99";
+  const role = roleId ? roleId : "68fe2ad3f5396542754d7b4a";
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
