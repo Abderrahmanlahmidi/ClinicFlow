@@ -5,8 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="59354861-90c5-4eac-b273-38114015bc62" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/server/models/Test.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/models/Test.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/controllers/authController.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/controllers/authController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/models/Prescription.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/models/Prescription.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/routes/entities/documentRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/routes/entities/documentRoutes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/routes/routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/routes/routes.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,7 +61,7 @@
     "database.data.extractors.current.export.id": "JSON-Groovy.json.groovy",
     "database.data.extractors.current.id": "JSON-Groovy.json.groovy",
     "datagrid.heatmap.switchedByDefault": "false",
-    "git-widget-placeholder": "feature/test",
+    "git-widget-placeholder": "main",
     "last_opened_file_path": "C:/Users/Youcode",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
