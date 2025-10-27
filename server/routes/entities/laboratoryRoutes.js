@@ -20,7 +20,7 @@ const upload = multer({ storage });
 router.get("/laboratories", getAllLaboratories);
 router.get("/laboratory/:id", getLaboratoryById);
 router.post("/create-laboratory", upload.single("reportFile"), createLaboratory);
-router.patch("/update-laboratory/:id", updateLaboratory);
+router.patch("/update-laboratory/:id",upload.single("reportFile"), updateLaboratory);
 router.delete("/delete-laboratory/:id", deleteLaboratory);
 
 export default router;
