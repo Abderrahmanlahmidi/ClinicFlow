@@ -3,12 +3,20 @@ import http from "http";
 import { Server } from "socket.io";
 import mongoose from "mongoose";
 import routes from "./routes/routes.js";
+import cors from "cors";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static("uploads"));
 
+
+// ------------------ Cors ------------------
+app.use(cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET','POST','PUT','DELETE'],
+    credentials: true
+}));
 // ------------------ HTTP + Socket.IO ------------------
 const server = http.createServer(app);
 const io = new Server(server, {

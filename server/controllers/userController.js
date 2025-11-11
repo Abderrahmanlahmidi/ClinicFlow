@@ -49,7 +49,7 @@ export const updateProfile = async (req, res) => {
 
 
 export const changePassword = async (req, res) => {
-    const userId = req.user.id; // جاي من JWT
+    const userId = req.user.id;
     const { oldPassword, newPassword } = req.body;
 
     if (!oldPassword || !newPassword) {
