@@ -1,191 +1,73 @@
-# ** authSlice.js  JWT**
+# React + TypeScript + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
 ```js
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
-import api from "../../services/api"
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-// Register async action
-export const registerUser = createAsyncThunk(
-  "auth/registerUser",
-  async (userData, { rejectWithValue }) => {
-    try {
-      const res = await api.post("/auth/register", userData)
-    
-      return res.data
-    } catch (error) {
-      return rejectWithValue(error.response?.data || "Erreur inconnue")
-    }
-  }
-)
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-const authSlice = createSlice({
-  name: "auth",
-  initialState: {
-    user: null,
-    loading: false,
-    error: null,
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
   },
-  reducers: {},
-  extraReducers: (builder) => {
-    builder
-      .addCase(registerUser.pending, (state) => {
-        state.loading = true
-        state.error = null
-      })
-      .addCase(registerUser.fulfilled, (state, action) => {
-        state.loading = false
-        state.user = action.payload
-      })
-      .addCase(registerUser.rejected, (state, action) => {
-        state.loading = false
-        state.error = action.payload
-      })
-  },
-})
-
-export default authSlice.reducer
+])
 ```
 
----
-
-# ** RegisterForm.jsx**
-
-```jsx
-import { useForm } from "react-hook-form"
-import { useDispatch, useSelector } from "react-redux"
-import { registerUser } from "../authSlice"
-
-export default function RegisterForm() {
-  const dispatch = useDispatch()
-  const { loading, error, user } = useSelector((state) => state.auth)
-
-  const { register, handleSubmit, formState: { errors } } = useForm()
-
-  const onSubmit = (data) => {
-    dispatch(registerUser(data))
-  }
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3 max-w-sm mx-auto mt-10">
-      <input
-        type="text"
-        placeholder="Nom"
-        {...register("name", { required: "Le nom est obligatoire" })}
-      />
-      {errors.name && <p style={{ color: "red" }}>{errors.name.message}</p>}
-
-      <input
-        type="email"
-        placeholder="Email"
-        {...register("email", {
-          required: "L'email est obligatoire",
-          pattern: { value: /^\S+@\S+$/i, message: "Email invalide" },
-        })}
-      />
-      {errors.email && <p style={{ color: "red" }}>{errors.email.message}</p>}
-
-      <input
-        type="password"
-        placeholder="Mot de passe"
-        {...register("password", { required: "Le mot de passe est obligatoire" })}
-      />
-      {errors.password && <p style={{ color: "red" }}>{errors.password.message}</p>}
-
-      <button type="submit" disabled={loading}>
-        {loading ? "Inscription..." : "S'inscrire"}
-      </button>
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {user && <p style={{ color: "green" }}>Bienvenue {user.name}</p>}
-    </form>
-  )
-}
-```
-
----
-
-# ** Register.jsx**
-
-```jsx
-import RegisterForm from "../components/RegisterForm"
-
-export default function Register() {
-  return (
-    <div>
-      <h1 style={{ textAlign: "center", marginTop: "20px" }}>Page d'inscription</h1>
-      <RegisterForm />
-    </div>
-  )
-}
-```
-
----
-
-# ** services/api.js**
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
 ```js
-import axios from "axios"
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-const api = axios.create({
-  baseURL: "http://localhost:5000/api",
-  headers: { "Content-Type": "application/json" },
-})
-
-export default api
-```
-
-
----
-
-# ** store.js**
-
-```js
-import { configureStore } from "@reduxjs/toolkit"
-import authReducer from "../features/auth/authSlice"
-
-export const store = configureStore({
-  reducer: {
-    auth: authReducer,
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
   },
-})
+])
 ```
-
----
-
-# ** main.jsx + App.jsx**
-
-```jsx
-// main.jsx
-import React from "react"
-import ReactDOM from "react-dom/client"
-import App from "./App.jsx"
-import { Provider } from "react-redux"
-import { store } from "./app/store.js"
-import { BrowserRouter } from "react-router-dom"
-
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </Provider>
-  </React.StrictMode>
-)
-```
-
-```jsx
-// App.jsx
-import { Routes, Route } from "react-router-dom"
-import Register from "./features/auth/pages/Register"
-
-export default function App() {
-  return (
-    <Routes>
-      <Route path="/register" element={<Register />} />
-    </Routes>
-  )
-}
-```
-
-
