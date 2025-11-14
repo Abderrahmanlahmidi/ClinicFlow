@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { registerUser } from "../../authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   FiUser,
   FiMail,
@@ -8,11 +11,16 @@ import {
   FiEyeOff,
   FiPhone,
 } from "react-icons/fi";
+import Spinner from "../../../../ui/loading/loadingButton";
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { isLoading, error, successMessage } = useSelector(
+    (state) => state.auth
+  );
 
   const {
     register,
@@ -26,12 +34,15 @@ export default function RegisterForm() {
 
   const onSubmit = (data) => {
     console.log("Registration Data:", data);
-    setSuccess(true);
-    setTimeout(() => {
-      setSuccess(false);
+    dispatch(registerUser(data)).then(() => {
       reset();
-    }, 2000);
+      navigate("/login");
+    });
   };
+  
+  if (error) {
+    console.log(error);
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -40,16 +51,34 @@ export default function RegisterForm() {
         <div className="relative">
           <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
           <input
-            {...register("fullName", { required: "Full name is required" })}
+            {...register("firstName", { required: "first name is required" })}
             type="text"
-            placeholder="Full Name"
+            placeholder="First Name"
             className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 text-sm"
           />
         </div>
         <div className="min-h-[18px]">
           {errors.fullName && (
             <p className="text-red-500 text-xs mt-1">
-              {errors.fullName.message}
+              {errors.firstName.message}
+            </p>
+          )}
+        </div>
+      </div>
+      <div className="flex flex-col">
+        <div className="relative">
+          <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
+          <input
+            {...register("lastName", { required: "last name is required" })}
+            type="text"
+            placeholder="Last Name"
+            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 text-sm"
+          />
+        </div>
+        <div className="min-h-[18px]">
+          {errors.fullName && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.lastName.message}
             </p>
           )}
         </div>
@@ -156,7 +185,7 @@ export default function RegisterForm() {
         <div className="relative">
           <FiPhone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
           <input
-            {...register("phone", {
+            {...register("numberPhone", {
               required: "Phone number is required",
               pattern: {
                 value: /^[0-9]{10,}$/,
@@ -175,18 +204,25 @@ export default function RegisterForm() {
         </div>
       </div>
 
-      {success && (
+      {successMessage && (
         <p className="text-green-600 text-sm font-medium text-center">
-          Account created successfully!
+          {successMessage}
         </p>
       )}
 
       {/* Register Button */}
       <button
         type="submit"
-        className="w-full bg-gray-800 text-white py-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 font-medium text-sm"
+        className="w-full bg-gray-800 text-white py-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 font-medium text-sm flex items-center justify-center gap-2"
       >
-        Create Account
+        {isLoading ? (
+          <>
+            <Spinner />
+            Creating Account...
+          </>
+        ) : (
+          "Register"
+        )}
       </button>
     </form>
   );

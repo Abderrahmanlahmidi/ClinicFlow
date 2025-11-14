@@ -1,10 +1,13 @@
 import React from 'react'
-import LoadingPage from '../../../ui/loading/loadingPage'
+import Navbar from '../sections/navbar';
+import Hero from '../sections/hero';
+
 
 export default function Home() {
   return (
     <div>
-      <LoadingPage/>
+      <Navbar/>
+      <Hero/>
     </div>
   )
 }

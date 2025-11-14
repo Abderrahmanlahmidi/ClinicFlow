@@ -4,11 +4,13 @@ import { Server } from "socket.io";
 import mongoose from "mongoose";
 import routes from "./routes/routes.js";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static("uploads"));
+app.use(cookieParser());
 
 
 // ------------------ Cors ------------------
@@ -45,7 +47,6 @@ io.on("connection", (socket) => {
 for (const r of routes) {
   app.use(r.path, r.route);
 }
-
 // ------------------ Start Server ------------------
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 server.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

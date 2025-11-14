@@ -5,12 +5,13 @@ import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import {
   generateAccessToken,
-  generateRefreshToken,
+  generateRefreshToken
 } from "../jwt/generateToken.js";
 import dotenv from "dotenv";
 dotenv.config();
 
 export const register = async (req, res) => {
+
   const {
     firstName,
     lastName,
@@ -29,7 +30,7 @@ export const register = async (req, res) => {
   if (existingUser)
     return res.status(400).json({ message: "User already exists" });
 
-  const role = roleId ? roleId : "68fe2ad3f5396542754d7b4a";
+  const role = roleId ? roleId : "68eb65a167c899cc8d931a99";
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -56,6 +57,7 @@ export const register = async (req, res) => {
 };
 
 export const login = async (req, res) => {
+
   const { email, password } = req.body;
   if (!email || !password)
     return res.status(400).json({ message: "Email and password required" });
@@ -74,12 +76,19 @@ export const login = async (req, res) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
+    console.log(refreshToken);
+    await res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "Lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
     await Token.create({ userId: user._id, refreshToken });
 
     res.status(200).json({
       message: "Login successful",
       accessToken,
-      refreshToken,
       user: {
         id: user._id,
         firstName: user.firstName,
@@ -119,12 +128,38 @@ export const refreshToken = async (req, res) => {
   }
 };
 
-const blacklistedTokens = new Set();
+
 
 export const logout = (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1] || req.body?.token;
-  if (!token) return res.status(400).json({ message: "No token provided" });
 
-  blacklistedTokens.add(token);
+  res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+  });
+
   return res.status(200).json({ message: "Logout successful" });
+};
+
+
+export const checkAuth = async (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+        return res.status(401).json({ message: "No token provided" });
+    }
+
+    try {
+        const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+        const user = await User.findOne({email:decoded.email});
+
+        if (!user) {
+            return res.status(401).json({ message: "No user found" });
+        }
+
+        return res.status(200).json({ userId: user._id, authenticated: true });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
 };
