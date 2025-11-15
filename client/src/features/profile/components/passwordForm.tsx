@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { FiLock, FiEye, FiEyeOff, FiShield } from 'react-icons/fi';
-import { axiosInstance } from '../../../api/axiosInstance';
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { FiLock, FiEye, FiEyeOff, FiShield } from "react-icons/fi";
+import { updatePassword } from "../apis/getUserInfo";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useToast } from "../../../ui/toasts/toast";
 
 const PasswordChangeForm = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
   const userId = localStorage.getItem("userId");
 
   const {
@@ -15,25 +19,28 @@ const PasswordChangeForm = () => {
     handleSubmit,
     formState: { errors },
     watch,
-    reset
+    reset,
   } = useForm();
 
-  const newPassword = watch('newPassword');
+  const newPassword = watch("newPassword");
+
+  const passwordMutation = useMutation({
+    mutationFn: (data) => updatePassword({ userId, data }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries(["user", userId]);
+
+      toast.success("Profile updated successfully!");
+    },
+    onError: (err) => {
+      console.error("Error updating profile:", err);
+      toast.error("Error updating profile");
+    },
+  });
 
   const onSubmit = async (data) => {
-    // try {
-    //   console.log('Password change data:', data);
-    //   const response = await axiosInstance.put(`/user/${userId}/password`, {
-    //     currentPassword: data.currentPassword,
-    //     newPassword: data.newPassword
-    //   });
-    //   console.log('Password change response:', response);
-    //   reset();
-    //   alert('Password changed successfully!');
-    // } catch (error) {
-    //   console.error('Error changing password:', error);
-    //   alert('Error changing password. Please try again.');
-    // }
+    console.log(data);
+    passwordMutation.mutate(data);
   };
 
   const handleClear = () => {
@@ -56,13 +63,13 @@ const PasswordChangeForm = () => {
             <div className="relative">
               <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
-                type={showCurrentPassword ? 'text' : 'password'}
-                {...register('currentPassword', { 
-                  required: 'Current password is required',
+                type={showCurrentPassword ? "text" : "password"}
+                {...register("oldPassword", {
+                  required: "Current password is required",
                   minLength: {
                     value: 6,
-                    message: 'Password must be at least 6 characters'
-                  }
+                    message: "Password must be at least 6 characters",
+                  },
                 })}
                 className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 placeholder="Enter current password"
@@ -72,11 +79,17 @@ const PasswordChangeForm = () => {
                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
               >
-                {showCurrentPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                {showCurrentPassword ? (
+                  <FiEyeOff className="w-4 h-4" />
+                ) : (
+                  <FiEye className="w-4 h-4" />
+                )}
               </button>
             </div>
             {errors.currentPassword && (
-              <p className="text-red-500 text-sm mt-1">{errors.currentPassword.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.currentPassword.message}
+              </p>
             )}
           </div>
 
@@ -87,13 +100,13 @@ const PasswordChangeForm = () => {
             <div className="relative">
               <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
-                type={showNewPassword ? 'text' : 'password'}
-                {...register('newPassword', { 
-                  required: 'New password is required',
+                type={showNewPassword ? "text" : "password"}
+                {...register("newPassword", {
+                  required: "New password is required",
                   minLength: {
                     value: 6,
-                    message: 'Password must be at least 6 characters'
-                  }
+                    message: "Password must be at least 6 characters",
+                  },
                 })}
                 className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 placeholder="Enter new password"
@@ -103,11 +116,17 @@ const PasswordChangeForm = () => {
                 onClick={() => setShowNewPassword(!showNewPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
               >
-                {showNewPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                {showNewPassword ? (
+                  <FiEyeOff className="w-4 h-4" />
+                ) : (
+                  <FiEye className="w-4 h-4" />
+                )}
               </button>
             </div>
             {errors.newPassword && (
-              <p className="text-red-500 text-sm mt-1">{errors.newPassword.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.newPassword.message}
+              </p>
             )}
           </div>
         </div>
@@ -119,10 +138,11 @@ const PasswordChangeForm = () => {
           <div className="relative">
             <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
-              type={showConfirmPassword ? 'text' : 'password'}
-              {...register('confirmPassword', { 
-                required: 'Please confirm your password',
-                validate: value => value === newPassword || 'Passwords do not match'
+              type={showConfirmPassword ? "text" : "password"}
+              {...register("confirmPassword", {
+                required: "Please confirm your password",
+                validate: (value) =>
+                  value === newPassword || "Passwords do not match",
               })}
               className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
               placeholder="Confirm new password"
@@ -132,16 +152,24 @@ const PasswordChangeForm = () => {
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
             >
-              {showConfirmPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+              {showConfirmPassword ? (
+                <FiEyeOff className="w-4 h-4" />
+              ) : (
+                <FiEye className="w-4 h-4" />
+              )}
             </button>
           </div>
           {errors.confirmPassword && (
-            <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>
+            <p className="text-red-500 text-sm mt-1">
+              {errors.confirmPassword.message}
+            </p>
           )}
         </div>
 
         <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-          <h4 className="text-sm font-medium text-blue-900 mb-2">Password Requirements</h4>
+          <h4 className="text-sm font-medium text-blue-900 mb-2">
+            Password Requirements
+          </h4>
           <ul className="text-sm text-blue-800 space-y-1">
             <li>• At least 6 characters long</li>
             <li>• Include uppercase and lowercase letters</li>

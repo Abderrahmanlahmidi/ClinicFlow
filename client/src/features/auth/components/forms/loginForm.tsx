@@ -1,22 +1,18 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { FiMail, FiLock, FiEye, FiEyeOff, FiCheck, FiX } from "react-icons/fi";
+import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../../authSlice";
 import Spinner from "../../../../ui/loading/loadingButton";
 import { useNavigate } from "react-router-dom";
+import FormAlert from "../../../../ui/alerts/formAlert";
+import { useMutation } from "@tanstack/react-query";
+import { loginUser } from "../../apis/authLogin";
+
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const navigate = useNavigate()
-
-  const dispatch = useDispatch();
-
-  const { isLoading, error, successMessage, user } = useSelector(
-    (state) => state.auth
-  );
+  const navigate = useNavigate();
+  const [alert, setAlert] = useState({ show: false, message: '', type: '' });
 
   const {
     register,
@@ -29,40 +25,57 @@ const LoginForm = () => {
     setShowPassword(!showPassword);
   };
 
-  const onSubmit = (data) => {
-    console.log("login date", data);
+  const { mutate: login, isPending } = useMutation({
+    mutationFn: loginUser,
+    onSuccess: (data) => {
 
-    dispatch(loginUser(data)).then(() => {
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("role", data.user.role);
+      localStorage.setItem("userId", data.user.id);
+
+      reset();
       
-      if (successMessage) {
-        reset();
-        setSuccess(true);
-        setTimeout(() => {
-         navigate("/")
-        }, 1500)
-      }
+      setAlert({
+        show: true,
+        message: data?.message || "Login successful!",
+        type: 'success'
+      });
+
+      setTimeout(() => {
+        navigate("/", { replace: true });
+      }, 1000);
+    },
+    onError: (error) => {
+      console.log(error);
+      const errorMessage = error?.response?.data?.message || "Invalid credentials";
       
-    });
+      setAlert({
+        show: true,
+        message: errorMessage,
+        type: 'error'
+      });
+    },
+  });
+
+  const onSubmit = (data) => {
+    login(data);
+  };
+
+  const handleCloseAlert = () => {
+    setAlert({ show: false, message: '', type: '' });
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {success && (
-  <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center justify-between">
-    <div className="flex items-center space-x-2">
-      <FiCheck className="text-green-600" />
-      <span className="text-green-800 text-sm font-medium">
-        {successMessage}
-      </span>
-    </div>
-    <button
-      onClick={() => setSuccess(false)}
-      className="text-green-600 hover:text-green-800 transition-colors duration-200"
-    >
-      <FiX className="w-4 h-4" />
-    </button>
-  </div>
-)}
+      {/* Alert Component */}
+      {alert.show && (
+        <FormAlert
+          type={alert.type}
+          message={alert.message}
+          onClose={handleCloseAlert}
+        />
+      )}
+
       {/* Email */}
       <div className="flex flex-col">
         <div className="relative">
@@ -131,9 +144,10 @@ const LoginForm = () => {
       {/* Login Button */}
       <button
         type="submit"
-        className="w-full bg-gray-800 text-white py-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 font-medium text-sm flex items-center justify-center gap-2"
+        disabled={isPending}
+        className="w-full bg-gray-800 text-white py-3 rounded-lg hover:bg-gray-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200 font-medium text-sm flex items-center justify-center gap-2"
       >
-        {isLoading ? (
+        {isPending ? (
           <>
             <Spinner />
             Logging in...

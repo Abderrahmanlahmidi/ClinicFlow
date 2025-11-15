@@ -27,7 +27,7 @@ const upload = multer({ storage, fileFilter });
 
 router.get("/users", getUsers);
 router.patch("/update-profile/:id", upload.single("imageProfile"), updateProfile);
-router.put("/change-password",  changePassword);
+router.put("/change-password/:id", isAuthenticated(),  changePassword);
 router.get("/user/:id", getUser);
 
 

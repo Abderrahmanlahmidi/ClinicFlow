@@ -1,35 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { axiosInstance } from "../api/axiosInstance";
 import LoadingPage from "../ui/loading/loadingPage";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 export default function PublicRoute({ children }) {
-
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const location = useLocation();
-
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
-    const checkPossibility = async () => {
+    const checkToken = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+
+      if (!accessToken) {
+        setIsAuthenticated(false);
+        return;
+      }
 
       try {
-        await axiosInstance.get("/auth/check-auth");
+        await axiosInstance.get("/auth/check-auth", { headers: { Authorization: `Bearer ${accessToken}` } });
         setIsAuthenticated(true);
       } catch (error) {
-        console.log("if error private public:", error);
         setIsAuthenticated(false);
-      } finally {
-        setIsLoading(false);
       }
     };
 
-    checkPossibility();
+    checkToken();
   }, []);
 
-  if (isLoading) return <LoadingPage />;
+  if (isAuthenticated === null) return <LoadingPage />;
 
-  if (isAuthenticated) return <Navigate to="/unauthorized" />;
+  if (isAuthenticated) return <Navigate to="/" replace />;
 
   return children;
 }
