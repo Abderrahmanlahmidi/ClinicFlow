@@ -15,6 +15,23 @@ export const getUsers = async (req, res) => {
   }
 };
 
+export const getUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const user = await User.findById(id).populate("roleId");
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        return res.status(200).json({ user });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+
 export const updateProfile = async (req, res) => {
   const id = req.params.id;
 
@@ -49,7 +66,7 @@ export const updateProfile = async (req, res) => {
 
 
 export const changePassword = async (req, res) => {
-    const userId = req.user.id; // جاي من JWT
+    const userId = req.user.id;
     const { oldPassword, newPassword } = req.body;
 
     if (!oldPassword || !newPassword) {
