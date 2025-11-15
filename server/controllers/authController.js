@@ -59,8 +59,10 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
 
   const { email, password } = req.body;
-  if (!email || !password)
-    return res.status(400).json({ message: "Email and password required" });
+
+  console.log("login password and email:", {password, email});
+
+  if (!email || !password) return res.status(400).json({ message: "Email and password required" });
 
   try {
     const user = await User.findOne({ email })
@@ -70,13 +72,11 @@ export const login = async (req, res) => {
     if (!user) return res.status(401).json({ error: "Invalid credentials" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.status(401).json({ message: "Invalid credentials" });
+    if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    console.log(refreshToken);
     await res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: false,
@@ -107,26 +107,29 @@ export const login = async (req, res) => {
 };
 
 export const refreshToken = async (req, res) => {
-  const { token } = req.body;
-  if (!token)
-    return res.status(401).json({ message: "Refresh token required" });
+    const token = req.cookies.refreshToken;
 
-  try {
-    const storedToken = await Token.findOne({ refreshToken: token });
-    if (!storedToken)
-      return res.status(403).json({ message: "Invalid refresh token" });
+    if (!token) {
+        return res.status(401).json({ message: "Refresh token required" });
+    }
 
-    const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
-    const user = await User.findById(decoded.userId);
-    if (!user) return res.status(403).json({ message: "User not found" });
+    try {
+        const storedToken = await Token.findOne({ refreshToken: token });
+        if (!storedToken)
+            return res.status(403).json({ message: "Invalid refresh token" });
 
-    const newAccessToken = generateAccessToken(user);
-    res.json({ accessToken: newAccessToken });
-  } catch (err) {
-    console.error(err);
-    res.status(403).json({ message: "Invalid or expired refresh token" });
-  }
+        const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+        const user = await User.findById(decoded.userId);
+        if (!user) return res.status(403).json({ message: "User not found" });
+
+        const newAccessToken = generateAccessToken(user);
+        res.json({ accessToken: newAccessToken });
+    } catch (err) {
+        console.error(err);
+        res.status(403).json({ message: "Invalid or expired refresh token" });
+    }
 };
+
 
 
 

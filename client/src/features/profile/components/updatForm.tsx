@@ -1,35 +1,47 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { FiUser, FiMail, FiPhone, FiSave, FiEdit } from 'react-icons/fi';
-import { axiosInstance } from '../../../api/axiosInstance';
+import React, {useEffect} from "react";
+import { useForm } from "react-hook-form";
+import { FiUser, FiMail, FiPhone, FiSave, FiEdit } from "react-icons/fi";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateUserProfile } from "../apis/getUserInfo";
+import { useToast } from "../../../ui/toasts/toast";
 
-const ProfileUpdateForm = ({ userData, onProfileUpdate }) => {
+const ProfileUpdateForm = ({ userData }) => {
+
+
   const userId = localStorage.getItem("userId");
+  const queryClient = useQueryClient();
+  const {toast} = useToast();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm({
-    defaultValues: userData
+    defaultValues: userData,
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     reset(userData);
   }, [userData, reset]);
 
+  const updateMutation = useMutation({
+    mutationFn: (data) => updateUserProfile({ userId, data }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries(["user", userId]);
+
+      toast.success("Profile updated successfully!")
+
+    },
+    onError: (err) => {
+      console.error("Error updating profile:", err);
+      toast.error("Error updating profile")
+    },
+  });
+
   const onSubmit = async (data) => {
-    // try {
-    //   console.log('Profile update data:', data);
-    //   const response = await axiosInstance.put(`/user/${userId}`, data);
-    //   console.log('Update response:', response);
-    //   onProfileUpdate(data);
-    //   alert('Profile updated successfully!');
-    // } catch (error) {
-    //   console.error('Error updating profile:', error);
-    //   alert('Error updating profile. Please try again.');
-    // }
+    updateMutation.mutate(data);
   };
 
   const handleCancel = () => {
@@ -39,7 +51,9 @@ const ProfileUpdateForm = ({ userData, onProfileUpdate }) => {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-normal text-gray-900">Personal Information</h3>
+        <h3 className="text-xl font-normal text-gray-900">
+          Personal Information
+        </h3>
         <FiEdit className="w-5 h-5 text-gray-500" />
       </div>
 
@@ -53,19 +67,21 @@ const ProfileUpdateForm = ({ userData, onProfileUpdate }) => {
               <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
-                {...register('firstName', { 
-                  required: 'First name is required',
+                {...register("firstName", {
+                  required: "First name is required",
                   minLength: {
                     value: 2,
-                    message: 'First name must be at least 2 characters'
-                  }
+                    message: "First name must be at least 2 characters",
+                  },
                 })}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 placeholder="Enter your first name"
               />
             </div>
             {errors.firstName && (
-              <p className="text-red-500 text-sm mt-1">{errors.firstName.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.firstName.message}
+              </p>
             )}
           </div>
 
@@ -77,19 +93,21 @@ const ProfileUpdateForm = ({ userData, onProfileUpdate }) => {
               <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
-                {...register('lastName', { 
-                  required: 'Last name is required',
+                {...register("lastName", {
+                  required: "Last name is required",
                   minLength: {
                     value: 2,
-                    message: 'Last name must be at least 2 characters'
-                  }
+                    message: "Last name must be at least 2 characters",
+                  },
                 })}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 placeholder="Enter your last name"
               />
             </div>
             {errors.lastName && (
-              <p className="text-red-500 text-sm mt-1">{errors.lastName.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.lastName.message}
+              </p>
             )}
           </div>
         </div>
@@ -102,12 +120,12 @@ const ProfileUpdateForm = ({ userData, onProfileUpdate }) => {
             <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="email"
-              {...register('email', { 
-                required: 'Email is required',
+              {...register("email", {
+                required: "Email is required",
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'Invalid email address'
-                }
+                  message: "Invalid email address",
+                },
               })}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
               placeholder="Enter your email address"
@@ -126,23 +144,25 @@ const ProfileUpdateForm = ({ userData, onProfileUpdate }) => {
             <FiPhone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="tel"
-              {...register('numberPhone', { 
-                required: 'Phone number is required',
+              {...register("numberPhone", {
+                required: "Phone number is required",
                 pattern: {
                   value: /^[0-9]+$/,
-                  message: 'Phone number must contain only numbers'
+                  message: "Phone number must contain only numbers",
                 },
                 minLength: {
                   value: 10,
-                  message: 'Phone number must be at least 10 digits'
-                }
+                  message: "Phone number must be at least 10 digits",
+                },
               })}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
               placeholder="Enter your phone number"
             />
           </div>
           {errors.numberPhone && (
-            <p className="text-red-500 text-sm mt-1">{errors.numberPhone.message}</p>
+            <p className="text-red-500 text-sm mt-1">
+              {errors.numberPhone.message}
+            </p>
           )}
         </div>
 

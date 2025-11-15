@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Home, Register, Login, Dashboard, Unauthorized, Profile ,withSuspense } from "./lazyImports";
+import { Home, Register, Login, Dashboard, Unauthorized, Profile, Statics, Users ,withSuspense } from "./lazyImports";
 import PrivateRoute from "../private/privateRoute";
 import PublicRoute from "../private/publicRoute";
 
@@ -19,11 +19,21 @@ export const router = createBrowserRouter([
   },
   {
     path:"/profile",
-    element:withSuspense(<Profile/>)
+    element:withSuspense(<PrivateRoute><Profile/></PrivateRoute>)
   },
   {
     path: "/dashboard",
     element: withSuspense(<PrivateRoute allowedRoles={["Admin"]} ><Dashboard /></PrivateRoute>),
+    children:[
+      {
+        index:true,
+        element:<Statics/>
+      },
+      {
+        path:"/dashboard/users",
+        element:<Users/>
+      }
+    ]
   },
   {
     path: "*",

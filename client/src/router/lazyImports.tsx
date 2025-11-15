@@ -11,6 +11,8 @@ export const Login = lazy(() => import("../features/auth/pages/login"))
 export const Dashboard = lazy(() => import("../features/dashboard/pages/dashboard"))
 export const Unauthorized = lazy(() => import("../features/unauthorized/unauthorized"))
 export const Profile = lazy(() => import("../features/profile/page/profile"))
+export const Statics = lazy(() => import("../features/dashboard/pages/sections/pages/statics"))
+export const Users = lazy(() => import("../features/dashboard/pages/sections/pages/users"))
 
 
 

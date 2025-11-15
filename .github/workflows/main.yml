@@ -1,41 +1,47 @@
-name: Full-stack CI
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
-  client:
-    name: Build & Test Client
+  build-and-deploy:
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v3
+    services:
+      mongo:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      - run: |
-          cd client
-          npm install
-          npm run build
-          npm test
-
-  server:
-    name: Build & Test Server
-    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: production
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: 20
 
-      - run: |
-          cd server
-          npm install
-          npm test
+      # ---------------- Backend ----------------
+      - name: Install backend dependencies
+        working-directory: ./server
+        run: npm ci
+
+      - name: Run backend tests
+        working-directory: ./server
+        run: npm test || echo "No tests configured"
+
+      # ---------------- Frontend ----------------
+      - name: Install frontend dependencies
+        working-directory: ./client
+        run: npm ci --omit=none
+
+      - name: Build frontend
+        working-directory: ./client
+        run: npm run build

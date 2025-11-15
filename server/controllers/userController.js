@@ -66,7 +66,7 @@ export const updateProfile = async (req, res) => {
 
 
 export const changePassword = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.params.id;
     const { oldPassword, newPassword } = req.body;
 
     if (!oldPassword || !newPassword) {
