@@ -11,32 +11,32 @@ export default function FormAlert({
 
   const alertConfig = {
     success: {
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200',
-      textColor: 'text-green-800',
+      bgColor: 'bg-green-900/20',
+      borderColor: 'border-green-700',
+      textColor: 'text-green-300',
       icon: FiCheckCircle,
-      iconColor: 'text-green-500'
+      iconColor: 'text-green-400'
     },
     error: {
-      bgColor: 'bg-red-50',
-      borderColor: 'border-red-200',
-      textColor: 'text-red-800',
+      bgColor: 'bg-red-900/20',
+      borderColor: 'border-red-700',
+      textColor: 'text-red-300',
       icon: FiXCircle,
-      iconColor: 'text-red-500'
+      iconColor: 'text-red-400'
     },
     warning: {
-      bgColor: 'bg-yellow-50',
-      borderColor: 'border-yellow-200',
-      textColor: 'text-yellow-800',
+      bgColor: 'bg-yellow-900/20',
+      borderColor: 'border-yellow-700',
+      textColor: 'text-yellow-300',
       icon: FiXCircle,
-      iconColor: 'text-yellow-500'
+      iconColor: 'text-yellow-400'
     },
     info: {
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200',
-      textColor: 'text-blue-800',
+      bgColor: 'bg-blue-900/20',
+      borderColor: 'border-blue-700',
+      textColor: 'text-blue-300',
       icon: FiCheckCircle,
-      iconColor: 'text-blue-500'
+      iconColor: 'text-blue-400'
     }
   };
 
@@ -49,7 +49,7 @@ export default function FormAlert({
         ${config.bgColor} 
         ${config.borderColor} 
         ${config.textColor}
-        border rounded-lg p-4 mb-4 transition-all duration-300 ease-in-out
+        border rounded-lg p-4 mb-4
         ${className}
       `}
     >
@@ -66,9 +66,6 @@ export default function FormAlert({
             onClick={onClose}
             className={`
               flex-shrink-0 ml-4 
-              hover:opacity-70 
-              transition-opacity 
-              duration-200
               ${config.textColor}
             `}
           >

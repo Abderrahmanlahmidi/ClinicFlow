@@ -30,13 +30,13 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
+    <nav className="bg-gray-900 border-b border-gray-700 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link
             to="/"
-            className="text-2xl font-light text-gray-900 hover:text-gray-700 transition-colors duration-200"
+            className="text-2xl font-light text-white hover:text-gray-300 transition-colors duration-200"
           >
             ClinicFlow
           </Link>
@@ -52,8 +52,8 @@ export default function Navbar() {
                   to={link.to}
                   className={`text-sm font-normal transition-colors duration-200 ${
                     isActive
-                      ? "text-gray-900"
-                      : "text-gray-700 hover:text-gray-900"
+                      ? "text-white"
+                      : "text-gray-300 hover:text-white"
                   }`}
                 >
                   {link.label}
@@ -66,14 +66,14 @@ export default function Navbar() {
               <div className="flex items-center space-x-4">
                 <Link
                   to="/login"
-                  className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors duration-200 text-sm font-normal"
+                  className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors duration-200 text-sm font-normal"
                 >
                   <FiLogIn className="w-4 h-4" />
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm font-normal"
+                  className="bg-lime-400 text-gray-900 px-4 py-2 rounded-lg hover:bg-lime-300 transition-colors duration-200 text-sm font-normal font-medium"
                 >
                   Create Account
                 </Link>
@@ -95,7 +95,7 @@ export default function Navbar() {
 
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className=" p-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+              className="p-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors duration-200"
             >
               {isOpen ? (
                 <FiX className="w-6 h-6" />
@@ -112,7 +112,7 @@ export default function Navbar() {
             isOpen ? "max-h-screen opacity-100 py-4" : "max-h-0 opacity-0 py-0"
           }`}
         >
-          <div className="flex flex-col space-y-4 border-t border-gray-100 pt-4">
+          <div className="flex flex-col space-y-4 border-t border-gray-700 pt-4">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.to;
 
@@ -123,8 +123,8 @@ export default function Navbar() {
                   onClick={() => setIsOpen(false)}
                   className={`text-base font-normal transition-colors duration-200 p-2 rounded-lg ${
                     isActive
-                      ? "text-gray-900 bg-gray-50"
-                      : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                      ? "text-white bg-gray-800"
+                      : "text-gray-300 hover:text-white hover:bg-gray-800"
                   }`}
                 >
                   {link.label}
@@ -138,7 +138,7 @@ export default function Navbar() {
                 <Link
                   to="/login"
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-center gap-2 text-gray-700 hover:text-gray-900 py-2 transition-colors duration-200 text-base font-normal"
+                  className="flex items-center justify-center gap-2 text-gray-300 hover:text-white py-2 transition-colors duration-200 text-base font-normal"
                 >
                   <FiLogIn className="w-4 h-4" />
                   Login
@@ -146,7 +146,7 @@ export default function Navbar() {
                 <Link
                   to="/register"
                   onClick={() => setIsOpen(false)}
-                  className="bg-gray-900 text-white text-center py-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-base font-normal"
+                  className="bg-lime-400 text-gray-900 text-center py-3 rounded-lg hover:bg-lime-300 transition-colors duration-200 text-base font-normal font-medium"
                 >
                   Create Account
                 </Link>

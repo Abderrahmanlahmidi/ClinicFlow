@@ -5,6 +5,7 @@ import LoadingPage from "../ui/loading/loadingPage";
 
 
 
+
 export const Home = lazy(() => import("../features/home/pages/home"))
 export const Register = lazy(() => import("../features/auth/pages/register"))
 export const Login = lazy(() => import("../features/auth/pages/login"))
@@ -13,6 +14,8 @@ export const Unauthorized = lazy(() => import("../features/unauthorized/unauthor
 export const Profile = lazy(() => import("../features/profile/page/profile"))
 export const Statics = lazy(() => import("../features/dashboard/pages/sections/pages/statics"))
 export const Users = lazy(() => import("../features/dashboard/pages/sections/pages/users"))
+export const Roles = lazy(() => import("../features/dashboard/pages/sections/pages/roles"))
+export const Availability = lazy(() => import("../features/dashboard/pages/sections/pages/availability"))
 
 
 

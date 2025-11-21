@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Home, Register, Login, Dashboard, Unauthorized, Profile, Statics, Users ,withSuspense } from "./lazyImports";
+import { Home, Register, Login, Dashboard, Unauthorized, Profile, Statics, Users, Roles, Availability ,withSuspense } from "./lazyImports";
 import PrivateRoute from "../private/privateRoute";
 import PublicRoute from "../private/publicRoute";
 
@@ -32,7 +32,15 @@ export const router = createBrowserRouter([
       {
         path:"/dashboard/users",
         element:<Users/>
-      }
+      },
+      {
+        path:"/dashboard/roles",
+        element:<Roles/>
+      },
+      {
+        path:"/dashboard/availability",
+        element:<Availability/>
+      },
     ]
   },
   {

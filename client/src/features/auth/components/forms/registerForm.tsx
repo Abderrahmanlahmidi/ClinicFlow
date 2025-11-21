@@ -54,12 +54,12 @@ export default function RegisterForm() {
             {...register("firstName", { required: "first name is required" })}
             type="text"
             placeholder="First Name"
-            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 text-sm"
+            className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-800 text-white placeholder-gray-400 text-sm"
           />
         </div>
         <div className="min-h-[18px]">
           {errors.fullName && (
-            <p className="text-red-500 text-xs mt-1">
+            <p className="text-red-400 text-xs mt-1">
               {errors.firstName.message}
             </p>
           )}
@@ -72,12 +72,12 @@ export default function RegisterForm() {
             {...register("lastName", { required: "last name is required" })}
             type="text"
             placeholder="Last Name"
-            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 text-sm"
+            className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-800 text-white placeholder-gray-400 text-sm"
           />
         </div>
         <div className="min-h-[18px]">
           {errors.fullName && (
-            <p className="text-red-500 text-xs mt-1">
+            <p className="text-red-400 text-xs mt-1">
               {errors.lastName.message}
             </p>
           )}
@@ -98,12 +98,12 @@ export default function RegisterForm() {
             })}
             type="email"
             placeholder="Email Address"
-            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 text-sm"
+            className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-800 text-white placeholder-gray-400 text-sm"
           />
         </div>
         <div className="min-h-[18px]">
           {errors.email && (
-            <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+            <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>
           )}
         </div>
       </div>
@@ -122,12 +122,12 @@ export default function RegisterForm() {
             })}
             type={showPassword ? "text" : "password"}
             placeholder="Password"
-            className="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 text-sm"
+            className="w-full pl-10 pr-10 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-800 text-white placeholder-gray-400 text-sm"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
           >
             {showPassword ? (
               <FiEyeOff className="text-sm" />
@@ -138,7 +138,7 @@ export default function RegisterForm() {
         </div>
         <div className="min-h-[18px]">
           {errors.password && (
-            <p className="text-red-500 text-xs mt-1">
+            <p className="text-red-400 text-xs mt-1">
               {errors.password.message}
             </p>
           )}
@@ -157,12 +157,12 @@ export default function RegisterForm() {
             })}
             type={showConfirmPassword ? "text" : "password"}
             placeholder="Confirm Password"
-            className="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 text-sm"
+            className="w-full pl-10 pr-10 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-800 text-white placeholder-gray-400 text-sm"
           />
           <button
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
           >
             {showConfirmPassword ? (
               <FiEyeOff className="text-sm" />
@@ -173,7 +173,7 @@ export default function RegisterForm() {
         </div>
         <div className="min-h-[18px]">
           {errors.confirmPassword && (
-            <p className="text-red-500 text-xs mt-1">
+            <p className="text-red-400 text-xs mt-1">
               {errors.confirmPassword.message}
             </p>
           )}
@@ -194,18 +194,18 @@ export default function RegisterForm() {
             })}
             type="tel"
             placeholder="Phone Number"
-            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 text-sm"
+            className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-800 text-white placeholder-gray-400 text-sm"
           />
         </div>
         <div className="min-h-[18px]">
           {errors.phone && (
-            <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>
+            <p className="text-red-400 text-xs mt-1">{errors.phone.message}</p>
           )}
         </div>
       </div>
 
       {successMessage && (
-        <p className="text-green-600 text-sm font-medium text-center">
+        <p className="text-green-400 text-sm font-medium text-center">
           {successMessage}
         </p>
       )}
@@ -213,7 +213,7 @@ export default function RegisterForm() {
       {/* Register Button */}
       <button
         type="submit"
-        className="w-full bg-gray-800 text-white py-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 font-medium text-sm flex items-center justify-center gap-2"
+        className="w-full bg-lime-400 text-gray-900 py-3 rounded-lg font-medium text-sm flex items-center justify-center gap-2"
       >
         {isLoading ? (
           <>

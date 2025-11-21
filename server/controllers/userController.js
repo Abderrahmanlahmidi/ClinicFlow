@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import Role from "../models/Role.js";
 import bcrypt from "bcrypt";
 
 export const getUsers = async (req, res) => {
@@ -92,4 +93,57 @@ export const changePassword = async (req, res) => {
     }
 };
 
+
+export const updateUserRole = async (req, res) => {
+    const { id } = req.params;
+    const { roleId } = req.body;
+
+    console.log("user id:",id);
+    console.log("role id:", roleId);
+
+    try {
+
+        if (!roleId) {
+            return res.status(400).json({
+                success: false,
+                message: "Role ID is required"
+            });
+        }
+
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        const role = await Role.findById(roleId);
+        if (!role) {
+            return res.status(404).json({
+                success: false,
+                message: "Role not found"
+            });
+        }
+
+        user.roleId = roleId;
+        await user.save();
+
+        const updatedUser = await User.findById(id).populate('roleId').populate('specialityId');
+
+        return res.status(200).json({
+            success: true,
+            message: "User role updated successfully",
+            user: updatedUser
+        });
+
+    } catch (error) {
+        console.error("Error updating user role:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message
+        });
+    }
+};
 

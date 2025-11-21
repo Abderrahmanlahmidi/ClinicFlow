@@ -19,7 +19,7 @@ export const getUserAvailabilities = async (req, res) => {
 
 export const getAllAvailabilities = async (req, res) => {
   try {
-    const availabilities = await Availability.find();
+    const availabilities = await Availability.find().populate("userId", "firstName lastName email imageProfile");
     if (!availabilities || availabilities.length === 0) {
       return res.status(404).json({ message: "No availabilities found" });
     }

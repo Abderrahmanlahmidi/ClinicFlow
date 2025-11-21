@@ -41,7 +41,6 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload || action.error.message; 
       });
-
   },
 });
 

@@ -6,8 +6,6 @@ import { updateUserProfile } from "../apis/getUserInfo";
 import { useToast } from "../../../ui/toasts/toast";
 
 const ProfileUpdateForm = ({ userData }) => {
-
-
   const userId = localStorage.getItem("userId");
   const queryClient = useQueryClient();
   const {toast} = useToast();
@@ -49,22 +47,22 @@ const ProfileUpdateForm = ({ userData }) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+    <div className="bg-gray-900 rounded-2xl shadow-sm border border-gray-700 p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-normal text-gray-900">
+        <h3 className="text-xl font-normal text-white">
           Personal Information
         </h3>
-        <FiEdit className="w-5 h-5 text-gray-500" />
+        <FiEdit className="w-5 h-5 text-gray-400" />
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               First Name
             </label>
             <div className="relative">
-              <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
               <input
                 type="text"
                 {...register("firstName", {
@@ -74,23 +72,23 @@ const ProfileUpdateForm = ({ userData }) => {
                     message: "First name must be at least 2 characters",
                   },
                 })}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-900 text-white placeholder-gray-400"
                 placeholder="Enter your first name"
               />
             </div>
             {errors.firstName && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-red-400 text-sm mt-1">
                 {errors.firstName.message}
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               Last Name
             </label>
             <div className="relative">
-              <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
               <input
                 type="text"
                 {...register("lastName", {
@@ -100,12 +98,12 @@ const ProfileUpdateForm = ({ userData }) => {
                     message: "Last name must be at least 2 characters",
                   },
                 })}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-900 text-white placeholder-gray-400"
                 placeholder="Enter your last name"
               />
             </div>
             {errors.lastName && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-red-400 text-sm mt-1">
                 {errors.lastName.message}
               </p>
             )}
@@ -113,11 +111,11 @@ const ProfileUpdateForm = ({ userData }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-300 mb-2">
             Email Address
           </label>
           <div className="relative">
-            <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
             <input
               type="email"
               {...register("email", {
@@ -127,21 +125,21 @@ const ProfileUpdateForm = ({ userData }) => {
                   message: "Invalid email address",
                 },
               })}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+              className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-900 text-white placeholder-gray-400"
               placeholder="Enter your email address"
             />
           </div>
           {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+            <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-300 mb-2">
             Phone Number
           </label>
           <div className="relative">
-            <FiPhone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <FiPhone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
             <input
               type="tel"
               {...register("numberPhone", {
@@ -155,12 +153,12 @@ const ProfileUpdateForm = ({ userData }) => {
                   message: "Phone number must be at least 10 digits",
                 },
               })}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+              className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-900 text-white placeholder-gray-400"
               placeholder="Enter your phone number"
             />
           </div>
           {errors.numberPhone && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="text-red-400 text-sm mt-1">
               {errors.numberPhone.message}
             </p>
           )}
@@ -169,7 +167,7 @@ const ProfileUpdateForm = ({ userData }) => {
         <div className="flex gap-4 pt-4">
           <button
             type="submit"
-            className="bg-gray-900 text-white px-8 py-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 flex items-center gap-2 font-normal"
+            className="bg-lime-400 text-gray-900 px-8 py-3 rounded-lg flex items-center gap-2 font-normal font-medium"
           >
             <FiSave className="w-4 h-4" />
             Save Changes
@@ -177,7 +175,7 @@ const ProfileUpdateForm = ({ userData }) => {
           <button
             type="button"
             onClick={handleCancel}
-            className="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-normal"
+            className="border border-gray-600 text-gray-300 px-8 py-3 rounded-lg font-normal"
           >
             Cancel
           </button>
