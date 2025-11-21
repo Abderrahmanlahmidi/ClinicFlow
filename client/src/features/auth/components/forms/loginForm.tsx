@@ -8,7 +8,6 @@ import FormAlert from "../../../../ui/alerts/formAlert";
 import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "../../apis/authLogin";
 
-
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -90,12 +89,12 @@ const LoginForm = () => {
             })}
             type="email"
             placeholder="Email Address"
-            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 text-sm"
+            className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-800 text-white placeholder-gray-400 text-sm"
           />
         </div>
         <div className="min-h-[18px]">
           {errors.email && (
-            <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+            <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>
           )}
         </div>
       </div>
@@ -108,12 +107,12 @@ const LoginForm = () => {
             {...register("password", { required: "Password is required" })}
             type={showPassword ? "text" : "password"}
             placeholder="Password"
-            className="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 text-sm"
+            className="w-full pl-10 pr-10 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-800 text-white placeholder-gray-400 text-sm"
           />
           <button
             type="button"
             onClick={togglePasswordVisibility}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
           >
             {showPassword ? (
               <FiEyeOff className="text-sm" />
@@ -124,7 +123,7 @@ const LoginForm = () => {
         </div>
         <div className="min-h-[18px]">
           {errors.password && (
-            <p className="text-red-500 text-xs mt-1">
+            <p className="text-red-400 text-xs mt-1">
               {errors.password.message}
             </p>
           )}
@@ -135,7 +134,7 @@ const LoginForm = () => {
       <div className="text-right">
         <Link
           to={"/forgot-password"}
-          className="text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200"
+          className="text-sm text-gray-400"
         >
           Forgot Password?
         </Link>
@@ -145,7 +144,7 @@ const LoginForm = () => {
       <button
         type="submit"
         disabled={isPending}
-        className="w-full bg-gray-800 text-white py-3 rounded-lg hover:bg-gray-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200 font-medium text-sm flex items-center justify-center gap-2"
+        className="w-full bg-lime-400 text-gray-900 py-3 rounded-lg font-medium text-sm flex items-center justify-center gap-2"
       >
         {isPending ? (
           <>

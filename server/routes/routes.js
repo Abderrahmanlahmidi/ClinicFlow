@@ -12,7 +12,6 @@ import userRoutes from "./entities/userRoutes.js";
 import testRoutes from "./entities/testRoutes.js";
 import documentRoutes from "./entities/documentRoutes.js";
 
-
 const routes = [
     {path: "/api/clinic", route: roleRoutes},
     {path: "/api/clinic", route: specialityRoutes},

@@ -7,7 +7,7 @@ const Spinner = () => (
     animate={{ rotate: 360 }}
     transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
   >
-    <FiLoader className="w-full h-full text-white" />
+    <FiLoader className="w-full h-full text-lime-400" />
   </motion.div>
 );
 

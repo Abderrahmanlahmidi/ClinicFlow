@@ -3,35 +3,35 @@ import React from 'react';
 const RoleBadge = ({ role }) => {
   const getRoleConfig = (role) => {
     switch (role) {
-      case 'patient':
+      case 'Patient':
         return {
-          bgColor: 'bg-blue-100',
-          textColor: 'text-blue-800',
-          borderColor: 'border-blue-200'
+          bgColor: 'bg-blue-900/30',
+          textColor: 'text-blue-300',
+          borderColor: 'border-blue-700'
         };
-      case 'nurse':
+      case 'Nurse':
         return {
-          bgColor: 'bg-green-100',
-          textColor: 'text-green-800',
-          borderColor: 'border-green-200'
+          bgColor: 'bg-green-900/30',
+          textColor: 'text-green-300',
+          borderColor: 'border-green-700'
         };
-      case 'doctor':
+      case 'Doctor':
         return {
-          bgColor: 'bg-purple-100',
-          textColor: 'text-purple-800',
-          borderColor: 'border-purple-200'
+          bgColor: 'bg-purple-900/30',
+          textColor: 'text-purple-300',
+          borderColor: 'border-purple-700'
         };
-      case 'admin':
+      case 'Admin':
         return {
-          bgColor: 'bg-red-100',
-          textColor: 'text-red-800',
-          borderColor: 'border-red-200'
+          bgColor: 'bg-red-900/30',
+          textColor: 'text-red-300',
+          borderColor: 'border-red-700'
         };
       default:
         return {
-          bgColor: 'bg-gray-100',
-          textColor: 'text-gray-800',
-          borderColor: 'border-gray-200'
+          bgColor: 'bg-gray-900/30',
+          textColor: 'text-gray-300',
+          borderColor: 'border-gray-700'
         };
     }
   };

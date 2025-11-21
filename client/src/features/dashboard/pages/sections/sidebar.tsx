@@ -6,16 +6,19 @@ import {
   FiBarChart2,
   FiChevronLeft,
   FiMenu,
-  FiUsers
+  FiUsers,
+  FiShield,
+  FiClock
 } from 'react-icons/fi';
 
-const SidebarDashboard = () => {
-  const [isOpen, setIsOpen] = useState(true);
+const SidebarDashboard = ({isOpen, setIsOpen}) => {
   const location = useLocation();
 
   const menuItems = [
     { icon: FiBarChart2, label: 'Analytics', path: '/dashboard' },
     { icon: FiUsers, label: 'Users', path: '/dashboard/users' },
+    { icon: FiShield, label: 'Roles', path: '/dashboard/roles' },
+    { icon: FiClock, label: 'Availability', path: '/dashboard/availability' }
   ];
 
   const sidebarVariants = {
@@ -59,7 +62,7 @@ const SidebarDashboard = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            className="fixed inset-0 bg-black bg-opacity-60 z-40 lg:hidden"
             onClick={() => setIsOpen(false)}
           />
         )}
@@ -70,10 +73,10 @@ const SidebarDashboard = () => {
         variants={sidebarVariants}
         initial="open"
         animate={isOpen ? "open" : "closed"}
-        className="fixed lg:relative h-screen bg-white shadow-sm z-50 flex flex-col border-r border-gray-200"
+        className="fixed top-0 left-0 h-screen bg-gray-900 shadow-xl z-50 flex flex-col border-r border-gray-700"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-6 border-b border-gray-700 flex-shrink-0">
           {isOpen ? (
             <AnimatePresence>
               <motion.div
@@ -82,7 +85,7 @@ const SidebarDashboard = () => {
                 exit={{ opacity: 0 }}
                 className="flex items-center gap-3"
               >
-                <span className="text-lg font-light text-gray-900">ClinicFlow</span>
+                <span className="text-lg font-light text-white">ClinicFlow</span>
               </motion.div>
             </AnimatePresence>
           ) : (
@@ -91,14 +94,14 @@ const SidebarDashboard = () => {
 
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-gray-700"
+            className="p-2 rounded-lg text-gray-400"
           >
             {isOpen ? <FiChevronLeft className="w-5 h-5" /> : <FiMenu className="w-5 h-5" />}
           </button>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-2">
+        {/* Navigation (scrollable) */}
+        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -107,16 +110,16 @@ const SidebarDashboard = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center px-4 py-3 rounded-lg transition-all duration-200 group
+                className={`flex items-center px-4 py-3 rounded-lg group
                   ${isOpen ? "gap-3 justify-start" : "justify-center"}
                   ${isActive 
-                    ? "bg-gray-100 text-gray-900 border border-gray-300" 
-                    : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"}
+                    ? "bg-gray-800 text-white border border-gray-600" 
+                    : "text-gray-300 hover:bg-gray-800"}
                 `}
               >
                 <Icon
                   className={`w-5 h-5 flex-shrink-0 ${
-                    isActive ? "text-gray-900" : "text-gray-600 group-hover:text-gray-700"
+                    isActive ? "text-lime-400" : "text-gray-400 group-hover:text-gray-300"
                   }`}
                 />
 
@@ -139,14 +142,14 @@ const SidebarDashboard = () => {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-gray-200 space-y-2">
+        <div className="p-4 border-t border-gray-700 flex-shrink-0">
           <Link
             to="/"
-            className={`flex items-center px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200 group
+            className={`flex items-center px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 group
               ${isOpen ? "gap-3 justify-start" : "justify-center"}
             `}
           >
-            <FiHome className="w-5 h-5 flex-shrink-0 text-gray-600 group-hover:text-gray-700" />
+            <FiHome className="w-5 h-5 flex-shrink-0 text-gray-400 group-hover:text-gray-300" />
 
             {isOpen && (
               <AnimatePresence>

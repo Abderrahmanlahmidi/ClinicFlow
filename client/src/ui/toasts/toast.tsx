@@ -17,27 +17,27 @@ const ToastMessage = ({ message, type = 'info', onDismiss }) => {
      switch(type) {
     case 'error':
         return {
-            className: `${baseClasses} text-red-800 bg-red-50 border-red-200`,
-            icon: <FiAlertCircle className="shrink-0 w-5 h-5 text-red-600" />,
-            buttonClass: "bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800"
+            className: `${baseClasses} text-red-300 bg-red-900/20 border-red-700`,
+            icon: <FiAlertCircle className="shrink-0 w-5 h-5 text-red-400" />,
+            buttonClass: "text-red-400"
         };
     case 'success':
         return {
-            className: `${baseClasses} text-green-800 bg-green-50 border-green-200`,
-            icon: <FiCheckCircle className="shrink-0 w-5 h-5 text-green-600" />,
-            buttonClass: "bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-800"
+            className: `${baseClasses} text-green-300 bg-green-900/20 border-green-700`,
+            icon: <FiCheckCircle className="shrink-0 w-5 h-5 text-green-400" />,
+            buttonClass: "text-green-400"
         };
     case 'warning':
         return {
-            className: `${baseClasses} text-yellow-800 bg-yellow-50 border-yellow-200`,
-            icon: <FiAlertTriangle className="shrink-0 w-5 h-5 text-yellow-600" />,
-            buttonClass: "bg-yellow-50 text-yellow-600 hover:bg-yellow-100 hover:text-yellow-800"
+            className: `${baseClasses} text-yellow-300 bg-yellow-900/20 border-yellow-700`,
+            icon: <FiAlertTriangle className="shrink-0 w-5 h-5 text-yellow-400" />,
+            buttonClass: "text-yellow-400"
         };
     default: 
         return {
-            className: `${baseClasses} text-blue-800 bg-blue-50 border-blue-200`,
-            icon: <FiInfo className="shrink-0 w-5 h-5 text-blue-600" />,
-            buttonClass: "bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800"
+            className: `${baseClasses} text-blue-300 bg-blue-900/20 border-blue-700`,
+            icon: <FiInfo className="shrink-0 w-5 h-5 text-blue-400" />,
+            buttonClass: "text-blue-400"
         };
 }
     };
@@ -56,13 +56,13 @@ const ToastMessage = ({ message, type = 'info', onDismiss }) => {
             <div className="flex items-center justify-between w-full">
                 <div className="flex items-center space-x-3">
                     {styles.icon}
-                    <div className="text-sm font-medium text-gray-800">
+                    <div className="text-sm font-medium text-gray-100">
                         {message}
                     </div>
                 </div>
                 <button
                     type="button"
-                    className={`ml-4 rounded-lg focus:ring-2 p-1.5 inline-flex items-center justify-center h-7 w-7 transition-colors duration-200 ${styles.buttonClass}`}
+                    className={`ml-4 rounded-lg p-1.5 inline-flex items-center justify-center h-7 w-7 ${styles.buttonClass}`}
                     onClick={onDismiss}
                     aria-label="Close"
                 >
