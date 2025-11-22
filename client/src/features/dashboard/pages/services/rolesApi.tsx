@@ -1,4 +1,4 @@
-import { axiosInstance } from "../../../../api/axiosInstance";
+import { axiosInstance } from "../../../../services/axiosInstance";
 
 export const getRoles = async () => {
   const res = await axiosInstance.get("/clinic/get-roles");

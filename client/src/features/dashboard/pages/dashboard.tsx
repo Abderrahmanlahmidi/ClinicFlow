@@ -1,12 +1,12 @@
 import { useState } from "react";
-import Sidebar from "../pages/sections/sidebar"; 
+import Sidebar from "../pages/sections/sidebar";
 import { Outlet } from "react-router-dom";
 
 const DashboardLayout = () => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-gray-900">
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
 
       <div
@@ -21,4 +21,3 @@ const DashboardLayout = () => {
 };
 
 export default DashboardLayout;
-

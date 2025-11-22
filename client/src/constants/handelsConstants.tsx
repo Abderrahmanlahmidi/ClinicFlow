@@ -32,6 +32,6 @@ export function useHandleForm() {
     handleCloseForms,
     setShowCreateForm,
     setShowUpdateForm,
-    setSelectedUser
+    setSelectedUser,
   };
 }

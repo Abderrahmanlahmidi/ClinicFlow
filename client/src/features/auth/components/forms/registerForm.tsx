@@ -19,7 +19,7 @@ export default function RegisterForm() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isLoading, error, successMessage } = useSelector(
-    (state) => state.auth
+    (state) => state.auth,
   );
 
   const {
@@ -39,7 +39,7 @@ export default function RegisterForm() {
       navigate("/login");
     });
   };
-  
+
   if (error) {
     console.log(error);
   }

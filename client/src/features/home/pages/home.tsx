@@ -1,13 +1,12 @@
-import React from 'react'
-import Navbar from '../sections/navbar';
-import Hero from '../sections/hero';
-
+import React from "react";
+import Navbar from "../sections/navbar";
+import Hero from "../sections/hero";
 
 export default function Home() {
   return (
     <div>
-      <Navbar/>
-      <Hero/>
+      <Navbar />
+      <Hero />
     </div>
-  )
+  );
 }

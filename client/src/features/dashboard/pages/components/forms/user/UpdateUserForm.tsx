@@ -57,13 +57,11 @@ const UpdateUserForm = ({ onClose, onSubmit, user }) => {
   const handleClose = () => {
     reset();
     setImagePreview(
-      user?.imageProfile ? `http://localhost:8000${user.imageProfile}` : null
+      user?.imageProfile ? `http://localhost:8000${user.imageProfile}` : null,
     );
     setSelectedImage(null);
     onClose();
   };
-
-
 
   if (!user) return null;
 

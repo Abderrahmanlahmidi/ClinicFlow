@@ -1,5 +1,4 @@
-import { axiosInstance } from '../../../api/axiosInstance';
-
+import { axiosInstance } from "../../../services/axiosInstance";
 
 export const getUserInfo = async ({ queryKey }) => {
   const userId = queryKey[1];
@@ -16,7 +15,7 @@ export const updateUserProfile = async ({ userId, data }) => {
   return res.data;
 };
 
-export const updatePassword = async ({data, userId}) => {
+export const updatePassword = async ({ data, userId }) => {
   const res = await axiosInstance.put(`/change-password/${userId}`, data);
   return res.data;
 };

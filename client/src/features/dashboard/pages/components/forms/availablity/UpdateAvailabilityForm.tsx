@@ -1,20 +1,14 @@
-// components/availability/CreateAvailabilityForm.jsx
-import { useState, useEffect } from "react";
-import {
-  FiX,
-  FiClock,
-  FiUsers,
-  FiCalendar,
-  FiAlertTriangle,
-} from "react-icons/fi";
-import { DAYS_OF_WEEK, TIME_SLOTS } from "../constants/availability";
 
-const CreateAvailabilityForm = ({
+import { useState, useEffect } from "react";
+import { FiX, FiClock, FiUsers, FiCalendar } from "react-icons/fi";
+import { DAYS_OF_WEEK, TIME_SLOTS } from "../../../constants/availability.tsx";
+
+const UpdateAvailabilityForm = ({
   onClose,
   onSubmit,
   isLoading,
+  availability,
   users,
-  availabilities,
 }) => {
   const [formData, setFormData] = useState({
     userId: "",
@@ -25,33 +19,18 @@ const CreateAvailabilityForm = ({
   });
 
   const [errors, setErrors] = useState({});
-  const [duplicateError, setDuplicateError] = useState("");
 
   useEffect(() => {
-    checkDuplicateAvailability();
-  }, [formData.userId, formData.dayOfWeek]);
-
-  const checkDuplicateAvailability = () => {
-    if (!formData.userId || !formData.dayOfWeek) {
-      setDuplicateError("");
-      return;
+    if (availability) {
+      setFormData({
+        userId: availability.userId?._id || availability.userId || "",
+        dayOfWeek: availability.dayOfWeek || "",
+        startTime: availability.startTime || "",
+        endTime: availability.endTime || "",
+        dailyCapacity: availability.dailyCapacity?.toString() || "",
+      });
     }
-
-    const existingAvailability = availabilities?.find(
-      (avail) =>
-        avail.userId?._id === formData.userId &&
-        avail.dayOfWeek?.toLowerCase() === formData.dayOfWeek.toLowerCase()
-    );
-
-    if (existingAvailability) {
-      const userName = `${existingAvailability.userId?.firstName} ${existingAvailability.userId?.lastName}`;
-      setDuplicateError(
-        `${userName} already has availability set for ${formData.dayOfWeek}. Please update the existing availability instead.`
-      );
-    } else {
-      setDuplicateError("");
-    }
-  };
+  }, [availability]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -78,11 +57,6 @@ const CreateAvailabilityForm = ({
       newErrors.dailyCapacity = "Daily capacity must be between 1 and 100";
     }
 
-    // Check for duplicate
-    if (duplicateError) {
-      newErrors.duplicate = duplicateError;
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -103,22 +77,14 @@ const CreateAvailabilityForm = ({
       ...prev,
       [name]: value,
     }));
-
-    // Clear errors when user starts typing
+    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
         [name]: "",
       }));
     }
-
-    // Clear duplicate error when user changes
-    if (duplicateError && (name === "userId" || name === "dayOfWeek")) {
-      setDuplicateError("");
-    }
   };
-
-  const isFormDisabled = duplicateError || isLoading;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -127,7 +93,7 @@ const CreateAvailabilityForm = ({
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-white flex items-center gap-2">
             <FiCalendar className="w-5 h-5 text-lime-400" />
-            Create Availability
+            Update Availability
           </h2>
           <button
             onClick={onClose}
@@ -137,16 +103,6 @@ const CreateAvailabilityForm = ({
             <FiX className="w-5 h-5" />
           </button>
         </div>
-
-        {/* Duplicate Warning */}
-        {duplicateError && (
-          <div className="mb-4 p-3 bg-red-900/50 border border-red-700 rounded-lg">
-            <div className="flex items-center gap-2 text-red-300">
-              <FiAlertTriangle className="w-4 h-4 flex-shrink-0" />
-              <p className="text-sm">{duplicateError}</p>
-            </div>
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* User Selection */}
@@ -160,7 +116,7 @@ const CreateAvailabilityForm = ({
               onChange={handleChange}
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-700 text-white ${
                 errors.userId ? "border-red-500" : "border-gray-600"
-              } ${duplicateError ? "border-yellow-500" : ""}`}
+              }`}
             >
               <option value="">Select User</option>
               {users?.map((user) => (
@@ -185,7 +141,7 @@ const CreateAvailabilityForm = ({
               onChange={handleChange}
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-700 text-white ${
                 errors.dayOfWeek ? "border-red-500" : "border-gray-600"
-              } ${duplicateError ? "border-yellow-500" : ""}`}
+              }`}
             >
               <option value="">Select Day</option>
               {DAYS_OF_WEEK.map((day) => (
@@ -288,14 +244,10 @@ const CreateAvailabilityForm = ({
             </button>
             <button
               type="submit"
-              disabled={isFormDisabled}
+              disabled={isLoading}
               className="flex-1 px-4 py-2 bg-lime-400 text-gray-900 rounded-lg hover:bg-lime-300 transition-colors disabled:opacity-50 font-medium"
             >
-              {isLoading
-                ? "Creating..."
-                : duplicateError
-                ? "Availability Exists"
-                : "Create Availability"}
+              {isLoading ? "Updating..." : "Update Availability"}
             </button>
           </div>
         </form>
@@ -304,4 +256,4 @@ const CreateAvailabilityForm = ({
   );
 };
 
-export default CreateAvailabilityForm;
+export default UpdateAvailabilityForm;

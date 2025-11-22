@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { axiosInstance } from "../api/axiosInstance";
+import { axiosInstance } from "../services/axiosInstance";
 import LoadingPage from "../ui/loading/loadingPage";
 import { Navigate } from "react-router-dom";
 
@@ -16,7 +16,9 @@ export default function PublicRoute({ children }) {
       }
 
       try {
-        await axiosInstance.get("/auth/check-auth", { headers: { Authorization: `Bearer ${accessToken}` } });
+        await axiosInstance.get("/auth/check-auth", {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
         setIsAuthenticated(true);
       } catch (error) {
         setIsAuthenticated(false);

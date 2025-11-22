@@ -8,7 +8,7 @@ export default function Navbar() {
   const location = useLocation();
   const checkUserAuth = localStorage.getItem("userId");
   const [isAuthenticated, setIsAuthenticated] = useState(
-    !!localStorage.getItem("userId")
+    !!localStorage.getItem("userId"),
   );
 
   useEffect(() => {
@@ -51,9 +51,7 @@ export default function Navbar() {
                   key={link.to}
                   to={link.to}
                   className={`text-sm font-normal transition-colors duration-200 ${
-                    isActive
-                      ? "text-white"
-                      : "text-gray-300 hover:text-white"
+                    isActive ? "text-white" : "text-gray-300 hover:text-white"
                   }`}
                 >
                   {link.label}

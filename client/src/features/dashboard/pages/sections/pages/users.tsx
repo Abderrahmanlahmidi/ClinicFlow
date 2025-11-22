@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
 import { FiPlus, FiEdit2, FiTrash2, FiUser, FiSearch } from "react-icons/fi";
-import CreateUserForm from "../../components/createUserForm";
-import UpdateUserForm from "../../components/updateUserForm";
-import RoleBadge from "../../components/roleBadge";
+import CreateUserForm from "../../components/forms/user/CreateUserForm.tsx";
+import UpdateUserForm from "../../components/forms/user/UpdateUserForm.tsx";
+import RoleBadge from "../../components/others/RoleBadge.tsx";
 import { HandleSearch } from "../../../../../constants/useSearch";
 import { useHandleForm } from "../../../../../constants/handelsConstants";
-import { getRoles } from "../../apis/rolesApi";
-import { getUsers, updateUserRole } from "../../apis/usersApi";
+import { getRoles } from "../../services/rolesApi";
+import { getUsers, updateUserRole } from "../../services/usersApi";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
 import { useToast } from "../../../../../ui/toasts/toast";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -67,22 +66,19 @@ const UsersPage = () => {
     },
     onError: (error) => {
       toast.error(
-        error.response?.data?.message || "Failed to update user role"
+        error.response?.data?.message || "Failed to update user role",
       );
     },
   });
 
   const handleChangeRole = (roleId, userId) => {
-   
-    
     console.log("role id:", roleId);
     console.log("user id:", userId);
-   
+
     changeUserRoleMutation.mutate({
       id: userId,
       roleId: roleId,
     });
-
   };
 
   return (

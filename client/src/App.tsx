@@ -6,7 +6,6 @@ import { Provider } from "react-redux";
 import { store } from "./app/store";
 import { ToastProvider } from "./ui/toasts/toast";
 
-
 const queryClient = new QueryClient();
 
 function App() {
@@ -14,9 +13,9 @@ function App() {
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <ToastProvider>
-           <RouterProvider router={router} />
+          <RouterProvider router={router} />
         </ToastProvider>
-        <ReactQueryDevtools initialIsOpen={false}/>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </Provider>
   );

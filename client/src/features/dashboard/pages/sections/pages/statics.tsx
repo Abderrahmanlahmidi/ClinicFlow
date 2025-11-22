@@ -1,7 +1,5 @@
-import React from 'react'
+import React from "react";
 
 export default function Statics() {
-  return (
-    <div>statics</div>
-  )
+  return <div>statics</div>;
 }

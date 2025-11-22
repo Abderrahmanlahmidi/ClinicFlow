@@ -12,9 +12,9 @@ const router = express.Router();
 
 router.get("/specialities", getSpecialities);
 router.post("/create-speciality", createSpeciality);
-router.get("/specialities/:id", getSpecialityById);
-router.get("/speciality-doctors/:id", getSpecialityDoctors);
 router.patch("/update-speciality/:id", updateSpeciality);
 router.delete("/delete-speciality/:id", deleteSpeciality);
+router.get("/specialities/:id", getSpecialityById);
+router.get("/speciality-doctors/:id", getSpecialityDoctors);
 
 export default router;

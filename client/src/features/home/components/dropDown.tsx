@@ -1,13 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  FiUser,
-  FiLogOut,
-  FiHome,
-  FiChevronDown,
-} from "react-icons/fi";
+import { FiUser, FiLogOut, FiHome, FiChevronDown } from "react-icons/fi";
 import LogoutConfirm from "./logoutConfirm";
-import { axiosInstance } from "../../../api/axiosInstance";
+import { axiosInstance } from "../../../services/axiosInstance";
 import { useQuery } from "@tanstack/react-query";
 import { getUserInfo } from "../../profile/apis/getUserInfo";
 
@@ -73,8 +68,8 @@ export default function DropdownProfile({ onLogout }) {
       >
         <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center overflow-hidden border border-gray-600">
           {data?.imageProfile ? (
-            <img 
-              src={`http://localhost:8000${data.imageProfile}`} 
+            <img
+              src={`http://localhost:8000${data.imageProfile}`}
               alt="Profile"
               className="w-full h-full object-cover"
             />
@@ -83,9 +78,7 @@ export default function DropdownProfile({ onLogout }) {
           )}
         </div>
         <FiChevronDown
-          className={`w-4 h-4 text-gray-200 ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          className={`w-4 h-4 text-gray-200 ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
 
@@ -134,7 +127,7 @@ export default function DropdownProfile({ onLogout }) {
             to="/profile"
             onClick={handleItemClick}
             className="flex items-center gap-3 px-5 py-3 text-sm text-gray-200 "
-            >
+          >
             <FiUser className="w-4 h-4 text-gray-400" />
             My Profile
           </Link>

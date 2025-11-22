@@ -8,8 +8,8 @@ import {
   FiCalendar,
   FiUsers,
 } from "react-icons/fi";
-import CreateAvailabilityForm from "../../components/CreateAvailabilityForm";
-import UpdateAvailabilityForm from "../../components/UpdateAvailabilityForm";
+import CreateAvailabilityForm from "../../components/forms/availablity/CreateAvailabilityForm.tsx";
+import UpdateAvailabilityForm from "../../components/forms/availablity/UpdateAvailabilityForm.tsx";
 import { HandleSearch } from "../../../../../constants/useSearch";
 import { useHandleForm } from "../../../../../constants/handelsConstants";
 import {
@@ -17,10 +17,10 @@ import {
   createAvailability,
   updateAvailability,
   deleteAvailability,
-} from "../../apis/availabilityApi";
+} from "../../services/availabilityApi";
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "../../../../../ui/toasts/toast";
-import ConfirmationModal from "../../components/confirmationModal";
+import ConfirmationModal from "../../components/others/ConfirmationModal.tsx";
 
 const Availability = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -37,7 +37,7 @@ const Availability = () => {
     showUpdateForm,
     handleCreateClick,
     handleUpdateClick,
-    handleCloseForms, 
+    handleCloseForms,
     setSelectedUser: setSelectedAvailability,
   } = useHandleForm();
 
@@ -46,7 +46,7 @@ const Availability = () => {
     {
       queryKey: ["availabilities"],
       queryFn: getAvailabilities,
-    }
+    },
   );
 
   // Search hook
@@ -62,7 +62,7 @@ const Availability = () => {
     },
     onError: (error) => {
       toast.error(
-        error.response?.data?.message || "Failed to create availability"
+        error.response?.data?.message || "Failed to create availability",
       );
     },
   });
@@ -77,7 +77,7 @@ const Availability = () => {
     },
     onError: (error) => {
       toast.error(
-        error.response?.data?.message || "Failed to update availability"
+        error.response?.data?.message || "Failed to update availability",
       );
     },
   });
@@ -93,7 +93,7 @@ const Availability = () => {
     },
     onError: (error) => {
       toast.error(
-        error.response?.data?.message || "Failed to delete availability"
+        error.response?.data?.message || "Failed to delete availability",
       );
     },
   });
@@ -146,7 +146,7 @@ const Availability = () => {
 
       const uniqueUsers = users.filter(
         (user, index, self) =>
-          index === self.findIndex((u) => u._id === user._id)
+          index === self.findIndex((u) => u._id === user._id),
       );
 
       setAvailabilityUsers(uniqueUsers);
@@ -155,9 +155,6 @@ const Availability = () => {
     getUsersFromAvailabilities();
   }, [availabilities]);
 
-
-
-
   return (
     <div className="min-h-screen bg-gray-900 p-6 overflow-hidden">
       <div className="max-w-7xl mx-auto">
@@ -165,7 +162,6 @@ const Availability = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
           <div>
             <h1 className="text-3xl font-light text-white mb-2 flex items-center gap-3">
-              <FiCalendar className="w-8 h-8 text-lime-400" />
               Availability Management
             </h1>
             <p className="text-gray-300">

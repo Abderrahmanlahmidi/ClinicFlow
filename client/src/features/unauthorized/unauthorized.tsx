@@ -12,8 +12,8 @@ const Unauthorized = () => {
           Access Denied
         </h1>
         <p className="text-gray-300 max-w-md mb-8">
-          You don't have permission to view this page.  
-          Please check your account permissions or go back to the homepage.
+          You don't have permission to view this page. Please check your account
+          permissions or go back to the homepage.
         </p>
         <div className="flex gap-4">
           <Link

@@ -14,9 +14,7 @@ export default function Login() {
           {/* Header */}
           <div className="text-center mb-8">
             <FiLogIn className="text-3xl text-gray-300 mx-auto mb-4" />
-            <h1 className="text-2xl font-light text-white mb-2">
-              ClinicFlow
-            </h1>
+            <h1 className="text-2xl font-light text-white mb-2">ClinicFlow</h1>
             <h2 className="text-lg font-medium text-gray-300 mb-1">
               Welcome Back
             </h2>
@@ -31,10 +29,7 @@ export default function Login() {
           <div className="text-center mt-6">
             <p className="text-sm text-gray-400">
               Don't have an account?{" "}
-              <Link
-                to="/register"
-                className="text-lime-400 font-medium"
-              >
+              <Link to="/register" className="text-lime-400 font-medium">
                 Create Account
               </Link>
             </p>
