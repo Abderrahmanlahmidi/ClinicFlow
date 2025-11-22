@@ -159,8 +159,8 @@ const Availability = () => {
     <div className="min-h-screen bg-gray-900 p-6 overflow-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
+          <div className="flex-1">
             <h1 className="text-3xl font-light text-white mb-2 flex items-center gap-3">
               Availability Management
             </h1>
@@ -168,29 +168,30 @@ const Availability = () => {
               Manage user schedules and daily capacities
             </p>
           </div>
-          <button
-            onClick={handleCreateClick}
-            disabled={createAvailabilityMutation.isLoading}
-            className="bg-lime-400 text-gray-900 px-6 py-3 rounded-lg flex items-center gap-2 font-medium mt-4 sm:mt-0 hover:bg-lime-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <FiPlus className="w-5 h-5" />
-            {createAvailabilityMutation.isLoading
-              ? "Creating..."
-              : "Add Availability"}
-          </button>
-        </div>
-
-        {/* Search Bar */}
-        <div className="bg-gray-900 rounded-xl border border-gray-700 p-6 mb-6">
-          <div className="relative max-w-md">
-            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search by user name, day of week..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-900 text-white placeholder-gray-400"
-            />
+          
+          {/* Search Bar - Moved to header */}
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            <div className="relative w-full sm:w-80">
+              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search by user name, day of week..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-900 text-white placeholder-gray-400"
+              />
+            </div>
+            
+            <button
+              onClick={handleCreateClick}
+              disabled={createAvailabilityMutation.isLoading}
+              className="bg-lime-400 text-gray-900 px-6 py-3 rounded-lg flex items-center gap-2 font-medium hover:bg-lime-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+            >
+              <FiPlus className="w-5 h-5" />
+              {createAvailabilityMutation.isLoading
+                ? "Creating..."
+                : "Add Availability"}
+            </button>
           </div>
         </div>
 

@@ -85,8 +85,8 @@ const UsersPage = () => {
     <div className="min-h-screen bg-gray-900 p-6 overflow-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
+          <div className="flex-1">
             <h1 className="text-3xl font-light text-white mb-2">
               Users Management
             </h1>
@@ -94,26 +94,27 @@ const UsersPage = () => {
               Manage your clinic users and their roles
             </p>
           </div>
-          {/* <button
-            onClick={handleCreateClick}
-            className="bg-lime-400 text-gray-900 px-6 py-3 rounded-lg flex items-center gap-2 font-medium mt-4 sm:mt-0"
-          >
-            <FiPlus className="w-5 h-5" />
-            Create New User
-          </button> */}
-        </div>
-
-        {/* Search Bar */}
-        <div className="bg-gray-900 rounded-xl border border-gray-700 p-6 mb-6">
-          <div className="relative max-w-md">
-            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search users by name, email, or role..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-900 text-white placeholder-gray-400"
-            />
+          
+          {/* Search Bar - Moved to header */}
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            <div className="relative w-full sm:w-80">
+              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search users by name, email, or role..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-900 text-white placeholder-gray-400"
+              />
+            </div>
+            
+            {/* <button
+              onClick={handleCreateClick}
+              className="bg-lime-400 text-gray-900 px-6 py-3 rounded-lg flex items-center gap-2 font-medium hover:bg-lime-300 transition-colors whitespace-nowrap"
+            >
+              <FiPlus className="w-5 h-5" />
+              Create New User
+            </button> */}
           </div>
         </div>
 
