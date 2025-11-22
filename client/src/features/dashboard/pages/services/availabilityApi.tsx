@@ -1,4 +1,4 @@
-import { axiosInstance } from "../../../../api/axiosInstance";
+import { axiosInstance } from "../../../../services/axiosInstance";
 
 export const getAvailabilities = async () => {
   const res = await axiosInstance.get("/clinic/availabilities");
@@ -12,16 +12,19 @@ export const getUserAvailabilities = async (userId) => {
 
 export const createAvailability = async (data) => {
   console.log(data);
-  try{
+  try {
     const res = await axiosInstance.post("/clinic/create-availability", data);
     return res.data;
-  }catch(error){
+  } catch (error) {
     console.log(error);
   }
 };
 
 export const updateAvailability = async ({ id, data }) => {
-  const res = await axiosInstance.put(`/clinic/update-availability/${id}`, data);
+  const res = await axiosInstance.put(
+    `/clinic/update-availability/${id}`,
+    data,
+  );
   return res.data;
 };
 
@@ -29,4 +32,3 @@ export const deleteAvailability = async (id) => {
   const res = await axiosInstance.delete(`/clinic/delete-availability/${id}`);
   return res.data;
 };
-

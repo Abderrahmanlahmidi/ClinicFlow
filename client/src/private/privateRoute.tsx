@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { axiosInstance } from "../api/axiosInstance";
+import { axiosInstance } from "../services/axiosInstance";
 import LoadingPage from "../ui/loading/loadingPage";
 import { Navigate } from "react-router-dom";
-
 
 export default function PrivateRoute({ children, allowedRoles = [] }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -15,7 +14,6 @@ export default function PrivateRoute({ children, allowedRoles = [] }) {
 
         const userRole = localStorage.getItem("role");
 
-
         if (allowedRoles.length > 0) {
           if (!allowedRoles.includes(userRole)) {
             setIsAuthenticated(false);
@@ -23,10 +21,8 @@ export default function PrivateRoute({ children, allowedRoles = [] }) {
             setIsAuthenticated(true);
           }
         } else {
-
           setIsAuthenticated(true);
         }
-
       } catch (error) {
         console.log("PrivateRoute error:", error);
         setIsAuthenticated(false);

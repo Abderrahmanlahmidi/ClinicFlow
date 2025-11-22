@@ -19,7 +19,6 @@ export default function Hero() {
       {/* Content */}
       <div className="relative max-w-7xl mx-auto px-6 lg:px-10 py-28">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
           {/* Text Content */}
           <div>
             <div className="inline-flex items-center gap-2 bg-gray-800 border border-gray-700 px-4 py-2 rounded-full shadow-sm text-sm mb-6">
@@ -33,8 +32,8 @@ export default function Hero() {
             </h1>
 
             <p className="text-lg text-gray-300 max-w-xl mb-8">
-              Book appointments, track your wellness, and stay in control of your
-              medical life—all in one simple, secure, and elegant platform.
+              Book appointments, track your wellness, and stay in control of
+              your medical life—all in one simple, secure, and elegant platform.
             </p>
 
             {/* Features */}
@@ -87,7 +86,6 @@ export default function Hero() {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </section>

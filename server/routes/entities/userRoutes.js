@@ -29,7 +29,7 @@ router.get("/users", getUsers);
 router.patch("/update-profile/:id", upload.single("imageProfile"), updateProfile);
 router.put("/change-password/:id", isAuthenticated(),  changePassword);
 router.get("/user/:id", getUser);
-router.put("/change-user-role/:id", updateUserRole)
+router.put("/change-user-role/:id", updateUserRole);
 
 
 export default router;

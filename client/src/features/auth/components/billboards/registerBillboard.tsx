@@ -1,4 +1,4 @@
-import {FiHeart} from "react-icons/fi";
+import { FiHeart } from "react-icons/fi";
 import FeatureItem from "../featureItem";
 import { features } from "../../constants/featureItemConstants";
 

@@ -1,6 +1,6 @@
 // ui/modals/ConfirmationModal.jsx
-import { useEffect } from 'react';
-import { FiAlertTriangle, FiInfo, FiCheckCircle, FiX } from 'react-icons/fi';
+import { useEffect } from "react";
+import { FiAlertTriangle, FiInfo, FiCheckCircle, FiX } from "react-icons/fi";
 
 const ConfirmationModal = ({
   isOpen,
@@ -11,31 +11,31 @@ const ConfirmationModal = ({
   confirmText = "Confirm",
   cancelText = "Cancel",
   isLoading = false,
-  variant = "default", 
+  variant = "default",
   size = "md",
 }) => {
   // Handle ESC key press
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose]);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
 
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isOpen]);
 
@@ -76,15 +76,15 @@ const ConfirmationModal = ({
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div 
-          className={`relative w-full ${sizeClass} transform overflow-hidden rounded-xl bg-gray-800 shadow-xl transition-all`}
+        <div
+          className={`relative w-full ${sizeClass} transform overflow-hidden rounded-xl bg-gray-900 shadow-xl transition-all`}
         >
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-700">
@@ -92,9 +92,7 @@ const ConfirmationModal = ({
               <div className={`flex-shrink-0 ${iconColor}`}>
                 <Icon className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-semibold text-white">
-                {title}
-              </h3>
+              <h3 className="text-lg font-semibold text-white">{title}</h3>
             </div>
             <button
               onClick={onClose}
@@ -107,9 +105,7 @@ const ConfirmationModal = ({
 
           {/* Body */}
           <div className="p-6">
-            <p className="text-gray-300 whitespace-pre-wrap">
-              {message}
-            </p>
+            <p className="text-gray-300 whitespace-pre-wrap">{message}</p>
           </div>
 
           {/* Footer */}

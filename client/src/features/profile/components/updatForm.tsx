@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { FiUser, FiMail, FiPhone, FiSave, FiEdit } from "react-icons/fi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -8,7 +8,7 @@ import { useToast } from "../../../ui/toasts/toast";
 const ProfileUpdateForm = ({ userData }) => {
   const userId = localStorage.getItem("userId");
   const queryClient = useQueryClient();
-  const {toast} = useToast();
+  const { toast } = useToast();
 
   const {
     register,
@@ -29,12 +29,11 @@ const ProfileUpdateForm = ({ userData }) => {
     onSuccess: () => {
       queryClient.invalidateQueries(["user", userId]);
 
-      toast.success("Profile updated successfully!")
-
+      toast.success("Profile updated successfully!");
     },
     onError: (err) => {
       console.error("Error updating profile:", err);
-      toast.error("Error updating profile")
+      toast.error("Error updating profile");
     },
   });
 
@@ -49,9 +48,7 @@ const ProfileUpdateForm = ({ userData }) => {
   return (
     <div className="bg-gray-900 rounded-2xl shadow-sm border border-gray-700 p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-normal text-white">
-          Personal Information
-        </h3>
+        <h3 className="text-xl font-normal text-white">Personal Information</h3>
         <FiEdit className="w-5 h-5 text-gray-400" />
       </div>
 

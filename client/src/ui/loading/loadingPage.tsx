@@ -10,7 +10,6 @@ export default function LoadingPage() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-
         <motion.div
           className="text-gray-300 text-4xl"
           animate={{ rotate: 360 }}

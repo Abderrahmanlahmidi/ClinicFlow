@@ -70,9 +70,7 @@ export default function ProfilePage() {
     onError: (err) => {
       console.error("Error updating profile:", err);
 
-      toast.error(
-        err?.response?.data?.message || "Error updating profile!"
-      );
+      toast.error(err?.response?.data?.message || "Error updating profile!");
     },
   });
 
@@ -168,7 +166,7 @@ export default function ProfilePage() {
                 <div className="flex justify-between items-center">
                   <span className="text-gray-300">Member since</span>
                   <span className="text-white font-medium">{`${GetYear(
-                    userData.createdAt
+                    userData.createdAt,
                   )}`}</span>
                 </div>
                 <div className="flex justify-between items-center">

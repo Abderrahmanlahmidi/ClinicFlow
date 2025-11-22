@@ -1,24 +1,28 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FiHome, 
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FiHome,
   FiBarChart2,
   FiChevronLeft,
   FiMenu,
   FiUsers,
   FiShield,
-  FiClock
-} from 'react-icons/fi';
+  FiClock,
+  FiBriefcase,
+  FiCalendar,
+} from "react-icons/fi";
 
-const SidebarDashboard = ({isOpen, setIsOpen}) => {
+const SidebarDashboard = ({ isOpen, setIsOpen }) => {
   const location = useLocation();
 
   const menuItems = [
-    { icon: FiBarChart2, label: 'Analytics', path: '/dashboard' },
-    { icon: FiUsers, label: 'Users', path: '/dashboard/users' },
-    { icon: FiShield, label: 'Roles', path: '/dashboard/roles' },
-    { icon: FiClock, label: 'Availability', path: '/dashboard/availability' }
+    { icon: FiBarChart2, label: "Analytics", path: "/dashboard" },
+    { icon: FiUsers, label: "Users", path: "/dashboard/users" },
+    { icon: FiShield, label: "Roles", path: "/dashboard/roles" },
+    { icon: FiClock, label: "Availability", path: "/dashboard/availability" },
+    { icon: FiBriefcase, label: "Speciality", path: "/dashboard/speciality" },
+    { icon: FiCalendar, label: "Appointment", path: "/dashboard/appointment" },
   ];
 
   const sidebarVariants = {
@@ -27,30 +31,30 @@ const SidebarDashboard = ({isOpen, setIsOpen}) => {
       transition: {
         type: "spring",
         stiffness: 300,
-        damping: 30
-      }
+        damping: 30,
+      },
     },
     closed: {
       width: 80,
       transition: {
         type: "spring",
         stiffness: 300,
-        damping: 30
-      }
-    }
+        damping: 30,
+      },
+    },
   };
 
   const itemVariants = {
     open: {
       opacity: 1,
       x: 0,
-      transition: { type: "spring", stiffness: 300, damping: 30 }
+      transition: { type: "spring", stiffness: 300, damping: 30 },
     },
     closed: {
       opacity: 0,
       x: -20,
-      transition: { type: "spring", stiffness: 300, damping: 30 }
-    }
+      transition: { type: "spring", stiffness: 300, damping: 30 },
+    },
   };
 
   return (
@@ -85,7 +89,9 @@ const SidebarDashboard = ({isOpen, setIsOpen}) => {
                 exit={{ opacity: 0 }}
                 className="flex items-center gap-3"
               >
-                <span className="text-lg font-light text-white">ClinicFlow</span>
+                <span className="text-lg font-light text-white">
+                  ClinicFlow
+                </span>
               </motion.div>
             </AnimatePresence>
           ) : (
@@ -96,7 +102,11 @@ const SidebarDashboard = ({isOpen, setIsOpen}) => {
             onClick={() => setIsOpen(!isOpen)}
             className="p-2 rounded-lg text-gray-400"
           >
-            {isOpen ? <FiChevronLeft className="w-5 h-5" /> : <FiMenu className="w-5 h-5" />}
+            {isOpen ? (
+              <FiChevronLeft className="w-5 h-5" />
+            ) : (
+              <FiMenu className="w-5 h-5" />
+            )}
           </button>
         </div>
 
@@ -112,14 +122,18 @@ const SidebarDashboard = ({isOpen, setIsOpen}) => {
                 to={item.path}
                 className={`flex items-center px-4 py-3 rounded-lg group
                   ${isOpen ? "gap-3 justify-start" : "justify-center"}
-                  ${isActive 
-                    ? "bg-gray-800 text-white border border-gray-600" 
-                    : "text-gray-300 hover:bg-gray-800"}
+                  ${
+                    isActive
+                      ? "bg-gray-800 text-white border border-gray-600"
+                      : "text-gray-300 hover:bg-gray-800"
+                  }
                 `}
               >
                 <Icon
                   className={`w-5 h-5 flex-shrink-0 ${
-                    isActive ? "text-lime-400" : "text-gray-400 group-hover:text-gray-300"
+                    isActive
+                      ? "text-lime-400"
+                      : "text-gray-400 group-hover:text-gray-300"
                   }`}
                 />
 

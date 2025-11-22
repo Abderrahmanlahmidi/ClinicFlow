@@ -1,24 +1,29 @@
-import { useState } from 'react';
-import { FiPlus, FiEdit2, FiTrash2, FiShield, FiSearch } from 'react-icons/fi';
-import CreateRoleForm from '../../components/createRoleForm';
-import UpdateRoleForm from '../../components/updateRoleForm';
-import { HandleSearch } from '../../../../../constants/useSearch';
-import { useHandleForm } from '../../../../../constants/handelsConstants';
-import { getRoles, createRole, updateRole, deleteRole } from '../../apis/rolesApi';
-import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
-import { useToast } from '../../../../../ui/toasts/toast';
-import ConfirmationModal from './../../components/confirmationModal';
+import { useState } from "react";
+import { FiPlus, FiEdit2, FiTrash2, FiShield, FiSearch } from "react-icons/fi";
+import CreateRoleForm from "../../components/forms/role/CreateRoleForm.tsx";
+import UpdateRoleForm from "../../components/forms/role/UpdateRoleForm.tsx";
+import { HandleSearch } from "../../../../../constants/useSearch";
+import { useHandleForm } from "../../../../../constants/handelsConstants";
+import {
+  getRoles,
+  createRole,
+  updateRole,
+  deleteRole,
+} from "../../services/rolesApi";
+import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
+import { useToast } from "../../../../../ui/toasts/toast";
+import ConfirmationModal from "../../components/others/ConfirmationModal.tsx";
 
 const RolesPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [roleToDelete, setRoleToDelete] = useState(null);
-  
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const {
-    selectedItem: selectedRole,
+    selectedUser: selectedRole,
     showCreateForm,
     showUpdateForm,
     handleCreateClick,
@@ -26,7 +31,7 @@ const RolesPage = () => {
     handleCloseForms,
     setShowCreateForm,
     setShowUpdateForm,
-    setSelectedItem: setSelectedRole,
+    setSelectedUser: setSelectedRole,
   } = useHandleForm();
 
   // Get roles data
@@ -87,7 +92,7 @@ const RolesPage = () => {
     if (selectedRole) {
       updateRoleMutation.mutate({
         id: selectedRole.id,
-        data: roleData
+        data: roleData,
       });
     }
   };
@@ -125,9 +130,7 @@ const RolesPage = () => {
             <h1 className="text-3xl font-light text-white mb-2">
               Roles Management
             </h1>
-            <p className="text-gray-300">
-              Manage system roles and permissions
-            </p>
+            <p className="text-gray-300">Manage system roles and permissions</p>
           </div>
           <button
             onClick={handleCreateClick}
@@ -221,10 +224,7 @@ const RolesPage = () => {
                     ))
                   ) : (
                     <tr>
-                      <td
-                        colSpan="3"
-                        className="py-12 px-6 text-center"
-                      >
+                      <td colSpan="3" className="py-12 px-6 text-center">
                         <FiShield className="w-16 h-16 mx-auto mb-4 text-gray-500" />
                         <p className="text-lg font-medium text-gray-400 mb-2">
                           No roles found

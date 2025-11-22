@@ -11,7 +11,7 @@ import { loginUser } from "../../apis/authLogin";
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const [alert, setAlert] = useState({ show: false, message: '', type: '' });
+  const [alert, setAlert] = useState({ show: false, message: "", type: "" });
 
   const {
     register,
@@ -27,17 +27,16 @@ const LoginForm = () => {
   const { mutate: login, isPending } = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("role", data.user.role);
       localStorage.setItem("userId", data.user.id);
 
       reset();
-      
+
       setAlert({
         show: true,
         message: data?.message || "Login successful!",
-        type: 'success'
+        type: "success",
       });
 
       setTimeout(() => {
@@ -46,12 +45,13 @@ const LoginForm = () => {
     },
     onError: (error) => {
       console.log(error);
-      const errorMessage = error?.response?.data?.message || "Invalid credentials";
-      
+      const errorMessage =
+        error?.response?.data?.message || "Invalid credentials";
+
       setAlert({
         show: true,
         message: errorMessage,
-        type: 'error'
+        type: "error",
       });
     },
   });
@@ -61,7 +61,7 @@ const LoginForm = () => {
   };
 
   const handleCloseAlert = () => {
-    setAlert({ show: false, message: '', type: '' });
+    setAlert({ show: false, message: "", type: "" });
   };
 
   return (
@@ -132,10 +132,7 @@ const LoginForm = () => {
 
       {/* Forgot Password */}
       <div className="text-right">
-        <Link
-          to={"/forgot-password"}
-          className="text-sm text-gray-400"
-        >
+        <Link to={"/forgot-password"} className="text-sm text-gray-400">
           Forgot Password?
         </Link>
       </div>
