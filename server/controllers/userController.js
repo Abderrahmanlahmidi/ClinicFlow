@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import Role from "../models/Role.js";
 import bcrypt from "bcrypt";
+import Speciality from "../models/Speciality.js";
 
 export const getUsers = async (req, res) => {
   try {
@@ -147,3 +148,44 @@ export const updateUserRole = async (req, res) => {
     }
 };
 
+
+export const updateUserSpeciality = async (req, res) => {
+    const { id } = req.params;
+    const { specialityId } = req.body;
+
+    try {
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+
+        if (specialityId === '') {
+            user.specialityId = undefined;
+        } else {
+
+            const speciality = await Speciality.findById(specialityId);
+            if (!speciality) {
+                return res.status(404).json({ message: "Speciality not found" });
+            }
+            user.specialityId = specialityId;
+        }
+
+        await user.save();
+
+        const updatedUser = await User.findById(id).populate('roleId').populate('specialityId');
+
+        return res.status(200).json({
+            success: true,
+            message: "User speciality updated successfully",
+            user: updatedUser
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Failed to update user speciality",
+            error: error.message
+        });
+    }
+};

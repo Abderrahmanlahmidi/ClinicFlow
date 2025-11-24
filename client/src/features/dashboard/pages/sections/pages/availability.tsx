@@ -18,6 +18,7 @@ import {
   updateAvailability,
   deleteAvailability,
 } from "../../services/availabilityApi";
+import { getUsers } from "../../services/usersApi.tsx";
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "../../../../../ui/toasts/toast";
 import ConfirmationModal from "../../components/others/ConfirmationModal.tsx";
@@ -26,7 +27,7 @@ const Availability = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [availabilityToDelete, setAvailabilityToDelete] = useState(null);
-  const [availabilityUsers, setAvailabilityUsers] = useState([]);
+  const [doctors, setDoctors] = useState([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -48,6 +49,12 @@ const Availability = () => {
       queryFn: getAvailabilities,
     },
   );
+
+  // Get all users and filter doctors
+  const { data: usersData } = useQuery({
+    queryKey: ["users"],
+    queryFn: getUsers,
+  });
 
   // Search hook
   const filteredData = HandleSearch(availabilities?.availabilities, searchTerm);
@@ -139,21 +146,20 @@ const Availability = () => {
   };
 
   useEffect(() => {
-    if (!availabilities || availabilities.length === 0) return;
+    if (!usersData?.users) return;
 
-    const getUsersFromAvailabilities = () => {
-      const users = availabilities.availabilities.map((item) => item.userId);
-
-      const uniqueUsers = users.filter(
-        (user, index, self) =>
-          index === self.findIndex((u) => u._id === user._id),
+    const filterDoctors = () => {
+      const doctorsList = usersData.users.filter(user => 
+        user.roleId?.name?.toLowerCase() === 'doctor'
       );
-
-      setAvailabilityUsers(uniqueUsers);
+      
+      console.log("Filtered Doctors:", doctorsList);
+      setDoctors(doctorsList);
     };
 
-    getUsersFromAvailabilities();
-  }, [availabilities]);
+    filterDoctors();
+  }, [usersData]);
+
 
   return (
     <div className="min-h-screen bg-gray-900 p-6 overflow-hidden">
@@ -162,10 +168,11 @@ const Availability = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
           <div className="flex-1">
             <h1 className="text-3xl font-light text-white mb-2 flex items-center gap-3">
+              <FiCalendar className="w-8 h-8 text-lime-400" />
               Availability Management
             </h1>
             <p className="text-gray-300">
-              Manage user schedules and daily capacities
+              Manage doctor schedules and daily capacities
             </p>
           </div>
           
@@ -175,7 +182,7 @@ const Availability = () => {
               <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search by user name, day of week..."
+                placeholder="Search by doctor name, day of week..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-900 text-white placeholder-gray-400"
@@ -202,7 +209,7 @@ const Availability = () => {
               <thead>
                 <tr className="border-b border-gray-700">
                   <th className="text-left py-4 px-6 text-sm font-medium text-gray-300">
-                    User
+                    Doctor
                   </th>
                   <th className="text-left py-4 px-6 text-sm font-medium text-gray-300">
                     Day
@@ -259,6 +266,11 @@ const Availability = () => {
                               <div className="text-sm text-gray-400">
                                 {availability.userId?.email || "No email"}
                               </div>
+                              {availability.userId?.specialityId && (
+                                <div className="text-xs text-lime-400">
+                                  {availability.userId.specialityId.name}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </td>
@@ -337,7 +349,7 @@ const Availability = () => {
             onClose={handleCloseForms}
             onSubmit={handleCreateAvailability}
             isLoading={createAvailabilityMutation.isLoading}
-            users={availabilityUsers}
+            users={doctors}
             availabilities={availabilities?.availabilities || []}
           />
         )}
@@ -348,7 +360,7 @@ const Availability = () => {
             onSubmit={handleUpdateAvailability}
             isLoading={updateAvailabilityMutation.isLoading}
             availability={selectedAvailability}
-            users={availabilityUsers}
+            users={doctors}
           />
         )}
 
@@ -358,7 +370,7 @@ const Availability = () => {
           onClose={handleCancelDelete}
           onConfirm={handleConfirmDelete}
           title="Delete Availability"
-          message={`Are you sure you want to delete the availability `}
+          message={`Are you sure you want to delete the availability for ${availabilityToDelete ? getUserName(availabilityToDelete) : 'this doctor'} on ${availabilityToDelete ? formatDayOfWeek(availabilityToDelete.dayOfWeek) : 'this day'}?`}
           confirmText="Delete"
           cancelText="Cancel"
           isLoading={deleteAvailabilityMutation.isLoading}
