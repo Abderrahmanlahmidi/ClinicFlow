@@ -8,14 +8,12 @@ import User from '../models/User.js';
 export const createAppointment = async (req, res) => {
     const { doctorId, patientId, date } = req.body;
 
-    // Validate required fields
     if (!doctorId || !patientId || !date) {
         return res.status(400).json({
             message: "Please provide all required fields: doctorId, patientId, and date."
         });
     }
 
-    // Validate MongoDB IDs
     if (!mongoose.Types.ObjectId.isValid(doctorId) || !mongoose.Types.ObjectId.isValid(patientId)) {
         return res.status(400).json({
             message: "Invalid doctorId or patientId format."
@@ -27,7 +25,7 @@ export const createAppointment = async (req, res) => {
         const patientObjectId = new mongoose.Types.ObjectId(patientId);
         const selectedDate = new Date(date);
 
-        // Validate date format
+
         if (isNaN(selectedDate.getTime())) {
             return res.status(400).json({
                 message: "Invalid date format."
@@ -45,18 +43,15 @@ export const createAppointment = async (req, res) => {
             });
         }
 
-        // Set time range for the selected day
         const startOfDay = new Date(selectedDate);
         startOfDay.setHours(0, 0, 0, 0);
         const endOfDay = new Date(selectedDate);
         endOfDay.setHours(23, 59, 59, 999);
 
-        // Get day of week
         const dayOfWeek = selectedDate.toLocaleDateString("en-US", {
             weekday: "long",
         });
 
-        // Check doctor availability
         const availability = await Availability.findOne({
             userId: doctorObjectId,
             dayOfWeek,
@@ -68,7 +63,6 @@ export const createAppointment = async (req, res) => {
             });
         }
 
-        // Check if doctor is active
         const doctor = await User.findById(doctorObjectId);
         if (!doctor || doctor.status !== "active") {
             return res.status(400).json({
@@ -76,7 +70,6 @@ export const createAppointment = async (req, res) => {
             });
         }
 
-        // Check if patient is active
         const patient = await User.findById(patientObjectId);
         if (!patient || patient.status !== "active") {
             return res.status(400).json({
@@ -84,12 +77,12 @@ export const createAppointment = async (req, res) => {
             });
         }
 
-        // Check for existing appointment for same patient with same doctor on same day
+
         const hasExistingAppointment = await Appointment.findOne({
             patientId: patientObjectId,
             doctorId: doctorObjectId,
             date: { $gte: startOfDay, $lte: endOfDay },
-            status: { $ne: "cancelled" } // Don't count cancelled appointments
+            status: { $ne: "cancelled" }
         });
 
         if (hasExistingAppointment) {
@@ -98,24 +91,24 @@ export const createAppointment = async (req, res) => {
             });
         }
 
-        // Count ACTIVE appointments for the day (excluding cancelled ones)
+
         const activeAppointmentsCount = await Appointment.countDocuments({
             doctorId: doctorObjectId,
             date: { $gte: startOfDay, $lte: endOfDay },
-            status: { $nin: ["cancelled"] } // Exclude cancelled appointments from count
+            status: { $nin: ["cancelled"] }
         });
 
-        // Check daily capacity
+
         if (activeAppointmentsCount >= availability.dailyCapacity) {
             return res.status(409).json({
                 message: "No more appointments available for this day. Doctor has reached daily capacity."
             });
         }
 
-        // Calculate queue number - only count non-cancelled appointments
+
         const queueNumber = activeAppointmentsCount + 1;
 
-        // Create new appointment
+
         const newAppointment = await Appointment.create({
             date: selectedDate,
             patientId: patientObjectId,
@@ -124,7 +117,7 @@ export const createAppointment = async (req, res) => {
             queueNumber: queueNumber,
         });
 
-        // Populate the created appointment for response
+
         const populatedAppointment = await Appointment.findById(newAppointment._id)
             .populate("patientId", "firstName lastName imageProfile numberPhone")
             .populate({
@@ -136,7 +129,7 @@ export const createAppointment = async (req, res) => {
                 }
             });
 
-        // Create notification for patient
+
         const notification = await Notification.create({
             type: "info",
             read: false,
@@ -145,7 +138,7 @@ export const createAppointment = async (req, res) => {
             userId: patientObjectId,
         });
 
-        // Emit real-time notification if socket is available
+
         if (req.io) {
             req.io.to(patientId).emit("newNotification", notification);
         }

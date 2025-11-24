@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { FiMenu, FiX, FiLogIn } from "react-icons/fi";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FiMenu, FiX, FiLogIn, FiCalendar, FiHome, FiInfo, FiSettings } from "react-icons/fi";
 import DropdownProfile from "../components/dropDown";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const checkUserAuth = localStorage.getItem("userId");
   const [isAuthenticated, setIsAuthenticated] = useState(
     !!localStorage.getItem("userId"),
@@ -22,18 +23,58 @@ export default function Navbar() {
 
   console.log(checkUserAuth);
 
-  const navLinks = [
-    { to: "/", label: "Home" },
-    { to: "/about", label: "About" },
-    { to: "/services", label: "Services" },
-    { to: "/appointments", label: "Appointments" },
+  const navItems = [
+    { href: "#home", label: "Home", icon: FiHome },
+    { href: "#about", label: "About", icon: FiInfo },
+    { href: "#services", label: "Services", icon: FiSettings },
   ];
+
+  const handleAnchorClick = (href) => {
+    // Remove the # from href to get the section id
+    const sectionId = href.replace('#', '');
+    const element = document.getElementById(sectionId);
+    
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+    setIsOpen(false);
+  };
+
+  const handleAppointmentsClick = () => {
+    if (isAuthenticated) {
+      navigate("/appointments");
+    } else {
+      navigate("/login");
+    }
+    setIsOpen(false);
+  };
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    setIsOpen(false);
+  };
+
+  // Check if current section is active based on scroll position
+  const isSectionActive = (href) => {
+    if (location.pathname !== '/') return false;
+    
+    const sectionId = href.replace('#', '');
+    const element = document.getElementById(sectionId);
+    
+    if (!element) return false;
+    
+    const rect = element.getBoundingClientRect();
+    return rect.top <= 100 && rect.bottom >= 100;
+  };
 
   return (
     <nav className="bg-gray-900 border-b border-gray-700 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
+          {/* Logo - Still a Link to home page */}
           <Link
             to="/"
             className="text-2xl font-light text-white hover:text-gray-300 transition-colors duration-200"
@@ -42,39 +83,56 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => {
-              const isActive = location.pathname === link.to;
+          <div className="hidden md:flex items-center space-x-4">
+            {navItems.map((item) => {
+              const isActive = isSectionActive(item.href);
+              const IconComponent = item.icon;
 
               return (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className={`text-sm font-normal transition-colors duration-200 ${
-                    isActive ? "text-white" : "text-gray-300 hover:text-white"
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleAnchorClick(item.href);
+                  }}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-200 text-sm font-normal cursor-pointer ${
+                    isActive
+                      ? "text-white bg-gray-800"
+                      : "text-gray-300 hover:text-white hover:bg-gray-800"
                   }`}
                 >
-                  {link.label}
-                </Link>
+                  <IconComponent className="w-4 h-4" />
+                  {item.label}
+                </a>
               );
             })}
+
+            {/* Appointments Button */}
+            <button
+              onClick={handleAppointmentsClick}
+              className="flex items-center gap-2 bg-lime-400 text-gray-900 px-4 py-2 rounded-lg hover:bg-lime-300 transition-colors duration-200 text-sm font-medium"
+            >
+              <FiCalendar className="w-4 h-4" />
+              Book Appointment
+            </button>
 
             {/* Auth Buttons */}
             {!isAuthenticated ? (
               <div className="flex items-center space-x-4">
-                <Link
-                  to="/login"
+                <button
+                  onClick={() => handleNavigation("/login")}
                   className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors duration-200 text-sm font-normal"
                 >
                   <FiLogIn className="w-4 h-4" />
                   Login
-                </Link>
-                <Link
-                  to="/register"
+                </button>
+                <button
+                  onClick={() => handleNavigation("/register")}
                   className="bg-lime-400 text-gray-900 px-4 py-2 rounded-lg hover:bg-lime-300 transition-colors duration-200 text-sm font-normal font-medium"
                 >
                   Create Account
-                </Link>
+                </button>
               </div>
             ) : (
               <>
@@ -110,44 +168,56 @@ export default function Navbar() {
             isOpen ? "max-h-screen opacity-100 py-4" : "max-h-0 opacity-0 py-0"
           }`}
         >
-          <div className="flex flex-col space-y-4 border-t border-gray-700 pt-4">
-            {navLinks.map((link) => {
-              const isActive = location.pathname === link.to;
+          <div className="flex flex-col space-y-3 border-t border-gray-700 pt-4">
+            {navItems.map((item) => {
+              const isActive = isSectionActive(item.href);
+              const IconComponent = item.icon;
 
               return (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  onClick={() => setIsOpen(false)}
-                  className={`text-base font-normal transition-colors duration-200 p-2 rounded-lg ${
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleAnchorClick(item.href);
+                  }}
+                  className={`flex items-center gap-3 text-left p-3 rounded-lg transition-colors duration-200 text-base font-normal cursor-pointer ${
                     isActive
                       ? "text-white bg-gray-800"
                       : "text-gray-300 hover:text-white hover:bg-gray-800"
                   }`}
                 >
-                  {link.label}
-                </Link>
+                  <IconComponent className="w-5 h-5" />
+                  {item.label}
+                </a>
               );
             })}
+
+            {/* Mobile Appointments Button */}
+            <button
+              onClick={handleAppointmentsClick}
+              className="flex items-center gap-3 bg-lime-400 text-gray-900 p-3 rounded-lg hover:bg-lime-300 transition-colors duration-200 text-base font-medium"
+            >
+              <FiCalendar className="w-5 h-5" />
+              Book Appointment
+            </button>
 
             {/* Mobile Auth Buttons */}
             {!isAuthenticated && (
               <div className="flex flex-col space-y-3 pt-2">
-                <Link
-                  to="/login"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-center gap-2 text-gray-300 hover:text-white py-2 transition-colors duration-200 text-base font-normal"
+                <button
+                  onClick={() => handleNavigation("/login")}
+                  className="flex items-center gap-3 text-gray-300 hover:text-white p-3 transition-colors duration-200 text-base font-normal rounded-lg hover:bg-gray-800"
                 >
-                  <FiLogIn className="w-4 h-4" />
+                  <FiLogIn className="w-5 h-5" />
                   Login
-                </Link>
-                <Link
-                  to="/register"
-                  onClick={() => setIsOpen(false)}
-                  className="bg-lime-400 text-gray-900 text-center py-3 rounded-lg hover:bg-lime-300 transition-colors duration-200 text-base font-normal font-medium"
+                </button>
+                <button
+                  onClick={() => handleNavigation("/register")}
+                  className="bg-lime-400 text-gray-900 text-center p-3 rounded-lg hover:bg-lime-300 transition-colors duration-200 text-base font-medium"
                 >
                   Create Account
-                </Link>
+                </button>
               </div>
             )}
           </div>

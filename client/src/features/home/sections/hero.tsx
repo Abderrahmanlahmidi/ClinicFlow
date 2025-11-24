@@ -7,6 +7,7 @@ import clinicImage from "../../../assets/images/cilinic.jpg";
 export default function Hero() {
   return (
     <section
+      id="home"
       className="relative bg-cover bg-center bg-no-repeat"
       style={{
         backgroundImage: `url(${clinicImage})`,

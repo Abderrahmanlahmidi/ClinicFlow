@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FiPlus, FiEdit2, FiTrash2, FiUser, FiSearch } from "react-icons/fi";
 import CreateUserForm from "../../components/forms/user/CreateUserForm.tsx";
 import UpdateUserForm from "../../components/forms/user/UpdateUserForm.tsx";
@@ -6,7 +6,8 @@ import RoleBadge from "../../components/others/RoleBadge.tsx";
 import { HandleSearch } from "../../../../../constants/useSearch";
 import { useHandleForm } from "../../../../../constants/handelsConstants";
 import { getRoles } from "../../services/rolesApi";
-import { getUsers, updateUserRole } from "../../services/usersApi";
+import { getUsers, updateUserRole, updateUserSpeciality } from "../../services/usersApi";
+import { getSpecialities } from "../../services/specialityApi.tsx";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useToast } from "../../../../../ui/toasts/toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -28,13 +29,25 @@ const UsersPage = () => {
     setSelectedUser,
   } = useHandleForm();
 
-  // get data
+
   const { data, error, isError, isLoading } = useQuery({
     queryKey: ["users"],
     queryFn: getUsers,
   });
 
-  // search hook
+
+  const { data: roles } = useQuery({
+    queryKey: ["roles"],
+    queryFn: getRoles,
+  });
+
+
+  const { data: specialities } = useQuery({
+    queryKey: ["specialities"],
+    queryFn: getSpecialities,
+  });
+
+
   const filteredData = HandleSearch(data?.users, searchTerm);
 
   const handleCreateUser = async (userData) => {
@@ -52,16 +65,11 @@ const UsersPage = () => {
     console.log("delete user:", userId);
   };
 
-  // handle roles
-  const { data: roles } = useQuery({
-    queryKey: ["roles"],
-    queryFn: getRoles,
-  });
-
+  // Change user role mutation
   const changeUserRoleMutation = useMutation({
     mutationFn: updateUserRole,
     onSuccess: () => {
-      toast.success("change role successfully");
+      toast.success("User role updated successfully");
       queryClient.invalidateQueries(["users"]);
     },
     onError: (error) => {
@@ -71,14 +79,37 @@ const UsersPage = () => {
     },
   });
 
-  const handleChangeRole = (roleId, userId) => {
-    console.log("role id:", roleId);
-    console.log("user id:", userId);
+  // Change user speciality mutation
+  const changeUserSpecialityMutation = useMutation({
+    mutationFn: updateUserSpeciality,
+    onSuccess: () => {
+      toast.success("User speciality updated successfully");
+      queryClient.invalidateQueries(["users"]);
+    },
+    onError: (error) => {
+      toast.error(
+        error.response?.data?.message || "Failed to update user speciality",
+      );
+    },
+  });
 
+  const handleChangeRole = (roleId, userId) => {
     changeUserRoleMutation.mutate({
       id: userId,
       roleId: roleId,
     });
+  };
+
+  const handleChangeSpeciality = (specialityId, userId) => {
+    console.log("check mutation user id:", userId);
+    changeUserSpecialityMutation.mutate({
+      userId: userId,
+      specialityId: specialityId,
+    });
+  };
+
+  const isDoctor = (user) => {
+    return user.roleId?.name?.toLowerCase() === 'doctor';
   };
 
   return (
@@ -139,6 +170,9 @@ const UsersPage = () => {
                   <th className="text-left py-4 px-6 text-sm font-medium text-gray-300">
                     Change Role
                   </th>
+                  <th className="text-left py-4 px-6 text-sm font-medium text-gray-300">
+                    Speciality
+                  </th>
                   {/* <th className="text-left py-4 px-6 text-sm font-medium text-gray-300">
                     Actions
                   </th> */}
@@ -190,7 +224,8 @@ const UsersPage = () => {
                               handleChangeRole(e.target.value, user?._id);
                             }}
                             value={user?.roleId?._id}
-                            className="bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-lime-400 focus:border-transparent"
+                            disabled={changeUserRoleMutation.isLoading}
+                            className="bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-lime-400 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             {roles?.roles?.map((role) => {
                               return (
@@ -200,6 +235,31 @@ const UsersPage = () => {
                               );
                             })}
                           </select>
+                        </td>
+
+                        {/* Speciality Select - Only show for doctors */}
+                        <td className="py-4 px-6">
+                          {isDoctor(user) ? (
+                            <select
+                              onChange={(e) => {
+                                handleChangeSpeciality(e.target.value, user?._id);
+                              }}
+                              value={user?.specialityId || ''}
+                              disabled={changeUserSpecialityMutation.isLoading}
+                              className="bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-lime-400 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <option value="">Select Speciality</option>
+                              {specialities?.specialities?.map((speciality) => {
+                                return (
+                                  <option key={speciality._id} value={speciality._id}>
+                                    {speciality.name}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          ) : (
+                            <span className="text-gray-500 text-sm">Not applicable</span>
+                          )}
                         </td>
 
                         {/* <td className="py-4 px-6">
@@ -224,7 +284,7 @@ const UsersPage = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="6" className="py-12 px-6 text-center">
+                      <td colSpan="7" className="py-12 px-6 text-center">
                         <FiUser className="w-16 h-16 mx-auto mb-4 text-gray-500" />
                         <p className="text-lg font-medium text-gray-400 mb-2">
                           No users found

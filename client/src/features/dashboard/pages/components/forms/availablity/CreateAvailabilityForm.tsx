@@ -40,13 +40,13 @@ const CreateAvailabilityForm = ({
     const existingAvailability = availabilities?.find(
       (avail) =>
         avail.userId?._id === formData.userId &&
-        avail.dayOfWeek?.toLowerCase() === formData.dayOfWeek.toLowerCase(),
+        avail.dayOfWeek?.toLowerCase() === formData.dayOfWeek.toLowerCase()
     );
 
     if (existingAvailability) {
       const userName = `${existingAvailability.userId?.firstName} ${existingAvailability.userId?.lastName}`;
       setDuplicateError(
-        `${userName} already has availability set for ${formData.dayOfWeek}. Please update the existing availability instead.`,
+        `${userName} already has availability set for ${formData.dayOfWeek}. Please update the existing availability instead.`
       );
     } else {
       setDuplicateError("");
@@ -120,9 +120,12 @@ const CreateAvailabilityForm = ({
 
   const isFormDisabled = duplicateError || isLoading;
 
+
+  console.log( "doctors forms create",  users)
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-gray-800 rounded-xl max-w-md w-full p-6 border border-gray-700">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-gray-900 rounded-xl max-w-md w-full p-6 border border-gray-700">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-white flex items-center gap-2">
@@ -158,7 +161,7 @@ const CreateAvailabilityForm = ({
               name="userId"
               value={formData.userId}
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-700 text-white ${
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-900 text-white ${
                 errors.userId ? "border-red-500" : "border-gray-600"
               } ${duplicateError ? "border-yellow-500" : ""}`}
             >
@@ -183,7 +186,7 @@ const CreateAvailabilityForm = ({
               name="dayOfWeek"
               value={formData.dayOfWeek}
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-700 text-white ${
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-900 text-white ${
                 errors.dayOfWeek ? "border-red-500" : "border-gray-600"
               } ${duplicateError ? "border-yellow-500" : ""}`}
             >
@@ -210,7 +213,7 @@ const CreateAvailabilityForm = ({
                 name="startTime"
                 value={formData.startTime}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-700 text-white ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-900 text-white ${
                   errors.startTime ? "border-red-500" : "border-gray-600"
                 }`}
               >
@@ -234,7 +237,7 @@ const CreateAvailabilityForm = ({
                 name="endTime"
                 value={formData.endTime}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-700 text-white ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-900 text-white ${
                   errors.endTime ? "border-red-500" : "border-gray-600"
                 }`}
               >
@@ -265,7 +268,7 @@ const CreateAvailabilityForm = ({
               min="1"
               max="100"
               placeholder="Enter daily capacity"
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-700 text-white ${
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-900 text-white ${
                 errors.dailyCapacity ? "border-red-500" : "border-gray-600"
               }`}
             />
@@ -282,7 +285,7 @@ const CreateAvailabilityForm = ({
               type="button"
               onClick={onClose}
               disabled={isLoading}
-              className="flex-1 px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>

@@ -65,14 +65,16 @@ const LoginForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-0">
       {/* Alert Component */}
       {alert.show && (
-        <FormAlert
-          type={alert.type}
-          message={alert.message}
-          onClose={handleCloseAlert}
-        />
+        <div className="pb-2">
+          <FormAlert
+            type={alert.type}
+            message={alert.message}
+            onClose={handleCloseAlert}
+          />
+        </div>
       )}
 
       {/* Email */}
@@ -89,7 +91,7 @@ const LoginForm = () => {
             })}
             type="email"
             placeholder="Email Address"
-            className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-800 text-white placeholder-gray-400 text-sm"
+            className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-900 text-white placeholder-gray-400 text-sm"
           />
         </div>
         <div className="min-h-[18px]">
@@ -107,12 +109,12 @@ const LoginForm = () => {
             {...register("password", { required: "Password is required" })}
             type={showPassword ? "text" : "password"}
             placeholder="Password"
-            className="w-full pl-10 pr-10 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-800 text-white placeholder-gray-400 text-sm"
+            className="w-full pl-10 pr-10 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-900 text-white placeholder-gray-400 text-sm"
           />
           <button
             type="button"
             onClick={togglePasswordVisibility}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300"
           >
             {showPassword ? (
               <FiEyeOff className="text-sm" />
@@ -131,27 +133,32 @@ const LoginForm = () => {
       </div>
 
       {/* Forgot Password */}
-      <div className="text-right">
-        <Link to={"/forgot-password"} className="text-sm text-gray-400">
+      <div className="text-right pt-2">
+        <Link 
+          to={"/forgot-password"} 
+          className="text-sm text-gray-400 hover:text-gray-300 transition-colors"
+        >
           Forgot Password?
         </Link>
       </div>
 
       {/* Login Button */}
-      <button
-        type="submit"
-        disabled={isPending}
-        className="w-full bg-lime-400 text-gray-900 py-3 rounded-lg font-medium text-sm flex items-center justify-center gap-2"
-      >
-        {isPending ? (
-          <>
-            <Spinner />
-            Logging in...
-          </>
-        ) : (
-          "Login"
-        )}
-      </button>
+      <div className="pt-4">
+        <button
+          type="submit"
+          disabled={isPending}
+          className="w-full bg-lime-400 text-gray-900 py-3 rounded-lg font-medium text-sm flex items-center justify-center gap-2 hover:bg-lime-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isPending ? (
+            <>
+              <Spinner />
+              Logging in...
+            </>
+          ) : (
+            "Login"
+          )}
+        </button>
+      </div>
     </form>
   );
 };

@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { registerUser } from "../../authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import FormAlert from "../../../../ui/alerts/formAlert";
 import {
   FiUser,
   FiMail,
@@ -16,9 +17,10 @@ import Spinner from "../../../../ui/loading/loadingButton";
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [alert, setAlert] = useState({ show: false, message: "", type: "" });
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isLoading, error, successMessage } = useSelector(
+  const { isLoading, error } = useSelector(
     (state) => state.auth,
   );
 
@@ -34,49 +36,81 @@ export default function RegisterForm() {
 
   const onSubmit = (data) => {
     console.log("Registration Data:", data);
-    dispatch(registerUser(data)).then(() => {
-      reset();
-      navigate("/login");
-    });
+    dispatch(registerUser(data))
+      .unwrap()
+      .then((response) => {
+
+        setAlert({
+          show: true,
+          message: response?.message || "Registration successful!",
+          type: "success",
+        });
+        
+        reset();
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      })
+      .catch((error) => {
+        // Show error alert
+        setAlert({
+          show: true,
+          message: error?.message || "Registration failed. Please try again.",
+          type: "error",
+        });
+      });
   };
 
-  if (error) {
-    console.log(error);
-  }
+  const handleCloseAlert = () => {
+    setAlert({ show: false, message: "", type: "" });
+  };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {/* Full Name */}
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-0">
+      {/* Alert Component */}
+      {alert.show && (
+        <div className="pb-2">
+          <FormAlert
+            type={alert.type}
+            message={alert.message}
+            onClose={handleCloseAlert}
+          />
+        </div>
+      )}
+
+      {/* First Name */}
       <div className="flex flex-col">
         <div className="relative">
           <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
           <input
-            {...register("firstName", { required: "first name is required" })}
+            {...register("firstName", { required: "First name is required" })}
             type="text"
             placeholder="First Name"
-            className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-800 text-white placeholder-gray-400 text-sm"
+            className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-900 text-white placeholder-gray-400 text-sm"
           />
         </div>
         <div className="min-h-[18px]">
-          {errors.fullName && (
+          {errors.firstName && (
             <p className="text-red-400 text-xs mt-1">
               {errors.firstName.message}
             </p>
           )}
         </div>
       </div>
+
+      {/* Last Name */}
       <div className="flex flex-col">
         <div className="relative">
           <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
           <input
-            {...register("lastName", { required: "last name is required" })}
+            {...register("lastName", { required: "Last name is required" })}
             type="text"
             placeholder="Last Name"
-            className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-800 text-white placeholder-gray-400 text-sm"
+            className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-900 text-white placeholder-gray-400 text-sm"
           />
         </div>
         <div className="min-h-[18px]">
-          {errors.fullName && (
+          {errors.lastName && (
             <p className="text-red-400 text-xs mt-1">
               {errors.lastName.message}
             </p>
@@ -98,7 +132,7 @@ export default function RegisterForm() {
             })}
             type="email"
             placeholder="Email Address"
-            className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-800 text-white placeholder-gray-400 text-sm"
+            className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-900 text-white placeholder-gray-400 text-sm"
           />
         </div>
         <div className="min-h-[18px]">
@@ -122,12 +156,12 @@ export default function RegisterForm() {
             })}
             type={showPassword ? "text" : "password"}
             placeholder="Password"
-            className="w-full pl-10 pr-10 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-800 text-white placeholder-gray-400 text-sm"
+            className="w-full pl-10 pr-10 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-900 text-white placeholder-gray-400 text-sm"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300"
           >
             {showPassword ? (
               <FiEyeOff className="text-sm" />
@@ -157,12 +191,12 @@ export default function RegisterForm() {
             })}
             type={showConfirmPassword ? "text" : "password"}
             placeholder="Confirm Password"
-            className="w-full pl-10 pr-10 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-800 text-white placeholder-gray-400 text-sm"
+            className="w-full pl-10 pr-10 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-900 text-white placeholder-gray-400 text-sm"
           />
           <button
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300"
           >
             {showConfirmPassword ? (
               <FiEyeOff className="text-sm" />
@@ -194,36 +228,35 @@ export default function RegisterForm() {
             })}
             type="tel"
             placeholder="Phone Number"
-            className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-800 text-white placeholder-gray-400 text-sm"
+            className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-900 text-white placeholder-gray-400 text-sm"
           />
         </div>
         <div className="min-h-[18px]">
-          {errors.phone && (
-            <p className="text-red-400 text-xs mt-1">{errors.phone.message}</p>
+          {errors.numberPhone && (
+            <p className="text-red-400 text-xs mt-1">
+              {errors.numberPhone.message}
+            </p>
           )}
         </div>
       </div>
 
-      {successMessage && (
-        <p className="text-green-400 text-sm font-medium text-center">
-          {successMessage}
-        </p>
-      )}
-
       {/* Register Button */}
-      <button
-        type="submit"
-        className="w-full bg-lime-400 text-gray-900 py-3 rounded-lg font-medium text-sm flex items-center justify-center gap-2"
-      >
-        {isLoading ? (
-          <>
-            <Spinner />
-            Creating Account...
-          </>
-        ) : (
-          "Register"
-        )}
-      </button>
+      <div className="pt-4">
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full bg-lime-400 text-gray-900 py-3 rounded-lg font-medium text-sm flex items-center justify-center gap-2 hover:bg-lime-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? (
+            <>
+              <Spinner />
+              Creating Account...
+            </>
+          ) : (
+            "Register"
+          )}
+        </button>
+      </div>
     </form>
   );
 }
