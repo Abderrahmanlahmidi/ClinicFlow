@@ -30,6 +30,9 @@ export const Speciality = lazy(
 export const Appointment = lazy(
   () => import("../features/dashboard/pages/sections/pages/appointment"),
 );
+export const Pharmacy = lazy(
+  () => import("../features/dashboard/pages/sections/pages/pharmacy"),
+);
 
 export const withSuspense = (Component: JSX.Element) => {
   return <Suspense fallback={<LoadingPage />}>{Component}</Suspense>;

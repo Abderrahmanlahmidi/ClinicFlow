@@ -11,6 +11,7 @@ import {
   FiClock,
   FiBriefcase,
   FiCalendar,
+  FiPackage,
 } from "react-icons/fi";
 import { selectIsOpenClose } from "../../../../app/selectors/selectors";
 import { toggle } from "../../../../app/slices/isOpenCloseSlice";
@@ -75,6 +76,7 @@ const SidebarDashboard: React.FC = () => {
     { icon: FiClock, label: "Availability", path: "/dashboard/availability" },
     { icon: FiBriefcase, label: "Speciality", path: "/dashboard/speciality" },
     { icon: FiCalendar, label: "Appointment", path: "/dashboard/appointment" },
+    { icon: FiPackage, label: "Pharmacy", path: "/dashboard/pharmacy" },
   ];
 
   const sidebarVariants: SidebarVariants = {

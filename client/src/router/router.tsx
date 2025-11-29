@@ -13,6 +13,7 @@ import {
   withSuspense,
   Speciality,
   Appointment,
+  Pharmacy
 } from "./lazyImports";
 import PrivateRoute from "../private/privateRoute";
 import PublicRoute from "../private/publicRoute";
@@ -77,6 +78,10 @@ export const router = createBrowserRouter([
       {
         path: "/dashboard/appointment",
         element: <Appointment />,
+      },
+      {
+        path: "/dashboard/pharmacy",
+        element: <Pharmacy />,
       },
     ],
   },
