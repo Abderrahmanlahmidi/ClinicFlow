@@ -1,10 +1,15 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState} from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiMenu, FiX, FiLogIn, FiCalendar, FiHome, FiInfo, FiSettings } from "react-icons/fi";
 import DropdownProfile from "../components/dropDown";
+import { toggle, setOpen } from "../../../app/slices/isOpenCloseSlice";
+import { selectIsOpenClose } from "../../../app/selectors/selectors";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const isOpen = useSelector(selectIsOpenClose);
+  const dispatch = useDispatch();
+  
   const location = useLocation();
   const navigate = useNavigate();
   const checkUserAuth = localStorage.getItem("userId");
@@ -30,7 +35,6 @@ export default function Navbar() {
   ];
 
   const handleAnchorClick = (href) => {
-    // Remove the # from href to get the section id
     const sectionId = href.replace('#', '');
     const element = document.getElementById(sectionId);
     
@@ -40,7 +44,7 @@ export default function Navbar() {
         block: 'start'
       });
     }
-    setIsOpen(false);
+    dispatch(setOpen(false));
   };
 
   const handleAppointmentsClick = () => {
@@ -49,15 +53,18 @@ export default function Navbar() {
     } else {
       navigate("/login");
     }
-    setIsOpen(false);
+    dispatch(setOpen(false));
   };
 
   const handleNavigation = (path) => {
     navigate(path);
-    setIsOpen(false);
+    dispatch(setOpen(false));
   };
 
-  // Check if current section is active based on scroll position
+  const handleToggle = () => {
+    dispatch(toggle());
+  };
+
   const isSectionActive = (href) => {
     if (location.pathname !== '/') return false;
     
@@ -74,7 +81,6 @@ export default function Navbar() {
     <nav className="bg-gray-900 border-b border-gray-700 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo - Still a Link to home page */}
           <Link
             to="/"
             className="text-2xl font-light text-white hover:text-gray-300 transition-colors duration-200"
@@ -82,7 +88,6 @@ export default function Navbar() {
             ClinicFlow
           </Link>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
             {navItems.map((item) => {
               const isActive = isSectionActive(item.href);
@@ -108,7 +113,6 @@ export default function Navbar() {
               );
             })}
 
-            {/* Appointments Button */}
             <button
               onClick={handleAppointmentsClick}
               className="flex items-center gap-2 bg-lime-400 text-gray-900 px-4 py-2 rounded-lg hover:bg-lime-300 transition-colors duration-200 text-sm font-medium"
@@ -117,7 +121,6 @@ export default function Navbar() {
               Book Appointment
             </button>
 
-            {/* Auth Buttons */}
             {!isAuthenticated ? (
               <div className="flex items-center space-x-4">
                 <button
@@ -141,7 +144,6 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center gap-2">
             {isAuthenticated && (
               <>
@@ -150,7 +152,7 @@ export default function Navbar() {
             )}
 
             <button
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={handleToggle}
               className="p-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors duration-200"
             >
               {isOpen ? (
@@ -162,7 +164,6 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Navigation with Better Animation */}
         <div
           className={`md:hidden transition-all duration-300 ease-in-out overflow-hidden ${
             isOpen ? "max-h-screen opacity-100 py-4" : "max-h-0 opacity-0 py-0"
@@ -193,7 +194,6 @@ export default function Navbar() {
               );
             })}
 
-            {/* Mobile Appointments Button */}
             <button
               onClick={handleAppointmentsClick}
               className="flex items-center gap-3 bg-lime-400 text-gray-900 p-3 rounded-lg hover:bg-lime-300 transition-colors duration-200 text-base font-medium"
@@ -202,7 +202,6 @@ export default function Navbar() {
               Book Appointment
             </button>
 
-            {/* Mobile Auth Buttons */}
             {!isAuthenticated && (
               <div className="flex flex-col space-y-3 pt-2">
                 <button

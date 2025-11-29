@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
 import {
-  FiPlus,
   FiEdit2,
   FiTrash2,
   FiClock,
-  FiSearch,
   FiCalendar,
   FiUsers,
 } from "react-icons/fi";
 import CreateAvailabilityForm from "../../components/forms/availablity/CreateAvailabilityForm.tsx";
 import UpdateAvailabilityForm from "../../components/forms/availablity/UpdateAvailabilityForm.tsx";
-import { HandleSearch } from "../../../../../constants/useSearch";
+import { useSearch } from "../../../../../constants/useSearch";
 import { useHandleForm } from "../../../../../constants/handelsConstants";
 import {
   getAvailabilities,
@@ -22,12 +20,61 @@ import { getUsers } from "../../services/usersApi.tsx";
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "../../../../../ui/toasts/toast";
 import ConfirmationModal from "../../components/others/ConfirmationModal.tsx";
+import SearchInput from "../../components/others/SearchBar.tsx";
+import CreateButton from "../../components/others/CreateButton.tsx";
+import PageHeader from "../../components/others/PageHeader.tsx";
 
-const Availability = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [availabilityToDelete, setAvailabilityToDelete] = useState(null);
-  const [doctors, setDoctors] = useState([]);
+// Types
+interface User {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  imageProfile?: string;
+  roleId?: {
+    name: string;
+  };
+  specialityId?: {
+    name: string;
+  };
+}
+
+interface Availability {
+  _id: string;
+  userId: User;
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  dailyCapacity: number;
+}
+
+interface AvailabilitiesResponse {
+  availabilities: Availability[];
+}
+
+interface UsersResponse {
+  users: User[];
+}
+
+interface CreateAvailabilityData {
+  userId: string;
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  dailyCapacity: number;
+}
+
+interface UpdateAvailabilityData {
+  id: string;
+  data: Partial<CreateAvailabilityData>;
+}
+
+const Availability: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const [availabilityToDelete, setAvailabilityToDelete] = useState<Availability | null>(null);
+  const [doctors, setDoctors] = useState<User[]>([]);
+  
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -40,34 +87,32 @@ const Availability = () => {
     handleUpdateClick,
     handleCloseForms,
     setSelectedUser: setSelectedAvailability,
-  } = useHandleForm();
+  } = useHandleForm<Availability>();
 
   // Get availabilities data
-  const { data: availabilities, isLoading: isLoadingAvailabilities } = useQuery(
-    {
-      queryKey: ["availabilities"],
-      queryFn: getAvailabilities,
-    },
-  );
+  const { data: availabilities, isLoading: isLoadingAvailabilities } = useQuery<AvailabilitiesResponse>({
+    queryKey: ["availabilities"],
+    queryFn: getAvailabilities,
+  });
 
   // Get all users and filter doctors
-  const { data: usersData } = useQuery({
+  const { data: usersData } = useQuery<UsersResponse>({
     queryKey: ["users"],
     queryFn: getUsers,
   });
 
-  // Search hook
-  const filteredData = HandleSearch(availabilities?.availabilities, searchTerm);
+  // Search hook - using useSearch instead of HandleSearch
+  const filteredData = useSearch(availabilities?.availabilities, searchTerm);
 
   // Create availability mutation
   const createAvailabilityMutation = useMutation({
     mutationFn: createAvailability,
     onSuccess: () => {
       toast.success("Availability created successfully!");
-      queryClient.invalidateQueries(["availabilities"]);
+      queryClient.invalidateQueries({ queryKey: ["availabilities"] });
       handleCloseForms();
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error(
         error.response?.data?.message || "Failed to create availability",
       );
@@ -79,10 +124,10 @@ const Availability = () => {
     mutationFn: updateAvailability,
     onSuccess: () => {
       toast.success("Availability updated successfully!");
-      queryClient.invalidateQueries(["availabilities"]);
+      queryClient.invalidateQueries({ queryKey: ["availabilities"] });
       handleCloseForms();
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error(
         error.response?.data?.message || "Failed to update availability",
       );
@@ -94,51 +139,52 @@ const Availability = () => {
     mutationFn: deleteAvailability,
     onSuccess: () => {
       toast.success("Availability deleted successfully!");
-      queryClient.invalidateQueries(["availabilities"]);
+      queryClient.invalidateQueries({ queryKey: ["availabilities"] });
       setDeleteModalOpen(false);
       setAvailabilityToDelete(null);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error(
         error.response?.data?.message || "Failed to delete availability",
       );
     },
   });
 
-  const handleCreateAvailability = async (availabilityData) => {
+  const handleCreateAvailability = async (availabilityData: CreateAvailabilityData): Promise<void> => {
     createAvailabilityMutation.mutate(availabilityData);
   };
 
-  const handleUpdateAvailability = async (availabilityData) => {
+  const handleUpdateAvailability = async (availabilityData: Partial<CreateAvailabilityData>): Promise<void> => {
     if (selectedAvailability) {
-      updateAvailabilityMutation.mutate({
+      const updateData: UpdateAvailabilityData = {
         id: selectedAvailability._id,
         data: availabilityData,
-      });
+      };
+      updateAvailabilityMutation.mutate(updateData);
     }
   };
 
-  const handleDeleteClick = (availability) => {
+  const handleDeleteClick = (availability: Availability): void => {
     setAvailabilityToDelete(availability);
     setDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = (): void => {
     if (availabilityToDelete) {
       deleteAvailabilityMutation.mutate(availabilityToDelete._id);
     }
   };
 
-  const handleCancelDelete = () => {
+  const handleCancelDelete = (): void => {
     setDeleteModalOpen(false);
     setAvailabilityToDelete(null);
   };
 
-  const formatDayOfWeek = (day) => {
+  const formatDayOfWeek = (day: string): string => {
     return day.charAt(0).toUpperCase() + day.slice(1);
   };
 
-  const getUserName = (availability) => {
+  const getUserName = (availability: Availability): string => {
     if (availability.userId?.firstName) {
       return `${availability.userId.firstName} ${availability.userId.lastName}`;
     }
@@ -148,7 +194,7 @@ const Availability = () => {
   useEffect(() => {
     if (!usersData?.users) return;
 
-    const filterDoctors = () => {
+    const filterDoctors = (): void => {
       const doctorsList = usersData.users.filter(user => 
         user.roleId?.name?.toLowerCase() === 'doctor'
       );
@@ -160,45 +206,34 @@ const Availability = () => {
     filterDoctors();
   }, [usersData]);
 
-
   return (
     <div className="min-h-screen bg-gray-900 p-6 overflow-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
-          <div className="flex-1">
-            <h1 className="text-3xl font-light text-white mb-2 flex items-center gap-3">
-              <FiCalendar className="w-8 h-8 text-lime-400" />
-              Availability Management
-            </h1>
-            <p className="text-gray-300">
-              Manage doctor schedules and daily capacities
-            </p>
-          </div>
-          
+          <PageHeader
+            title="Availability Management"
+            subtitle="Manage doctor schedules and daily capacities"
+            titleClassName="text-3xl font-light text-white mb-2 flex items-center gap-3"
+            subtitleClassName="text-gray-300"
+          >
+            <FiCalendar className="w-8 h-8 text-lime-400" />
+          </PageHeader>
+
           {/* Search Bar - Moved to header */}
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            <div className="relative w-full sm:w-80">
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search by doctor name, day of week..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-900 text-white placeholder-gray-400"
-              />
-            </div>
-            
-            <button
+            <SearchInput
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              placeholder="Search by doctor name, day of week..."
+            />
+
+            <CreateButton
               onClick={handleCreateClick}
-              disabled={createAvailabilityMutation.isLoading}
-              className="bg-lime-400 text-gray-900 px-6 py-3 rounded-lg flex items-center gap-2 font-medium hover:bg-lime-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-            >
-              <FiPlus className="w-5 h-5" />
-              {createAvailabilityMutation.isLoading
-                ? "Creating..."
-                : "Add Availability"}
-            </button>
+              isLoading={createAvailabilityMutation.isLoading}
+              loadingText="Creating..."
+              normalText="Add Availability"
+            />
           </div>
         </div>
 
@@ -229,8 +264,8 @@ const Availability = () => {
             <div className="max-h-96 overflow-y-auto">
               <table className="w-full">
                 <tbody>
-                  {filteredData?.length > 0 ? (
-                    filteredData?.map((availability) => (
+                  {filteredData && filteredData.length > 0 ? (
+                    filteredData.map((availability: Availability) => (
                       <tr
                         key={availability._id}
                         className="border-b border-gray-700 hover:bg-gray-800 transition-colors"
@@ -244,8 +279,12 @@ const Availability = () => {
                                   alt={`${getUserName(availability)}`}
                                   className="w-full h-full object-cover"
                                   onError={(e) => {
-                                    e.target.style.display = "none";
-                                    e.target.nextSibling.style.display = "flex";
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = "none";
+                                    const nextSibling = target.nextSibling as HTMLElement;
+                                    if (nextSibling) {
+                                      nextSibling.style.display = "flex";
+                                    }
                                   }}
                                 />
                               ) : null}
@@ -324,7 +363,7 @@ const Availability = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="5" className="py-12 px-6 text-center">
+                      <td colSpan={5} className="py-12 px-6 text-center">
                         <FiCalendar className="w-16 h-16 mx-auto mb-4 text-gray-500" />
                         <p className="text-lg font-medium text-gray-400 mb-2">
                           No availabilities found

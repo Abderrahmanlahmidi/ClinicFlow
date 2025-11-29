@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FiUser, FiLogOut, FiHome, FiChevronDown } from "react-icons/fi";
 import LogoutConfirm from "./logoutConfirm";
 import { axiosInstance } from "../../../services/axiosInstance";

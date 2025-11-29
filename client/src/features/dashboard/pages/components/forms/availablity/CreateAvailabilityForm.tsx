@@ -1,4 +1,3 @@
-// components/availability/CreateAvailabilityForm.jsx
 import { useState, useEffect } from "react";
 import {
   FiX,

@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { FiPlus, FiEdit2, FiTrash2, FiUser, FiSearch } from "react-icons/fi";
+import { FiUser } from "react-icons/fi";
 import CreateUserForm from "../../components/forms/user/CreateUserForm.tsx";
 import UpdateUserForm from "../../components/forms/user/UpdateUserForm.tsx";
 import RoleBadge from "../../components/others/RoleBadge.tsx";
-import { HandleSearch } from "../../../../../constants/useSearch";
+import { useSearch } from "../../../../../constants/useSearch";
 import { useHandleForm } from "../../../../../constants/handelsConstants";
 import { getRoles } from "../../services/rolesApi";
 import { getUsers, updateUserRole, updateUserSpeciality } from "../../services/usersApi";
@@ -11,9 +11,56 @@ import { getSpecialities } from "../../services/specialityApi.tsx";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useToast } from "../../../../../ui/toasts/toast";
 import { useQueryClient } from "@tanstack/react-query";
+import SearchInput from "../../components/others/SearchBar.tsx";
+import PageHeader from "../../components/others/PageHeader.tsx";
 
-const UsersPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+// Types
+interface Role {
+  _id: string;
+  name: string;
+}
+
+interface Speciality {
+  _id: string;
+  name: string;
+}
+
+interface User {
+  _id: string;
+  id?: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  numberPhone: string;
+  imageProfile?: string;
+  roleId?: Role;
+  specialityId?: string;
+}
+
+interface UsersResponse {
+  users: User[];
+}
+
+interface RolesResponse {
+  roles: Role[];
+}
+
+interface SpecialitiesResponse {
+  specialities: Speciality[];
+}
+
+interface UpdateRoleData {
+  id: string;
+  roleId: string;
+}
+
+interface UpdateSpecialityData {
+  userId: string;
+  specialityId: string;
+}
+
+const UsersPage: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -27,41 +74,38 @@ const UsersPage = () => {
     setShowCreateForm,
     setShowUpdateForm,
     setSelectedUser,
-  } = useHandleForm();
+  } = useHandleForm<User>();
 
-
-  const { data, error, isError, isLoading } = useQuery({
+  const { data, error, isError, isLoading } = useQuery<UsersResponse>({
     queryKey: ["users"],
     queryFn: getUsers,
   });
 
-
-  const { data: roles } = useQuery({
+  const { data: roles } = useQuery<RolesResponse>({
     queryKey: ["roles"],
     queryFn: getRoles,
   });
 
-
-  const { data: specialities } = useQuery({
+  const { data: specialities } = useQuery<SpecialitiesResponse>({
     queryKey: ["specialities"],
     queryFn: getSpecialities,
   });
 
+  // Search hook - using useSearch instead of HandleSearch
+  const filteredData = useSearch(data?.users, searchTerm);
 
-  const filteredData = HandleSearch(data?.users, searchTerm);
-
-  const handleCreateUser = async (userData) => {
+  const handleCreateUser = async (userData: any): Promise<void> => {
     console.log("create user:", userData);
     setShowCreateForm(false);
   };
 
-  const handleUpdateUser = async (userData) => {
+  const handleUpdateUser = async (userData: any): Promise<void> => {
     console.log("update user:", userData);
     setShowUpdateForm(false);
     setSelectedUser(null);
   };
 
-  const handleDeleteUser = async (userId) => {
+  const handleDeleteUser = async (userId: string): Promise<void> => {
     console.log("delete user:", userId);
   };
 
@@ -70,9 +114,9 @@ const UsersPage = () => {
     mutationFn: updateUserRole,
     onSuccess: () => {
       toast.success("User role updated successfully");
-      queryClient.invalidateQueries(["users"]);
+      queryClient.invalidateQueries({ queryKey: ["users"] });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error(
         error.response?.data?.message || "Failed to update user role",
       );
@@ -84,31 +128,33 @@ const UsersPage = () => {
     mutationFn: updateUserSpeciality,
     onSuccess: () => {
       toast.success("User speciality updated successfully");
-      queryClient.invalidateQueries(["users"]);
+      queryClient.invalidateQueries({ queryKey: ["users"] });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error(
         error.response?.data?.message || "Failed to update user speciality",
       );
     },
   });
 
-  const handleChangeRole = (roleId, userId) => {
-    changeUserRoleMutation.mutate({
+  const handleChangeRole = (roleId: string, userId: string): void => {
+    const updateData: UpdateRoleData = {
       id: userId,
       roleId: roleId,
-    });
+    };
+    changeUserRoleMutation.mutate(updateData);
   };
 
-  const handleChangeSpeciality = (specialityId, userId) => {
+  const handleChangeSpeciality = (specialityId: string, userId: string): void => {
     console.log("check mutation user id:", userId);
-    changeUserSpecialityMutation.mutate({
+    const updateData: UpdateSpecialityData = {
       userId: userId,
       specialityId: specialityId,
-    });
+    };
+    changeUserSpecialityMutation.mutate(updateData);
   };
 
-  const isDoctor = (user) => {
+  const isDoctor = (user: User): boolean => {
     return user.roleId?.name?.toLowerCase() === 'doctor';
   };
 
@@ -117,35 +163,24 @@ const UsersPage = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
-          <div className="flex-1">
-            <h1 className="text-3xl font-light text-white mb-2">
-              Users Management
-            </h1>
-            <p className="text-gray-300">
-              Manage your clinic users and their roles
-            </p>
-          </div>
-          
+          <PageHeader
+            title="Users Management"
+            subtitle="Manage your clinic users and their roles"
+          />
+
           {/* Search Bar - Moved to header */}
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            <div className="relative w-full sm:w-80">
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search users by name, email, or role..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-900 text-white placeholder-gray-400"
-              />
-            </div>
+            <SearchInput
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              placeholder="Search users by name, email, or role..."
+            />
             
-            {/* <button
+            {/* Uncomment if you want the create button */}
+            {/* <CreateButton
               onClick={handleCreateClick}
-              className="bg-lime-400 text-gray-900 px-6 py-3 rounded-lg flex items-center gap-2 font-medium hover:bg-lime-300 transition-colors whitespace-nowrap"
-            >
-              <FiPlus className="w-5 h-5" />
-              Create New User
-            </button> */}
+              normalText="Create New User"
+            /> */}
           </div>
         </div>
 
@@ -173,18 +208,15 @@ const UsersPage = () => {
                   <th className="text-left py-4 px-6 text-sm font-medium text-gray-300">
                     Speciality
                   </th>
-                  {/* <th className="text-left py-4 px-6 text-sm font-medium text-gray-300">
-                    Actions
-                  </th> */}
                 </tr>
               </thead>
             </table>
             <div className="max-h-96 overflow-y-auto">
               <table className="w-full">
                 <tbody>
-                  {filteredData?.length > 0 ? (
-                    filteredData?.map((user) => (
-                      <tr key={user.id} className="border-b border-gray-700">
+                  {filteredData && filteredData.length > 0 ? (
+                    filteredData.map((user: User) => (
+                      <tr key={user._id || user.id} className="border-b border-gray-700">
                         <td className="py-4 px-6">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden border border-gray-600">
@@ -215,19 +247,19 @@ const UsersPage = () => {
                         </td>
 
                         <td className="py-4 px-6">
-                          <RoleBadge role={user.roleId.name} />
+                          <RoleBadge role={user?.roleId?.name} />
                         </td>
 
                         <td className="py-4 px-6">
                           <select
                             onChange={(e) => {
-                              handleChangeRole(e.target.value, user?._id);
+                              handleChangeRole(e.target.value, user._id || user.id || '');
                             }}
-                            value={user?.roleId?._id}
+                            value={user?.roleId?._id || ''}
                             disabled={changeUserRoleMutation.isLoading}
                             className="bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-lime-400 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            {roles?.roles?.map((role) => {
+                            {roles?.roles?.map((role: Role) => {
                               return (
                                 <option key={role._id} value={role._id}>
                                   {role.name}
@@ -242,14 +274,14 @@ const UsersPage = () => {
                           {isDoctor(user) ? (
                             <select
                               onChange={(e) => {
-                                handleChangeSpeciality(e.target.value, user?._id);
+                                handleChangeSpeciality(e.target.value, user._id || user.id || '');
                               }}
                               value={user?.specialityId || ''}
                               disabled={changeUserSpecialityMutation.isLoading}
                               className="bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-lime-400 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               <option value="">Select Speciality</option>
-                              {specialities?.specialities?.map((speciality) => {
+                              {specialities?.specialities?.map((speciality: Speciality) => {
                                 return (
                                   <option key={speciality._id} value={speciality._id}>
                                     {speciality.name}
@@ -261,30 +293,11 @@ const UsersPage = () => {
                             <span className="text-gray-500 text-sm">Not applicable</span>
                           )}
                         </td>
-
-                        {/* <td className="py-4 px-6">
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => handleUpdateClick(user)}
-                              className="p-2 text-gray-400 hover:text-lime-400"
-                              title="Edit user"
-                            >
-                              <FiEdit2 className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteUser(user.id)}
-                              className="p-2 text-gray-400 hover:text-red-400"
-                              title="Delete user"
-                            >
-                              <FiTrash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td> */}
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="7" className="py-12 px-6 text-center">
+                      <td colSpan={6} className="py-12 px-6 text-center">
                         <FiUser className="w-16 h-16 mx-auto mb-4 text-gray-500" />
                         <p className="text-lg font-medium text-gray-400 mb-2">
                           No users found

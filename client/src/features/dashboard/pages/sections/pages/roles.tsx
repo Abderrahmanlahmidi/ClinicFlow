@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { FiPlus, FiEdit2, FiTrash2, FiShield, FiSearch } from "react-icons/fi";
+import { FiShield } from "react-icons/fi";
 import CreateRoleForm from "../../components/forms/role/CreateRoleForm.tsx";
 import UpdateRoleForm from "../../components/forms/role/UpdateRoleForm.tsx";
-import { HandleSearch } from "../../../../../constants/useSearch";
+import { useSearch } from "../../../../../constants/useSearch";
 import { useHandleForm } from "../../../../../constants/handelsConstants";
 import {
   getRoles,
@@ -13,11 +13,40 @@ import {
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "../../../../../ui/toasts/toast";
 import ConfirmationModal from "../../components/others/ConfirmationModal.tsx";
+import SearchInput from "../../components/others/SearchBar.tsx";
+import CreateButton from "../../components/others/CreateButton.tsx";
+import PageHeader from "../../components/others/PageHeader.tsx";
+import {
+  FiEdit2,
+  FiTrash2
+} from "react-icons/fi";
 
-const RolesPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [roleToDelete, setRoleToDelete] = useState(null);
+// Types
+interface Role {
+  _id: string;
+  id?: string;
+  name: string;
+  description: string;
+}
+
+interface RolesResponse {
+  roles: Role[];
+}
+
+interface CreateRoleData {
+  name: string;
+  description: string;
+}
+
+interface UpdateRoleData {
+  id: string;
+  data: Partial<CreateRoleData>;
+}
+
+const RolesPage: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const [roleToDelete, setRoleToDelete] = useState<Role | null>(null);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -32,26 +61,26 @@ const RolesPage = () => {
     setShowCreateForm,
     setShowUpdateForm,
     setSelectedUser: setSelectedRole,
-  } = useHandleForm();
+  } = useHandleForm<Role>();
 
   // Get roles data
-  const { data: roles, isLoading: isLoadingRoles } = useQuery({
+  const { data: roles, isLoading: isLoadingRoles } = useQuery<RolesResponse>({
     queryKey: ["roles"],
     queryFn: getRoles,
   });
 
-  // Search hook
-  const filteredData = HandleSearch(roles?.roles, searchTerm);
+  // Search hook - using useSearch instead of HandleSearch
+  const filteredData = useSearch(roles?.roles, searchTerm);
 
   // Create role mutation
   const createRoleMutation = useMutation({
     mutationFn: createRole,
     onSuccess: () => {
       toast.success("Role created successfully!");
-      queryClient.invalidateQueries(["roles"]);
+      queryClient.invalidateQueries({ queryKey: ["roles"] });
       setShowCreateForm(false);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error(error.response?.data?.message || "Failed to create role");
     },
   });
@@ -61,11 +90,11 @@ const RolesPage = () => {
     mutationFn: updateRole,
     onSuccess: () => {
       toast.success("Role updated successfully!");
-      queryClient.invalidateQueries(["roles"]);
+      queryClient.invalidateQueries({ queryKey: ["roles"] });
       setShowUpdateForm(false);
       setSelectedRole(null);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error(error.response?.data?.message || "Failed to update role");
     },
   });
@@ -75,40 +104,41 @@ const RolesPage = () => {
     mutationFn: deleteRole,
     onSuccess: () => {
       toast.success("Role deleted successfully!");
-      queryClient.invalidateQueries(["roles"]);
+      queryClient.invalidateQueries({ queryKey: ["roles"] });
       setDeleteModalOpen(false);
       setRoleToDelete(null);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error(error.response?.data?.message || "Failed to delete role");
     },
   });
 
-  const handleCreateRole = async (roleData) => {
+  const handleCreateRole = async (roleData: CreateRoleData): Promise<void> => {
     createRoleMutation.mutate(roleData);
   };
 
-  const handleUpdateRole = async (roleData) => {
+  const handleUpdateRole = async (roleData: Partial<CreateRoleData>): Promise<void> => {
     if (selectedRole) {
-      updateRoleMutation.mutate({
-        id: selectedRole.id,
+      const updateData: UpdateRoleData = {
+        id: selectedRole._id || selectedRole.id || '',
         data: roleData,
-      });
+      };
+      updateRoleMutation.mutate(updateData);
     }
   };
 
-  const handleDeleteClick = (role) => {
+  const handleDeleteClick = (role: Role): void => {
     setRoleToDelete(role);
     setDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = (): void => {
     if (roleToDelete) {
       deleteRoleMutation.mutate(roleToDelete._id);
     }
   };
 
-  const handleCancelDelete = () => {
+  const handleCancelDelete = (): void => {
     setDeleteModalOpen(false);
     setRoleToDelete(null);
   };
@@ -126,34 +156,25 @@ const RolesPage = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
-          <div className="flex-1">
-            <h1 className="text-3xl font-light text-white mb-2">
-              Roles Management
-            </h1>
-            <p className="text-gray-300">Manage system roles and permissions</p>
-          </div>
-          
+          <PageHeader
+            title="Roles Management"
+            subtitle="Manage system roles and permissions"
+          />
+
           {/* Search Bar - Moved to header */}
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            <div className="relative w-full sm:w-80">
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search roles by name or description..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-lime-400 focus:border-transparent bg-gray-900 text-white placeholder-gray-400"
-              />
-            </div>
-            
-            <button
+            <SearchInput
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              placeholder="Search roles by name or description..."
+            />
+
+            <CreateButton
               onClick={handleCreateClick}
-              disabled={createRoleMutation.isLoading}
-              className="bg-lime-400 text-gray-900 px-6 py-3 rounded-lg flex items-center gap-2 font-medium hover:bg-lime-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-            >
-              <FiPlus className="w-5 h-5" />
-              {createRoleMutation.isLoading ? "Creating..." : "Create New Role"}
-            </button>
+              isLoading={createRoleMutation.isLoading}
+              loadingText="Creating..."
+              normalText="Create New Role"
+            />
           </div>
         </div>
 
@@ -178,8 +199,8 @@ const RolesPage = () => {
             <div className="max-h-96 overflow-y-auto">
               <table className="w-full">
                 <tbody>
-                  {filteredData?.length > 0 ? (
-                    filteredData?.map((role) => (
+                  {filteredData && filteredData.length > 0 ? (
+                    filteredData.map((role: Role) => (
                       <tr
                         key={role._id}
                         className="border-b border-gray-700 hover:bg-gray-800 transition-colors"
@@ -225,7 +246,7 @@ const RolesPage = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="3" className="py-12 px-6 text-center">
+                      <td colSpan={3} className="py-12 px-6 text-center">
                         <FiShield className="w-16 h-16 mx-auto mb-4 text-gray-500" />
                         <p className="text-lg font-medium text-gray-400 mb-2">
                           No roles found
@@ -249,6 +270,7 @@ const RolesPage = () => {
           <CreateRoleForm
             onClose={handleCloseForms}
             onSubmit={handleCreateRole}
+            isLoading={createRoleMutation.isLoading}
           />
         )}
 
@@ -257,6 +279,7 @@ const RolesPage = () => {
             onClose={handleCloseForms}
             onSubmit={handleUpdateRole}
             role={selectedRole}
+            isLoading={updateRoleMutation.isLoading}
           />
         )}
 

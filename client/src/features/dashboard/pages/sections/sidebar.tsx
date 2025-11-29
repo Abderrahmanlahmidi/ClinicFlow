@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -12,11 +12,63 @@ import {
   FiBriefcase,
   FiCalendar,
 } from "react-icons/fi";
+import { selectIsOpenClose } from "../../../../app/selectors/selectors";
+import { toggle } from "../../../../app/slices/isOpenCloseSlice";
+import { useDispatch, useSelector } from "react-redux";
 
-const SidebarDashboard = ({ isOpen, setIsOpen }) => {
+// Types
+interface MenuItem {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  path: string;
+}
+
+interface SidebarVariants {
+  open: {
+    width: number;
+    transition: {
+      type: string;
+      stiffness: number;
+      damping: number;
+    };
+  };
+  closed: {
+    width: number;
+    transition: {
+      type: string;
+      stiffness: number;
+      damping: number;
+    };
+  };
+}
+
+interface ItemVariants {
+  open: {
+    opacity: number;
+    x: number;
+    transition: {
+      type: string;
+      stiffness: number;
+      damping: number;
+    };
+  };
+  closed: {
+    opacity: number;
+    x: number;
+    transition: {
+      type: string;
+      stiffness: number;
+      damping: number;
+    };
+  };
+}
+
+const SidebarDashboard: React.FC = () => {
+  const dispatch = useDispatch();
+  const isOpen = useSelector(selectIsOpenClose);
   const location = useLocation();
 
-  const menuItems = [
+  const menuItems: MenuItem[] = [
     { icon: FiBarChart2, label: "Analytics", path: "/dashboard" },
     { icon: FiUsers, label: "Users", path: "/dashboard/users" },
     { icon: FiShield, label: "Roles", path: "/dashboard/roles" },
@@ -25,7 +77,7 @@ const SidebarDashboard = ({ isOpen, setIsOpen }) => {
     { icon: FiCalendar, label: "Appointment", path: "/dashboard/appointment" },
   ];
 
-  const sidebarVariants = {
+  const sidebarVariants: SidebarVariants = {
     open: {
       width: 280,
       transition: {
@@ -44,7 +96,7 @@ const SidebarDashboard = ({ isOpen, setIsOpen }) => {
     },
   };
 
-  const itemVariants = {
+  const itemVariants: ItemVariants = {
     open: {
       opacity: 1,
       x: 0,
@@ -57,6 +109,14 @@ const SidebarDashboard = ({ isOpen, setIsOpen }) => {
     },
   };
 
+  const handleToggle = (): void => {
+    dispatch(toggle());
+  };
+
+  const handleOverlayClick = (): void => {
+    dispatch(toggle());
+  };
+
   return (
     <>
       {/* Overlay for mobile */}
@@ -67,7 +127,7 @@ const SidebarDashboard = ({ isOpen, setIsOpen }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black bg-opacity-60 z-40 lg:hidden"
-            onClick={() => setIsOpen(false)}
+            onClick={handleOverlayClick}
           />
         )}
       </AnimatePresence>
@@ -99,8 +159,8 @@ const SidebarDashboard = ({ isOpen, setIsOpen }) => {
           )}
 
           <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="p-2 rounded-lg text-gray-400"
+            onClick={handleToggle}
+            className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
           >
             {isOpen ? (
               <FiChevronLeft className="w-5 h-5" />
@@ -120,7 +180,7 @@ const SidebarDashboard = ({ isOpen, setIsOpen }) => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center px-4 py-3 rounded-lg group
+                className={`flex items-center px-4 py-3 rounded-lg group transition-colors
                   ${isOpen ? "gap-3 justify-start" : "justify-center"}
                   ${
                     isActive
@@ -159,7 +219,7 @@ const SidebarDashboard = ({ isOpen, setIsOpen }) => {
         <div className="p-4 border-t border-gray-700 flex-shrink-0">
           <Link
             to="/"
-            className={`flex items-center px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 group
+            className={`flex items-center px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 group transition-colors
               ${isOpen ? "gap-3 justify-start" : "justify-center"}
             `}
           >
