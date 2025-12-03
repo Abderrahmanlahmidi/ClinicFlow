@@ -52,8 +52,9 @@ export const createAvailability = async (
 
 export const updateAvailability = async ({
   id,
-  data,
+  data
 }: UpdateAvailabilityParams): Promise<Availability> => {
+  
   const res = await axiosInstance.put<Availability>(
     `/clinic/update-availability/${id}`,
     data
