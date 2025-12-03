@@ -1,6 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FiUser, FiLogOut, FiHome, FiChevronDown } from "react-icons/fi";
+import {
+  FiUser,
+  FiLogOut,
+  FiHome,
+  FiChevronDown,
+  FiCalendar,
+  FiClock
+} from "react-icons/fi";
 import LogoutConfirm from "./logoutConfirm";
 import { axiosInstance } from "../../../services/axiosInstance";
 import { useQuery } from "@tanstack/react-query";
@@ -116,7 +123,7 @@ export default function DropdownProfile({ onLogout }) {
             <Link
               to="/dashboard"
               onClick={handleItemClick}
-              className="flex items-center gap-3 px-5 py-3 text-sm text-gray-200 border-b border-gray-800"
+              className="flex items-center gap-3 px-5 py-3 text-sm text-gray-200 border-b border-gray-800 hover:bg-gray-800 transition-colors duration-200"
             >
               <FiHome className="w-4 h-4 text-gray-400" />
               Dashboard
@@ -126,16 +133,40 @@ export default function DropdownProfile({ onLogout }) {
           <Link
             to="/profile"
             onClick={handleItemClick}
-            className="flex items-center gap-3 px-5 py-3 text-sm text-gray-200 "
+            className="flex items-center gap-3 px-5 py-3 text-sm text-gray-200 border-b border-gray-800 hover:bg-gray-800 transition-colors duration-200"
           >
             <FiUser className="w-4 h-4 text-gray-400" />
             My Profile
           </Link>
+          
+          {(role === "Nurse" || role === "Patient" || role === "Doctor") && (
+            <Link
+              to="/my-appointments"
+              onClick={handleItemClick}
+              className="flex items-center gap-3 px-5 py-3 text-sm text-gray-200 hover:bg-gray-800 transition-colors border-b border-gray-800"
+            >
+              <FiCalendar className="w-4 h-4 text-gray-400" />
+              Appointments
+            </Link>
+          )}
+
+          
+          {/* Doctor Availability Link */}
+          {role === "Doctor" && (
+            <Link
+              to="/doctor-availabilities"
+              onClick={handleItemClick}
+              className="flex items-center gap-3 px-5 py-3 text-sm text-gray-200 border-b border-gray-800 hover:bg-gray-800 transition-colors duration-200"
+            >
+              <FiClock className="w-4 h-4 text-gray-400" />
+              Manage Availabilities
+            </Link>
+          )}
 
           {/* Logout */}
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-5 py-3 text-sm text-red-400 text-left border-t border-gray-800 mt-1"
+            className="flex items-center gap-3 w-full px-5 py-3 text-sm text-red-400 text-left hover:bg-gray-800 transition-colors duration-200 mt-1"
           >
             <FiLogOut className="w-4 h-4 text-red-500" />
             Logout

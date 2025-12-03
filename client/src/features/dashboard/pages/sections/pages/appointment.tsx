@@ -10,7 +10,9 @@ import {
   updateAppointment,
   deleteAppointment,
   updateAppointmentStatus,
+  assignNurseToAppointment,
 } from "../../services/appointmentApi";
+import { getUsers } from "../../services/usersApi";
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "../../../../../ui/toasts/toast";
 import ConfirmationModal from "../../components/others/ConfirmationModal.tsx";
@@ -28,19 +30,24 @@ interface User {
   specialityId?: {
     name: string;
   };
+  roleId?: {
+    name: string;
+  };
 }
 
 interface Appointment {
   _id: string;
   patientId: User;
   doctorId: User;
+  nurseId?: User | null;
   date: string;
   queueNumber: number;
   status: 'scheduled' | 'in progress' | 'completed' | 'cancelled';
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface CreateAppointmentData {
-  // Define based on your form structure
   patientId: string;
   doctorId: string;
   date: string;
@@ -56,6 +63,11 @@ interface UpdateAppointmentData {
 interface StatusUpdateData {
   id: string;
   status: string;
+}
+
+interface NurseAssignmentData {
+  appointmentId: string;
+  nurseId: string;
 }
 
 const AppointmentsPage: React.FC = () => {
@@ -79,13 +91,24 @@ const AppointmentsPage: React.FC = () => {
   } = useHandleForm<Appointment>();
 
   // Get appointments data
-  const { data: appointments, isLoading: isLoadingAppointments } = useQuery<Appointment[]>({
+  const { data: appointments, isLoading: isLoadingAppointments } = useQuery<{ appointments: Appointment[] }>({
     queryKey: ["appointments"],
     queryFn: getAppointments,
   });
 
+  // Get all users and filter nurses
+  const { data: usersData } = useQuery({
+    queryKey: ["users"],
+    queryFn: getUsers,
+  });
+
+  // Filter nurses from users
+  const nurses = usersData?.users?.filter((user: User) => 
+    user.roleId?.name?.toLowerCase() === 'nurse'
+  ) || [];
+
   // Search hook
-  const filteredAppointments = useSearch(appointments, searchTerm);
+  const filteredAppointments = useSearch<Appointment>(appointments?.appointments || [], searchTerm);
 
   // Create appointment mutation
   const createAppointmentMutation = useMutation({
@@ -130,6 +153,18 @@ const AppointmentsPage: React.FC = () => {
     },
   });
 
+  // Assign nurse mutation
+  const assignNurseMutation = useMutation({
+    mutationFn: assignNurseToAppointment,
+    onSuccess: () => {
+      toast.success("Nurse assigned successfully!");
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Failed to assign nurse");
+    },
+  });
+
   // Delete appointment mutation
   const deleteAppointmentMutation = useMutation({
     mutationFn: deleteAppointment,
@@ -168,6 +203,16 @@ const AppointmentsPage: React.FC = () => {
     updateStatusMutation.mutate(statusData);
   };
 
+  const handleNurseChange = (appointmentId: string, nurseId: string): void => {
+    if (nurseId) {
+      const nurseData: NurseAssignmentData = {
+        appointmentId: appointmentId,
+        nurseId: nurseId
+      };
+      assignNurseMutation.mutate(nurseData);
+    }
+  };
+
   const handleDeleteClick = (appointment: Appointment): void => {
     setAppointmentToDelete(appointment);
     setDeleteModalOpen(true);
@@ -183,6 +228,7 @@ const AppointmentsPage: React.FC = () => {
     setDeleteModalOpen(false);
     setAppointmentToDelete(null);
   };
+
 
   return (
     <div className="min-h-screen bg-gray-900 p-6 overflow-hidden">
@@ -204,7 +250,7 @@ const AppointmentsPage: React.FC = () => {
 
             <CreateButton
               onClick={handleCreateClick}
-              isLoading={createAppointmentMutation.isLoading}
+              isLoading={createAppointmentMutation.status === "loading"}
               loadingText="Creating appointment..."
               normalText="Create New Appointment"
             />
@@ -222,6 +268,9 @@ const AppointmentsPage: React.FC = () => {
                   </th>
                   <th className="text-left py-4 px-6 text-sm font-medium text-gray-300">
                     Doctor
+                  </th>
+                  <th className="text-left py-4 px-6 text-sm font-medium text-gray-300">
+                    Nurse
                   </th>
                   <th className="text-left py-4 px-6 text-sm font-medium text-gray-300">
                     Date & Time
@@ -299,11 +348,49 @@ const AppointmentsPage: React.FC = () => {
                           </div>
                         </td>
 
+                        {/* Nurse Info */}
+                        <td className="py-4 px-6">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center overflow-hidden border border-gray-600">
+                              {appointment.nurseId?.imageProfile ? (
+                                <img
+                                  src={`http://localhost:8000${appointment.nurseId.imageProfile}`}
+                                  alt={`${appointment.nurseId.firstName} ${appointment.nurseId.lastName}`}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <FiUser className="w-5 h-5 text-gray-400" />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <select
+                                value={appointment.nurseId?._id || ""}
+                                onChange={(e) => handleNurseChange(appointment._id, e.target.value)}
+                                disabled={assignNurseMutation.status === "loading"}
+                                className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-lime-400 focus:border-transparent disabled:opacity-50"
+                              >
+                                <option value="">No Nurse</option>
+                                {nurses.map((nurse: User) => (
+                                  <option key={nurse._id} value={nurse._id}>
+                                    {nurse.firstName} {nurse.lastName}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                        </td>
+
                         {/* Date */}
                         <td className="py-4 px-6 text-gray-300">
                           <div className="flex items-center gap-2">
                             <FiCalendar className="w-4 h-4" />
                             {new Date(appointment.date).toLocaleDateString()}
+                            <span className="text-gray-400">
+                              {new Date(appointment.date).toLocaleTimeString([], { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })}
+                            </span>
                           </div>
                         </td>
 
@@ -325,7 +412,7 @@ const AppointmentsPage: React.FC = () => {
                                 e.target.value
                               )
                             }
-                            disabled={updateStatusMutation.isLoading}
+                            disabled={updateStatusMutation.status === "loading"}
                             className={`px-3 py-1 rounded-full text-xs font-medium border-0 focus:ring-2 focus:ring-lime-400 bg-gray-800 text-white ${getStatusColor(
                               appointment.status
                             )} disabled:opacity-50`}
@@ -342,7 +429,7 @@ const AppointmentsPage: React.FC = () => {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => handleUpdateClick(appointment)}
-                              disabled={updateAppointmentMutation.isLoading}
+                              disabled={updateAppointmentMutation.status === "loading"}
                               className="p-2 text-gray-400 hover:text-lime-400 transition-colors disabled:opacity-50"
                               title="Edit appointment"
                             >
@@ -350,7 +437,7 @@ const AppointmentsPage: React.FC = () => {
                             </button>
                             <button
                               onClick={() => handleDeleteClick(appointment)}
-                              disabled={deleteAppointmentMutation.isLoading}
+                              disabled={deleteAppointmentMutation.status === "loading"}
                               className="p-2 text-gray-400 hover:text-red-400 transition-colors disabled:opacity-50"
                               title="Delete appointment"
                             >
@@ -362,7 +449,7 @@ const AppointmentsPage: React.FC = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={6} className="py-12 px-6 text-center">
+                      <td colSpan={7} className="py-12 px-6 text-center">
                         <FiCalendar className="w-16 h-16 mx-auto mb-4 text-gray-500" />
                         <p className="text-lg font-medium text-gray-400 mb-2">
                           No appointments found
@@ -386,7 +473,7 @@ const AppointmentsPage: React.FC = () => {
           <CreateAppointmentForm
             onClose={handleCloseForms}
             onSubmit={handleCreateAppointment}
-            isLoading={createAppointmentMutation.isLoading}
+            isLoading={createAppointmentMutation.status === "loading"}
           />
         )}
 
@@ -395,7 +482,7 @@ const AppointmentsPage: React.FC = () => {
             onClose={handleCloseForms}
             onSubmit={handleUpdateAppointment}
             appointment={selectedAppointment}
-            isLoading={updateAppointmentMutation.isLoading}
+            isLoading={updateAppointmentMutation.status === "loading"}
           />
         )}
 
@@ -408,7 +495,7 @@ const AppointmentsPage: React.FC = () => {
           message={`Are you sure you want to delete this appointment? This action cannot be undone.`}
           confirmText="Delete"
           cancelText="Cancel"
-          isLoading={deleteAppointmentMutation.isLoading}
+          isLoading={deleteAppointmentMutation.status === "loading"}
           variant="danger"
         />
       </div>

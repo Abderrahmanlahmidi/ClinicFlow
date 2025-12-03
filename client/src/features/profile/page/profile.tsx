@@ -143,7 +143,7 @@ export default function ProfilePage() {
                 {userData.firstName} {userData.lastName}
               </h2>
               <p className="text-gray-300 mb-2">{userData.email}</p>
-              <p className="text-gray-400 text-sm">{`${userData.roleId.name}`}</p>
+              <p className="text-gray-400 text-sm">{`${userData?.roleId?.name}`}</p>
 
               {/* Submit button for image upload */}
               {selectedImage && (

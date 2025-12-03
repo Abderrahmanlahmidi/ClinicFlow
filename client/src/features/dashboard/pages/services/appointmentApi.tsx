@@ -59,6 +59,9 @@ export const updateAppointmentStatus = async ({
   id,
   status,
 }: UpdateAppointmentStatusParams): Promise<Appointment> => {
+
+  console.log("the is status", id);
+  console.log("the status", status)
   const response = await axiosInstance.patch<Appointment>(
     `/clinic/update-appointment-status/${id}`,
     { status }
@@ -73,5 +76,47 @@ export const deleteAppointment = async (
     success: boolean;
     message?: string;
   }>(`/clinic/appointment/${id}`);
+  return response.data;
+};
+
+export const assignNurseToAppointment = async (data: {
+  appointmentId: string;
+  nurseId: string;
+}): Promise<any> => {
+  console.log(data);
+  const response = await axiosInstance.put(
+    `/clinic/appointments/assign-nurse/${data.appointmentId}`,
+    {
+      nurseId: data.nurseId,
+    }
+  );
+  return response.data;
+};
+
+
+export const getDoctorAppointments = async (
+  doctorId: string
+): Promise<Appointment[]> => {
+  const response = await axiosInstance.get<Appointment[]>(
+    `/clinic/doctor-appointments/${doctorId}`
+  );
+  return response.data;
+};
+
+export const getPatientAppointments = async (
+  patientId: string
+): Promise<Appointment[]> => {
+  const response = await axiosInstance.get<Appointment[]>(
+    `/clinic/patient-appointments/${patientId}`
+  );
+  return response.data;
+};
+
+export const getNurseAppointments = async (
+  nurseId: string
+): Promise<Appointment[]> => {
+  const response = await axiosInstance.get<Appointment[]>(
+    `/clinic/nurse-appointments/${nurseId}`
+  );
   return response.data;
 };

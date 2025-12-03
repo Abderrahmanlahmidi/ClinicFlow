@@ -30,7 +30,7 @@ export const register = async (req, res) => {
   if (existingUser)
     return res.status(400).json({ message: "User already exists" });
 
-  const role = roleId ? roleId : "68eb65a167c899cc8d931a99";
+  const role = roleId ? roleId : "692c07f3760dd4d964218a86";
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -67,10 +67,24 @@ export const login = async (req, res) => {
       .populate({ path: "roleId", select: "name description -_id" })
       .populate({ path: "specialityId", select: "name description -_id" });
 
+
     if (!user) return res.status(401).json({ error: "Invalid credentials" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
+
+
+
+      const hash = "$2b$10$ePUvanQ3oY9UGgO9yJjjquy51btTJJf8RyJHvlJzRo6L4hIz6p6/u";
+      const plain = "ChrisNurse2025!";
+
+      console.log("Hash length:", hash.length);
+
+      bcrypt.compare(plain, hash)
+          .then(isMatch => console.log("Match?", isMatch))
+          .catch(err => console.error(err));
+
+
+      if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);

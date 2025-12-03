@@ -13,10 +13,14 @@ import {
   withSuspense,
   Speciality,
   Appointment,
-  Pharmacy
+  Pharmacy,
+  CreateAppointement,
+  MyAppointements,
+  DoctorAvailabilities
 } from "./lazyImports";
 import PrivateRoute from "../private/privateRoute";
 import PublicRoute from "../private/publicRoute";
+import AuthRequiredPage from "../features/unauthorized/authRequired";
 
 export const router = createBrowserRouter([
   {
@@ -24,11 +28,35 @@ export const router = createBrowserRouter([
     element: withSuspense(<Home />),
   },
   {
+    path: "/appointments",
+    element: withSuspense(
+      <PrivateRoute>
+        <CreateAppointement/>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/my-appointments",
+    element: withSuspense(
+      <PrivateRoute allowedRoles={["Nurse", "Patient", "Doctor"]} >
+        <MyAppointements/>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/doctor-availabilities",
+    element: withSuspense(
+      <PrivateRoute allowedRoles={["Doctor"]} >
+        <DoctorAvailabilities/>
+      </PrivateRoute>
+    ),
+  },
+  {
     path: "/register",
     element: withSuspense(
       <PublicRoute>
         <Register />
-      </PublicRoute>,
+      </PublicRoute>
     ),
   },
   {
@@ -36,7 +64,7 @@ export const router = createBrowserRouter([
     element: withSuspense(
       <PublicRoute>
         <Login />
-      </PublicRoute>,
+      </PublicRoute>
     ),
   },
   {
@@ -44,7 +72,7 @@ export const router = createBrowserRouter([
     element: withSuspense(
       <PrivateRoute>
         <Profile />
-      </PrivateRoute>,
+      </PrivateRoute>
     ),
   },
   {
@@ -52,7 +80,7 @@ export const router = createBrowserRouter([
     element: withSuspense(
       <PrivateRoute allowedRoles={["Admin"]}>
         <Dashboard />
-      </PrivateRoute>,
+      </PrivateRoute>
     ),
     children: [
       {
@@ -88,5 +116,9 @@ export const router = createBrowserRouter([
   {
     path: "*",
     element: withSuspense(<Unauthorized />),
+  },
+  {
+    path: "/auth-required",
+    element: withSuspense(<AuthRequiredPage />),
   },
 ]);

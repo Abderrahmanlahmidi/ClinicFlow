@@ -2328,13 +2328,30 @@
 											"height": 13,
 											"text": "-userId: User",
 											"horizontalAlignment": 0
+										},
+										{
+											"_type": "UMLAttributeView",
+											"_id": "AAAAAAGa1IFhT3i8QGI=",
+											"_parent": {
+												"$ref": "AAAAAAGZvlEXH/lAvDo="
+											},
+											"model": {
+												"$ref": "AAAAAAGa1IFhPnizUqw="
+											},
+											"font": "Arial;13;0",
+											"left": 261,
+											"top": 226,
+											"width": 134,
+											"height": 13,
+											"text": "-nurseId: User",
+											"horizontalAlignment": 0
 										}
 									],
 									"font": "Arial;13;0",
 									"left": 256,
 									"top": 161,
 									"width": 144,
-									"height": 68
+									"height": 83
 								},
 								{
 									"_type": "UMLOperationCompartmentView",
@@ -2439,7 +2456,7 @@
 									],
 									"font": "Arial;13;0",
 									"left": 256,
-									"top": 229,
+									"top": 244,
 									"width": 144,
 									"height": 10
 								},
@@ -2481,7 +2498,7 @@
 							"left": 256,
 							"top": 136,
 							"width": 144,
-							"height": 103,
+							"height": 118,
 							"nameCompartment": {
 								"$ref": "AAAAAAGZvlEXHvk7eBA="
 							},
@@ -2520,7 +2537,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": 561,
-									"top": 145,
+									"top": 149,
 									"height": 13,
 									"alpha": 1.5707963267948966,
 									"distance": 15,
@@ -2540,8 +2557,8 @@
 									},
 									"visible": null,
 									"font": "Arial;13;0",
-									"left": 560,
-									"top": 130,
+									"left": 559,
+									"top": 134,
 									"height": 13,
 									"alpha": 1.5707963267948966,
 									"distance": 30,
@@ -2562,7 +2579,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": 564,
-									"top": 174,
+									"top": 178,
 									"height": 13,
 									"alpha": -1.5707963267948966,
 									"distance": 15,
@@ -2583,7 +2600,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": 424,
-									"top": 157,
+									"top": 163,
 									"height": 13,
 									"alpha": 0.5235987755982988,
 									"distance": 30,
@@ -2604,7 +2621,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": 425,
-									"top": 144,
+									"top": 149,
 									"height": 13,
 									"alpha": 0.7853981633974483,
 									"distance": 40,
@@ -2624,7 +2641,7 @@
 									},
 									"font": "Arial;13;0",
 									"left": 405,
-									"top": 196,
+									"top": 201,
 									"width": 19.5126953125,
 									"height": 13,
 									"alpha": -1.0645430620962637,
@@ -2647,7 +2664,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": 699,
-									"top": 133,
+									"top": 134,
 									"height": 13,
 									"alpha": -0.5235987755982988,
 									"distance": 30,
@@ -2666,8 +2683,8 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 696,
-									"top": 120,
+									"left": 695,
+									"top": 121,
 									"height": 13,
 									"alpha": -0.7853981633974483,
 									"distance": 40,
@@ -2686,7 +2703,7 @@
 									},
 									"font": "Arial;13;0",
 									"left": 706,
-									"top": 167,
+									"top": 168,
 									"width": 7.22998046875,
 									"height": 13,
 									"alpha": 0.7969703336564864,
@@ -2735,7 +2752,7 @@
 								"$ref": "AAAAAAGZvlEXHvk68ds="
 							},
 							"lineStyle": 1,
-							"points": "400:181;727:152",
+							"points": "400:187;727:153",
 							"showVisibility": true,
 							"nameLabel": {
 								"$ref": "AAAAAAGZvrUxjB64Ef4="
@@ -8913,6 +8930,18 @@
 							"type": {
 								"$ref": "AAAAAAGZvddZdvaa7Fs="
 							}
+						},
+						{
+							"_type": "UMLAttribute",
+							"_id": "AAAAAAGa1IFhPnizUqw=",
+							"_parent": {
+								"$ref": "AAAAAAGZvlEXHfk4zBc="
+							},
+							"name": "nurseId",
+							"visibility": "private",
+							"type": {
+								"$ref": "AAAAAAGZvddZdvaa7Fs="
+							}
 						}
 					],
 					"operations": [
@@ -9463,7 +9492,8 @@
 								"$ref": "AAAAAAGaAMtEb0+xLlA="
 							},
 							"name": "id",
-							"visibility": "private"
+							"visibility": "private",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",

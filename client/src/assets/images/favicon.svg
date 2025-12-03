@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- Soft green circular background -->
+  <circle cx="32" cy="32" r="28" fill="#101828"/>
+
+  <!-- Soft white calendar container with rounded corners -->
+  <rect x="19" y="17" width="26" height="30" rx="6" fill="white"/>
+
+  <!-- Calendar header bar -->
+  <rect x="19" y="17" width="26" height="8" rx="3" fill="#101828"/>
+
+  <!-- Two small binding dots -->
+  <circle cx="26" cy="17" r="2" fill="#ffffff"/>
+  <circle cx="38" cy="17" r="2" fill="#ffffff"/>
+
+  <!-- Center medical plus sign -->
+  <line x1="32" y1="29" x2="32" y2="39" stroke="#101828" stroke-width="4" stroke-linecap="round"/>
+  <line x1="27" y1="34" x2="37" y2="34" stroke="#101828" stroke-width="4" stroke-linecap="round"/>
+</svg>
