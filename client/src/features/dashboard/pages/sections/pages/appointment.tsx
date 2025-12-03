@@ -367,7 +367,7 @@ const AppointmentsPage: React.FC = () => {
                                 value={appointment.nurseId?._id || ""}
                                 onChange={(e) => handleNurseChange(appointment._id, e.target.value)}
                                 disabled={assignNurseMutation.status === "loading"}
-                                className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-lime-400 focus:border-transparent disabled:opacity-50"
+                                className="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-lime-400 focus:border-transparent disabled:opacity-50"
                               >
                                 <option value="">No Nurse</option>
                                 {nurses.map((nurse: User) => (
@@ -385,12 +385,6 @@ const AppointmentsPage: React.FC = () => {
                           <div className="flex items-center gap-2">
                             <FiCalendar className="w-4 h-4" />
                             {new Date(appointment.date).toLocaleDateString()}
-                            <span className="text-gray-400">
-                              {new Date(appointment.date).toLocaleTimeString([], { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
-                              })}
-                            </span>
                           </div>
                         </td>
 
@@ -413,7 +407,7 @@ const AppointmentsPage: React.FC = () => {
                               )
                             }
                             disabled={updateStatusMutation.status === "loading"}
-                            className={`px-3 py-1 rounded-full text-xs font-medium border-0 focus:ring-2 focus:ring-lime-400 bg-gray-800 text-white ${getStatusColor(
+                            className={`px-3 py-1 rounded-full text-xs font-medium border-1 border-gray-600  focus:ring-2 focus:ring-lime-400 bg-gray-900 text-white ${getStatusColor(
                               appointment.status
                             )} disabled:opacity-50`}
                           >

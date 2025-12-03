@@ -245,7 +245,7 @@ const CreatePharmacyForm: React.FC<CreatePharmacyFormProps> = ({
             <button
               type="button"
               onClick={handleClose}
-              className="px-4 py-2 text-gray-300 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+              className="px-4 py-2 bg-gray-900 border border-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors"
             >
               Cancel
             </button>

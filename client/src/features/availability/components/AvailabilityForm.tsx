@@ -33,12 +33,14 @@ export const AvailabilityForm: React.FC<AvailabilityFormProps> = ({
   errors = {},
   onClose,
 }) => {
+
+
+  
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-semibold text-white flex items-center gap-2">
-            <span className="w-6 h-6 text-lime-400">📅</span>
             {isEditing ? "Edit Availability" : "Add New Availability"}
           </h3>
           <button

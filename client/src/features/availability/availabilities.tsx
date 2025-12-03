@@ -104,25 +104,27 @@ export default function Availabilities() {
     },
   });
 
-  // Update availability mutation
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: AvailabilityFormData }) =>
-      updateAvailability({
-        _id: id,
+  // ! Update availability mutation
+const updateMutation = useMutation({
+  mutationFn: ({ id, data }: { id: string; data: AvailabilityFormData }) =>
+    updateAvailability({
+      id: id,
+      data: {
         ...data,
         dailyCapacity: Number(data.dailyCapacity),
-      }),
-    onSuccess: () => {
-      toast.success("Availability updated successfully!");
-      queryClient.invalidateQueries({ queryKey: ["availabilities"] });
-      closeForm();
-    },
-    onError: (error: any) => {
-      toast.error(
-        error.response?.data?.message || "Failed to update availability"
-      );
-    },
-  });
+      }
+    }),
+  onSuccess: () => {
+    toast.success("Availability updated successfully!");
+    queryClient.invalidateQueries({ queryKey: ["availabilities"] });
+    closeForm();
+  },
+  onError: (error: any) => {
+    toast.error(
+      error.response?.data?.message || "Failed to update availability"
+    );
+  },
+});
 
   // Delete availability mutation
   const deleteMutation = useMutation({
@@ -139,6 +141,7 @@ export default function Availabilities() {
     },
   });
 
+  // ! problem her to update data
   const onSubmit = (data: AvailabilityFormData) => {
     if (editingAvailability) {
       updateMutation.mutate({ id: editingAvailability._id, data });
@@ -193,40 +196,7 @@ export default function Availabilities() {
 
   const uniqueDays = getUniqueDays(processedAvailabilities);
 
-  if (isPending) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <FiRefreshCw className="w-8 h-8 text-lime-400 animate-spin" />
-          <p className="text-gray-300">Loading availabilities...</p>
-        </div>
-      </div>
-    );
-  }
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 max-w-md">
-          <div className="flex items-center gap-3 mb-4">
-            <FiAlertCircle className="w-6 h-6 text-red-400" />
-            <h2 className="text-xl font-semibold text-white">
-              Error Loading Availabilities
-            </h2>
-          </div>
-          <p className="text-gray-300 mb-4">
-            {error.message || "Failed to load availabilities"}
-          </p>
-          <button
-            onClick={() => refetch()}
-            className="px-4 py-2 bg-gray-900 border border-gray-800 text-white rounded hover:bg-gray-900 transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-900 p-4 md:p-6">
@@ -322,6 +292,7 @@ export default function Availabilities() {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* !-switching is her */}
             {DAYS_OF_WEEK.map((dayObj) => {
               const dayValue =
                 typeof dayObj === "string" ? dayObj : dayObj.value;
@@ -381,7 +352,7 @@ export default function Availabilities() {
 
         {/* Overlay Form */}
         {isFormOpen && (
-          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}

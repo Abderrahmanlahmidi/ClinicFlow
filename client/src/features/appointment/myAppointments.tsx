@@ -140,18 +140,14 @@ export default function MyAppointment() {
     },
   });
 
-  // FIXED: Added proper cache invalidation for nurse assignments
   const assignNurseMutation = useMutation({
     mutationFn: assignNurseToAppointment,
     onSuccess: async () => {
       toast.success("Nurse assigned successfully!");
-
-      // invalidate the EXACT key
       await queryClient.invalidateQueries({
         queryKey: ["appointments", role, userId],
       });
-
-      await refetch(); // get fresh data
+      await refetch();
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Failed to assign nurse");
@@ -200,7 +196,6 @@ export default function MyAppointment() {
     }
   };
 
-  // FIXED: Added proper cache handling
   const handleNurseChange = (appointmentId, nurseId) => {
     if (nurseId) {
       const nurseData = {
@@ -228,9 +223,12 @@ export default function MyAppointment() {
   const getDisplayName = (person) => {
     if (!person) return "Not assigned";
     if (typeof person === "string") return "Not available";
-    return (
-      `${person.firstName || ""} ${person.lastName || ""}`.trim() || "Unknown"
-    );
+    if (typeof person === "object") {
+      return (
+        `${person.firstName || ""} ${person.lastName || ""}`.trim() || "Unknown"
+      );
+    }
+    return "Unknown";
   };
 
   const getProfileImage = (person) => {
@@ -243,10 +241,44 @@ export default function MyAppointment() {
     return person.numberPhone || person.phone || null;
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <FiClock className="w-8 h-8 text-lime-400 animate-spin" />
+          <p className="text-gray-300">Loading appointments...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 max-w-md">
+          <div className="flex items-center gap-3 mb-4">
+            <FiXCircle className="w-6 h-6 text-red-400" />
+            <h2 className="text-xl font-semibold text-white">
+              Error Loading Appointments
+            </h2>
+          </div>
+          <p className="text-gray-300 mb-4">
+            {error.message || "Failed to load appointments"}
+          </p>
+          <button
+            onClick={() => refetch()}
+            className="px-4 py-2 bg-gray-900 border border-gray-800 text-white rounded hover:bg-gray-900 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-900 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -271,7 +303,6 @@ export default function MyAppointment() {
             </div>
           </div>
 
-          {/* Search Bar */}
           <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-6">
             <div className="w-full">
               <SearchInput
@@ -283,7 +314,6 @@ export default function MyAppointment() {
           </div>
         </motion.div>
 
-        {/* Appointments Grid */}
         {filteredAppointments.length === 0 ? (
           <div className="bg-gray-900 border border-gray-800 rounded-xl p-12 text-center">
             <FiCalendar className="w-20 h-20 mx-auto mb-6 text-gray-500" />
@@ -306,12 +336,11 @@ export default function MyAppointment() {
 
               return (
                 <motion.div
-                  key={app._id}
+                  key={app?._id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="bg-gray-900 border border-gray-800 rounded-xl hover:border-lime-400/30 transition-colors group relative"
                 >
-                  {/* Status Badge - Now positioned inside the card */}
                   <div className="absolute top-4 right-4">
                     <span
                       className={`px-3 py-1 text-xs font-medium rounded-full border border-gray-800 ${statusColor}`}
@@ -320,9 +349,7 @@ export default function MyAppointment() {
                     </span>
                   </div>
 
-                  {/* Card Content */}
                   <div className="p-6">
-                    {/* Date & Time */}
                     <div className="mb-6">
                       <div className="flex items-center gap-2 text-gray-300 mb-2">
                         <FiCalendar className="w-5 h-5 text-lime-400" />
@@ -337,9 +364,7 @@ export default function MyAppointment() {
                       </div>
                     </div>
 
-                    {/* People Section */}
                     <div className="space-y-4 mb-6">
-                      {/* Doctor */}
                       <div className="flex items-center gap-3 p-3 bg-gray-900 border border-gray-800 rounded-lg">
                         <div className="relative">
                           <div className="w-12 h-12 rounded-full bg-gray-900 border border-gray-800 flex items-center justify-center overflow-hidden">
@@ -365,7 +390,6 @@ export default function MyAppointment() {
                         </div>
                       </div>
 
-                      {/* Patient */}
                       <div className="flex items-center gap-3 p-3 bg-gray-900 border border-gray-800 rounded-lg">
                         <div className="relative">
                           <div className="w-12 h-12 rounded-full bg-gray-900 border border-gray-800 flex items-center justify-center overflow-hidden">
@@ -408,7 +432,6 @@ export default function MyAppointment() {
                         </div>
                       </div>
 
-                      {/* Nurse */}
                       <div className="flex items-center gap-3 p-3 bg-gray-900 border border-gray-800 rounded-lg">
                         <div className="relative">
                           <div className="w-12 h-12 rounded-full bg-gray-900 border border-gray-800 flex items-center justify-center overflow-hidden">
@@ -431,21 +454,21 @@ export default function MyAppointment() {
                             <div>
                               <select
                                 value={
-                                  typeof app.nurseId === "object"
-                                    ? app.nurseId._id
-                                    : ""
+                                  app?.nurseId && typeof app.nurseId === "object"
+                                    ? app.nurseId._id || ""
+                                    : app?.nurseId || ""
                                 }
                                 onChange={(e) =>
-                                  handleNurseChange(app._id, e.target.value)
+                                  handleNurseChange(app?._id, e.target.value)
                                 }
                                 disabled={
                                   assignNurseMutation.isLoading ||
                                   isLoadingNurses
                                 }
-                                className="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white"
+                                className="w-full bg-gray-900 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-lime-400 focus:border-transparent disabled:opacity-50"
                               >
                                 <option value="">
-                                  {app.nurseId
+                                  {app?.nurseId
                                     ? "Change Nurse"
                                     : "Assign Nurse"}
                                 </option>
@@ -473,14 +496,13 @@ export default function MyAppointment() {
                       </div>
                     </div>
 
-                    {/* Actions */}
                     <div className="flex flex-col gap-3 pt-4 border-t border-gray-800">
                       {canChangeStatus && (
                         <div className="flex-1">
                           <select
                             value={app.status || ""}
                             onChange={(e) =>
-                              handleStatusChange(app._id, e.target.value)
+                              handleStatusChange(app?._id, e.target.value)
                             }
                             disabled={updateStatusMutation.isLoading}
                             className="w-full px-3 py-2 rounded-lg text-sm bg-gray-900 border border-gray-800 text-white focus:ring-2 focus:ring-lime-400 focus:border-transparent disabled:opacity-50"
@@ -523,7 +545,6 @@ export default function MyAppointment() {
           </div>
         )}
 
-        {/* Patient Info Modal */}
         {selectedPatient && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
             <div className="bg-gray-900 border border-gray-800 rounded-xl max-w-md w-full">
@@ -610,7 +631,6 @@ export default function MyAppointment() {
           </div>
         )}
 
-        {/* Delete Confirmation Modal */}
         <ConfirmationModal
           isOpen={!!appointmentToDelete}
           onClose={handleCancelDelete}
