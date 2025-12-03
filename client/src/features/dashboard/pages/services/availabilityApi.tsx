@@ -70,3 +70,12 @@ export const deleteAvailability = async (
   }>(`/clinic/delete-availability/${id}`);
   return res.data;
 };
+
+export const getDoctorAvailabilities = async (
+  userId: string
+): Promise<Availability[]> => {
+  const res = await axiosInstance.get<Availability[]>(
+    `/clinic/availabilities/${userId}`
+  );
+  return res.data;
+};

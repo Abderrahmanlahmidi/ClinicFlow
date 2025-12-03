@@ -13,7 +13,6 @@ const CreateAppointmentForm = ({ onClose, onSubmit, isLoading }) => {
     handleSubmit,
     formState: { errors },
     reset,
-    watch,
   } = useForm();
 
   // Fetch users for dropdowns
@@ -54,8 +53,6 @@ const CreateAppointmentForm = ({ onClose, onSubmit, isLoading }) => {
     onClose();
   };
 
-  const selectedDoctorId = watch("doctorId");
-  const selectedPatientId = watch("patientId");
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">

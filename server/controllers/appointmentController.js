@@ -6,7 +6,7 @@ import User from '../models/User.js';
 
 
 export const createAppointment = async (req, res) => {
-    const { doctorId, patientId, date } = req.body;
+    const { doctorId, patientId, date, nurseId } = req.body;
 
     if (!doctorId || !patientId || !date) {
         return res.status(400).json({
@@ -14,17 +14,28 @@ export const createAppointment = async (req, res) => {
         });
     }
 
-    if (!mongoose.Types.ObjectId.isValid(doctorId) || !mongoose.Types.ObjectId.isValid(patientId)) {
+    if (
+        !mongoose.Types.ObjectId.isValid(doctorId) ||
+        !mongoose.Types.ObjectId.isValid(patientId)
+    ) {
         return res.status(400).json({
             message: "Invalid doctorId or patientId format."
+        });
+    }
+
+    // validate nurseId only if sent
+    if (nurseId && !mongoose.Types.ObjectId.isValid(nurseId)) {
+        return res.status(400).json({
+            message: "Invalid nurseId format."
         });
     }
 
     try {
         const doctorObjectId = new mongoose.Types.ObjectId(doctorId);
         const patientObjectId = new mongoose.Types.ObjectId(patientId);
-        const selectedDate = new Date(date);
+        const nurseObjectId = nurseId ? new mongoose.Types.ObjectId(nurseId) : null;
 
+        const selectedDate = new Date(date);
 
         if (isNaN(selectedDate.getTime())) {
             return res.status(400).json({
@@ -32,7 +43,6 @@ export const createAppointment = async (req, res) => {
             });
         }
 
-        // Check if date is in the past
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         selectedDate.setHours(0, 0, 0, 0);
@@ -77,7 +87,6 @@ export const createAppointment = async (req, res) => {
             });
         }
 
-
         const hasExistingAppointment = await Appointment.findOne({
             patientId: patientObjectId,
             doctorId: doctorObjectId,
@@ -91,13 +100,11 @@ export const createAppointment = async (req, res) => {
             });
         }
 
-
         const activeAppointmentsCount = await Appointment.countDocuments({
             doctorId: doctorObjectId,
             date: { $gte: startOfDay, $lte: endOfDay },
             status: { $nin: ["cancelled"] }
         });
-
 
         if (activeAppointmentsCount >= availability.dailyCapacity) {
             return res.status(409).json({
@@ -105,18 +112,16 @@ export const createAppointment = async (req, res) => {
             });
         }
 
-
         const queueNumber = activeAppointmentsCount + 1;
-
 
         const newAppointment = await Appointment.create({
             date: selectedDate,
             patientId: patientObjectId,
             doctorId: doctorObjectId,
+            nurseId: nurseObjectId || null, // added nurseId
             status: "scheduled",
             queueNumber: queueNumber,
         });
-
 
         const populatedAppointment = await Appointment.findById(newAppointment._id)
             .populate("patientId", "firstName lastName imageProfile numberPhone")
@@ -127,8 +132,8 @@ export const createAppointment = async (req, res) => {
                     path: "specialityId",
                     select: "name"
                 }
-            });
-
+            })
+            .populate("nurseId", "firstName lastName imageProfile"); // populate nurse
 
         const notification = await Notification.create({
             type: "info",
@@ -137,7 +142,6 @@ export const createAppointment = async (req, res) => {
             message: `Your appointment with Dr. ${populatedAppointment.doctorId.firstName} ${populatedAppointment.doctorId.lastName} on ${selectedDate.toLocaleDateString()} has been scheduled. Queue number: ${queueNumber}`,
             userId: patientObjectId,
         });
-
 
         if (req.io) {
             req.io.to(patientId).emit("newNotification", notification);
@@ -159,14 +163,42 @@ export const createAppointment = async (req, res) => {
 };
 
 
+export const getNurseAppointments = async (req, res) => {
+    const nurseId = req.params.id;
+
+    try {
+
+        const nurseAppointments = await Appointment.find({ nurseId }).populate("patientId").populate("doctorId").populate("nurseId").sort({ date: 1, createdAt: -1 });
+
+
+        if (!nurseAppointments || nurseAppointments.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "No appointments found for this nurse.",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            count: nurseAppointments.length,
+            nurseAppointments,
+        });
+
+    } catch (error) {
+        console.error("Error fetching nurse appointments:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Server error",
+            error: error.message,
+        });
+    }
+};
+
 
 export const getDoctorAppointments = async (req, res) => {
   const doctorId = req.params.id;
   try {
-    const doctorAppointments = await Appointment.find({ doctorId }).populate(
-      "patientId",
-      "firstName lastName numberPhone"
-    );
+    const doctorAppointments = await Appointment.find({ doctorId }).populate("patientId").populate("doctorId").populate("nurseId");
     if (!doctorAppointments || doctorAppointments.length === 0)
       return res
         .status(404)
@@ -183,10 +215,7 @@ export const getDoctorAppointments = async (req, res) => {
 export const getPatientAppointments = async (req, res) => {
   const patientId = req.params.id;
   try {
-    const patientAppointments = await Appointment.find({ patientId }).populate(
-      "doctorId",
-      "firstName lastName numberPhone"
-    );
+    const patientAppointments = await Appointment.find({ patientId }).populate("doctorId").populate("nurseId").populate("patientId").populate("doctorId");
     if (!patientAppointments || patientAppointments.length === 0)
       return res
         .status(404)
@@ -201,27 +230,35 @@ export const getPatientAppointments = async (req, res) => {
 };
 
 export const getAllAppointments = async (req, res) => {
-  try {
-      const appointments = await Appointment.find()
-          .populate({
-              path: "patientId",
-              select: "-password -email",
-          })
-          .populate({
-              path: "doctorId",
-              select: "-password -email",
-              populate: {
-                  path: "specialityId",
-              },
-          });
-    if (!appointments || appointments.length === 0)
-      return res
-        .status(404)
-        .json({ success: false, message: "No appointments found." });
-    return res.status(200).json({ success: true, appointments });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
+    try {
+        const appointments = await Appointment.find()
+            .populate({
+                path: "patientId",
+                select: "-password -email",
+            })
+            .populate({
+                path: "doctorId",
+                select: "-password -email",
+                populate: {
+                    path: "specialityId",
+                },
+            })
+            .populate({
+                path: "nurseId",
+                select: "-password -email",
+            });
+
+        if (!appointments || appointments.length === 0) {
+            return res
+                .status(404)
+                .json({ success: false, message: "No appointments found." });
+        }
+
+        return res.status(200).json({ success: true, appointments });
+
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
 };
 
 export const updateAppointment = async (req, res) => {
@@ -360,5 +397,86 @@ export const updateAppointmentStatus = async (req, res) => {
 
     } catch (error) {
         return res.status(500).json({ error: error.message });
+    }
+};
+
+
+export const assignNurseToAppointment = async (req, res) => {
+    try {
+        const { id: appointmentId } = req.params;
+        const { nurseId } = req.body;
+
+        if (!nurseId) {
+            return res.status(400).json({
+                success: false,
+                message: "nurseId is required.",
+            });
+        }
+
+
+        if (
+            !mongoose.Types.ObjectId.isValid(appointmentId) ||
+            !mongoose.Types.ObjectId.isValid(nurseId)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid appointmentId or nurseId.",
+            });
+        }
+
+        // Find appointment
+        const appointment = await Appointment.findById(appointmentId);
+        if (!appointment) {
+            return res.status(404).json({
+                success: false,
+                message: "Appointment not found.",
+            });
+        }
+
+
+        const nurse = await User.findById(nurseId).populate("roleId");
+
+        if (!nurse) {
+            return res.status(404).json({
+                success: false,
+                message: "Nurse not found.",
+            });
+        }
+
+
+        if (nurse.roleId.name !== "Nurse") {
+            return res.status(400).json({
+                success: false,
+                message: "User is not a nurse.",
+            });
+        }
+
+
+        appointment.nurseId = nurseId;
+        await appointment.save();
+
+
+        const updatedAppointment = await Appointment.findById(appointmentId)
+            .populate("patientId", "firstName lastName imageProfile numberPhone")
+            .populate({
+                path: "doctorId",
+                select: "firstName lastName imageProfile specialityId",
+                populate: { path: "specialityId", select: "name" },
+            })
+            .populate("nurseId", "firstName lastName imageProfile numberPhone");
+
+        return res.status(200).json({
+            success: true,
+            message: "Nurse assigned successfully.",
+            appointment: updatedAppointment,
+        });
+
+    } catch (error) {
+        console.error("Error assigning nurse:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error.",
+            error: error.message,
+        });
     }
 };
