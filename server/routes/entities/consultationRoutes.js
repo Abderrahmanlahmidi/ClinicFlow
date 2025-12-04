@@ -1,6 +1,7 @@
 import express from "express";
 import {
   getUserConsultations,
+    getDoctorConsultations,
   getAllConsultations,
   createConsultation,
   updateConsultation,
@@ -10,6 +11,7 @@ import {
 const router = express.Router();
 
 router.get("/user-consultations/:id", getUserConsultations);
+router.get("/doctor-consultations/:doctorId", getDoctorConsultations);
 router.get("/consultations", getAllConsultations);
 router.post("/create-consultation", createConsultation);
 router.patch("/update-consultation/:id", updateConsultation);

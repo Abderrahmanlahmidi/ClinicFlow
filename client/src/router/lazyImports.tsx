@@ -47,6 +47,10 @@ export const DoctorAvailabilities = lazy(
   () => import("../features/availability/availabilities")
 );
 
+export const Consultation = lazy(
+  () => import("../features/consultation/consultation")
+);
+
 export const withSuspense = (Component: JSX.Element) => {
   return <Suspense fallback={<LoadingPage />}>{Component}</Suspense>;
 };

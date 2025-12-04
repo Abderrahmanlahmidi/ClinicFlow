@@ -16,7 +16,8 @@ import {
   Pharmacy,
   CreateAppointement,
   MyAppointements,
-  DoctorAvailabilities
+  DoctorAvailabilities,
+  Consultation
 } from "./lazyImports";
 import PrivateRoute from "../private/privateRoute";
 import PublicRoute from "../private/publicRoute";
@@ -48,6 +49,14 @@ export const router = createBrowserRouter([
     element: withSuspense(
       <PrivateRoute allowedRoles={["Doctor"]} >
         <DoctorAvailabilities/>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/consultations",
+    element: withSuspense(
+      <PrivateRoute allowedRoles={["Doctor", "Patient"]} >
+        <Consultation/>
       </PrivateRoute>
     ),
   },
