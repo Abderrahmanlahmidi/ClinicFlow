@@ -6,7 +6,8 @@ import {
   FiHome,
   FiChevronDown,
   FiCalendar,
-  FiClock
+  FiClock,
+  FiActivity,
 } from "react-icons/fi";
 import LogoutConfirm from "./logoutConfirm";
 import { axiosInstance } from "../../../services/axiosInstance";
@@ -138,7 +139,7 @@ export default function DropdownProfile({ onLogout }) {
             <FiUser className="w-4 h-4 text-gray-400" />
             My Profile
           </Link>
-          
+
           {(role === "Nurse" || role === "Patient" || role === "Doctor") && (
             <Link
               to="/my-appointments"
@@ -150,7 +151,6 @@ export default function DropdownProfile({ onLogout }) {
             </Link>
           )}
 
-          
           {/* Doctor Availability Link */}
           {role === "Doctor" && (
             <Link
@@ -160,6 +160,17 @@ export default function DropdownProfile({ onLogout }) {
             >
               <FiClock className="w-4 h-4 text-gray-400" />
               Manage Availabilities
+            </Link>
+          )}
+
+          {(role === "Doctor" || role === "Patient") && (
+            <Link
+              to="/consultations"
+              onClick={handleItemClick}
+              className="flex items-center gap-3 px-5 py-3 text-sm text-gray-200 hover:bg-gray-800 transition-colors border-b border-gray-800"
+            >
+              <FiActivity className="w-4 h-4 text-gray-400" />
+              Consultations
             </Link>
           )}
 

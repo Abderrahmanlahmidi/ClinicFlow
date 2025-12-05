@@ -3,10 +3,8 @@ import Consultation from "../models/Consultation.js";
 export const getUserConsultations = async (req, res) => {
   const { id } = req.params;
   try {
-    const userConsultations = await Consultation.find({ userId: id }).populate({
-      path: "prescriptions",
-      consultations: "Prescription",
-    });
+    const userConsultations = await Consultation.find({ userId: id }).populate("doctorId", "firstName lastName email imageProfile");
+
     if (!userConsultations || userConsultations.length === 0) {
       return res
         .status(404)
@@ -22,6 +20,34 @@ export const getUserConsultations = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const getDoctorConsultations = async (req, res) => {
+    const { doctorId } = req.params;
+
+    try {
+        const consultations = await Consultation.find({ doctorId: doctorId })
+            .populate("userId", "firstName lastName email imageProfile")
+
+
+        if (!consultations || consultations.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "No consultations found for this doctor"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            consultations: consultations
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
 
 export const getAllConsultations = async (req, res) => {
   try {

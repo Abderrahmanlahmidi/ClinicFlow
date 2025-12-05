@@ -5,19 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2df23785-48a4-44cc-a133-7c87ed9c0c5f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/client/src/features/appointment/myAppointments.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/features/appointment/myAppointments.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/src/features/availability/availabilities.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/features/availability/availabilities.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/features/availability/components/AvailabilityForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/features/availability/components/AvailabilityForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/features/dashboard/pages/components/forms/appointment/CreateAppointmentForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/features/dashboard/pages/components/forms/appointment/CreateAppointmentForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/features/dashboard/pages/components/forms/appointment/UpdateAppointmentForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/features/dashboard/pages/components/forms/appointment/UpdateAppointmentForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/features/dashboard/pages/components/forms/pharmacy/CreatePharmacyForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/features/dashboard/pages/components/forms/pharmacy/CreatePharmacyForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/features/dashboard/pages/components/forms/pharmacy/UpdatePharmacyForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/features/dashboard/pages/components/forms/pharmacy/UpdatePharmacyForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/features/dashboard/pages/components/forms/role/CreateRoleForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/features/dashboard/pages/components/forms/role/CreateRoleForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/features/dashboard/pages/components/forms/role/UpdateRoleForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/features/dashboard/pages/components/forms/role/UpdateRoleForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/features/dashboard/pages/components/forms/speciality/CreateSpecialityForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/features/dashboard/pages/components/forms/speciality/CreateSpecialityForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/features/dashboard/pages/components/forms/speciality/UpdateSpecialityForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/features/dashboard/pages/components/forms/speciality/UpdateSpecialityForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/features/dashboard/pages/sections/pages/appointment.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/features/dashboard/pages/sections/pages/appointment.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/src/features/dashboard/pages/services/availabilityApi.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/client/src/features/dashboard/pages/services/availabilityApi.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,7 +76,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1764758126101</updated>
-      <workItem from="1764758127481" duration="6349000" />
+      <workItem from="1764758127481" duration="7703000" />
     </task>
     <servers />
   </component>

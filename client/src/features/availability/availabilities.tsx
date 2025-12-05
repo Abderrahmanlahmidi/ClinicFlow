@@ -24,6 +24,7 @@ import { AvailabilityCard } from "./components/AvailabilityCard.tsx";
 import type { Availability, AvailabilityFormData } from "./types/types.ts";
 import { DEFAULT_AVAILABILITY_FORM_VALUES } from "./constants/constants.ts";
 import { extractStringValue, getUniqueDays } from "./utils/utils.ts";
+import { PageHeader } from "../../ui/headers/pageHeader.tsx";
 
 export default function Availabilities() {
   const queryClient = useQueryClient();
@@ -179,7 +180,7 @@ const updateMutation = useMutation({
         availability.dailyCapacity ||
         DEFAULT_AVAILABILITY_FORM_VALUES.dailyCapacity,
     });
-    setIsFormOpen(true);
+    setIsFormOpen(true); 
   };
 
   const handleAddNew = () => {
@@ -202,31 +203,14 @@ const updateMutation = useMutation({
     <div className="min-h-screen bg-gray-900 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-light text-white mb-2 flex items-center gap-3">
-                <FiCalendar className="w-7 h-7 text-lime-400" />
-                My Availabilities
-              </h1>
-              <p className="text-gray-400">
-                Manage your weekly schedule and appointment slots
-              </p>
-            </div>
-
-            <button
-              onClick={handleAddNew}
-              className="px-4 py-2.5 bg-gray-900 border border-lime-400 text-lime-400 rounded-lg hover:bg-lime-400/10 transition-colors flex items-center gap-2"
-            >
-              <FiPlus className="w-5 h-5" />
-              Add Availability
-            </button>
-          </div>
-        </motion.div>
+        <PageHeader
+          title="My Availabilities"
+          subtitle="Manage your weekly schedule and appointment slots"
+          icon={<FiCalendar className="w-7 h-7 text-lime-400" />}
+          buttonText="Add Availability"
+          onButtonClick={handleAddNew}
+          buttonIcon={<FiPlus className="w-5 h-5" />}
+        />
 
         {/* Stats Summary */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -352,12 +336,7 @@ const updateMutation = useMutation({
 
         {/* Overlay Form */}
         {isFormOpen && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-gray-900 border border-gray-800 rounded-xl w-full max-w-2xl"
-            >
+
               <AvailabilityForm
                 onSubmit={onSubmit}
                 isLoading={createMutation.isPending || updateMutation.isPending}
@@ -368,8 +347,7 @@ const updateMutation = useMutation({
                 reset={reset}
                 onClose={closeForm}
               />
-            </motion.div>
-          </div>
+           
         )}
 
         {/* Delete Confirmation Modal */}
