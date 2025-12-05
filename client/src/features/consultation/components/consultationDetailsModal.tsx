@@ -1,6 +1,6 @@
 import React from "react";
 import { FiFileText, FiDownload } from "react-icons/fi";
-import type { Consultation } from "../types/index";
+import type { Consultation } from "../Types/index";
 import {
   formatDate,
   formatTime,

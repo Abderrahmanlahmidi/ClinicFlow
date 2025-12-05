@@ -1,4 +1,9 @@
+import { getDoctorAppointments } from '../../dashboard/pages/services/appointmentApi';
+import { useQuery } from '@tanstack/react-query';
 import type { User } from '../Types/index';
+
+const doctorId = localStorage.getItem("userId");
+
 
 export const MOCK_USERS: User[] = [
   { _id: '1', firstName: 'John', lastName: 'Doe', email: 'john@example.com' },

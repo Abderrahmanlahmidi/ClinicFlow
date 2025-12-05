@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { FiFileText, FiPlus } from 'react-icons/fi';
-
-
 import { useToast } from '../../ui/toasts/toast';
 import { getUserConsultations, deleteConsultation, getDoctorConsultations } from '../availability/services/consultationApi';
 import { PageHeader } from '../../ui/headers/pageHeader';
@@ -16,12 +14,13 @@ import {
   prepareFormDataForFrontend
 } from './utils';
 import { ConsultationCard } from './components/consultationCard';
-import { ConsultationDetailsModal } from './components/ConsultationDetailsModal';
-import { EmptyState } from './components/EmptyState';
+import { ConsultationDetailsModal } from './components/consultationDetailsModal';
+import { EmptyState } from './components/emptyState';
 import ConsultationForm from './components/consultationForm';
 
 
 export default function ConsultationPage() {
+
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingConsultation, setEditingConsultation] = useState<Consultation | null>(null);
   const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
@@ -51,6 +50,7 @@ export default function ConsultationPage() {
 
   const consultations = consultationsResponse?.consultations || [];
 
+
   const deleteMutation = useMutation({
     mutationFn: deleteConsultation,
     onSuccess: () => {
@@ -73,8 +73,8 @@ export default function ConsultationPage() {
   };
 
   const handleEdit = (consultation: Consultation) => {
-    const frontendData = prepareFormDataForFrontend(consultation);
-    setEditingConsultation(frontendData);
+    // const frontendData = prepareFormDataForFrontend(consultation);
+    setEditingConsultation(consultation);
     setIsFormOpen(true);
   };
 

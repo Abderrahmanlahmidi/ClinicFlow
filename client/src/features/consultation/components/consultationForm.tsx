@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import {
   FiX,
@@ -26,7 +25,7 @@ interface ConsultationFormData {
   allergies: string;
   bloodType: string;
   weight: number;
-  width: number; // Changed from height to width
+  width: number;
   bloodPressure: string;
   temperature: number;
   respiratoryRate: number;
@@ -59,6 +58,11 @@ export default function ConsultationForm({
   } = useForm<ConsultationFormData>({
     defaultValues: initialData || {}
   });
+
+  console.log(initialData)
+  
+  
+  
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -307,7 +311,7 @@ export default function ConsultationForm({
                         </label>
                         <input
                           type="number"
-                          {...register('heartRate', { 
+                          {...register('hearRate', { 
                             required: 'Heart rate is required',
                             min: { value: 0, message: 'Must be positive' },
                             max: { value: 200, message: 'Value too high' }
